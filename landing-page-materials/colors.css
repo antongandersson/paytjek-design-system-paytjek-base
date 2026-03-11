@@ -1,0 +1,225 @@
+/**
+ * PayTjek Landing Page - Color System
+ * 
+ * Importer denne fil i dit projekt:
+ * @import url('./colors.css');
+ * 
+ * Eller kopier variablerne til din eksisterende CSS.
+ */
+
+:root {
+  /* ========================================
+     BRAND COLORS
+     ======================================== */
+  
+  /* Primary - Deep Blue */
+  --paytjek-primary: #090cd2;
+  --paytjek-primary-rgb: 9, 12, 210;
+  --paytjek-primary-light: #3b3ee0;
+  --paytjek-primary-dark: #0608a3;
+  
+  /* Accent - Lime Green */
+  --paytjek-accent: #b1e63e;
+  --paytjek-accent-rgb: 177, 230, 62;
+  --paytjek-accent-light: #c7ed6e;
+  --paytjek-accent-dark: #9ab522;
+  
+  /* Secondary - Light Blue */
+  --paytjek-secondary: #98c6e3;
+  --paytjek-secondary-rgb: 152, 198, 227;
+  --paytjek-secondary-light: #b8d8ed;
+  --paytjek-secondary-dark: #78b4d9;
+  
+
+  /* ========================================
+     FEATURE CARD BACKGROUNDS
+     (Soft, pastel versions for cards)
+     ======================================== */
+  
+  /* Løntjek - Soft Blue */
+  --paytjek-card-blue: #e8f4fc;
+  --paytjek-card-blue-border: #c5e3f5;
+  
+  /* Kalender - Soft Green */
+  --paytjek-card-green: #f0fce8;
+  --paytjek-card-green-border: #d4f0c5;
+  
+  /* Ernest AI - Soft Purple */
+  --paytjek-card-purple: #f0e8fc;
+  --paytjek-card-purple-border: #d9c5f5;
+  
+  /* Fagforening - Soft Pink */
+  --paytjek-card-pink: #fce8f0;
+  --paytjek-card-pink-border: #f5c5d9;
+  
+
+  /* ========================================
+     SEMANTIC COLORS
+     ======================================== */
+  
+  /* Success - Green */
+  --paytjek-success: #22c55e;
+  --paytjek-success-light: #dcfce7;
+  
+  /* Warning - Orange */
+  --paytjek-warning: #f97316;
+  --paytjek-warning-light: #ffedd5;
+  
+  /* Error/Destructive - Red */
+  --paytjek-error: #ef4444;
+  --paytjek-error-light: #fee2e2;
+  
+
+  /* ========================================
+     NEUTRAL COLORS
+     ======================================== */
+  
+  /* Background */
+  --paytjek-bg: #fafafa;
+  --paytjek-bg-white: #ffffff;
+  
+  /* Text */
+  --paytjek-text: #101320;
+  --paytjek-text-muted: #6b7280;
+  --paytjek-text-light: #9ca3af;
+  
+  /* Borders */
+  --paytjek-border: #e5e7eb;
+  --paytjek-border-light: #f3f4f6;
+  
+
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  --paytjek-font-family: 'Urbanist', system-ui, -apple-system, sans-serif;
+  
+  /* Font weights */
+  --paytjek-font-regular: 400;
+  --paytjek-font-medium: 500;
+  --paytjek-font-semibold: 600;
+  --paytjek-font-bold: 700;
+  
+
+  /* ========================================
+     SPACING & RADIUS
+     ======================================== */
+  
+  --paytjek-radius-sm: 0.5rem;    /* 8px */
+  --paytjek-radius-md: 0.75rem;   /* 12px */
+  --paytjek-radius-lg: 1rem;      /* 16px */
+  --paytjek-radius-xl: 1.5rem;    /* 24px */
+  --paytjek-radius-2xl: 2rem;     /* 32px */
+  --paytjek-radius-full: 9999px;
+  
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  
+  --paytjek-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --paytjek-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --paytjek-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --paytjek-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+  /* Colored shadows for CTAs */
+  --paytjek-shadow-primary: 0 10px 25px -5px rgba(var(--paytjek-primary-rgb), 0.3);
+  --paytjek-shadow-accent: 0 10px 25px -5px rgba(var(--paytjek-accent-rgb), 0.3);
+}
+
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Primary button */
+.btn-primary {
+  background-color: var(--paytjek-primary);
+  color: white;
+  font-weight: var(--paytjek-font-semibold);
+  padding: 1rem 2rem;
+  border-radius: var(--paytjek-radius-xl);
+  box-shadow: var(--paytjek-shadow-primary);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--paytjek-primary-light);
+  transform: translateY(-2px);
+}
+
+/* Accent button */
+.btn-accent {
+  background-color: var(--paytjek-accent);
+  color: var(--paytjek-text);
+  font-weight: var(--paytjek-font-semibold);
+  padding: 1rem 2rem;
+  border-radius: var(--paytjek-radius-xl);
+  box-shadow: var(--paytjek-shadow-accent);
+  transition: all 0.2s ease;
+}
+
+.btn-accent:hover {
+  background-color: var(--paytjek-accent-light);
+  transform: translateY(-2px);
+}
+
+/* Feature card base */
+.feature-card {
+  padding: 2rem;
+  border-radius: var(--paytjek-radius-2xl);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--paytjek-shadow-lg);
+}
+
+/* Feature card variants */
+.feature-card--blue {
+  background-color: var(--paytjek-card-blue);
+  border: 1px solid var(--paytjek-card-blue-border);
+}
+
+.feature-card--green {
+  background-color: var(--paytjek-card-green);
+  border: 1px solid var(--paytjek-card-green-border);
+}
+
+.feature-card--purple {
+  background-color: var(--paytjek-card-purple);
+  border: 1px solid var(--paytjek-card-purple-border);
+}
+
+.feature-card--pink {
+  background-color: var(--paytjek-card-pink);
+  border: 1px solid var(--paytjek-card-pink-border);
+}
+
+
+/* ========================================
+   DARK MODE (optional)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paytjek-bg: #101320;
+    --paytjek-bg-white: #1a1f2e;
+    --paytjek-text: #fafafa;
+    --paytjek-text-muted: #9ca3af;
+    --paytjek-border: #2d3748;
+    --paytjek-border-light: #1f2937;
+    
+    /* Slightly brighter primary in dark mode */
+    --paytjek-primary: #4b4ff0;
+    
+    /* Darker card backgrounds */
+    --paytjek-card-blue: #1a2333;
+    --paytjek-card-green: #1a2a1a;
+    --paytjek-card-purple: #251a33;
+    --paytjek-card-pink: #331a25;
+  }
+}
+
+
