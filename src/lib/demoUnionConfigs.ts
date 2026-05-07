@@ -840,9 +840,10 @@ export const DJOEF_CONFIG: UnionDemoConfig = {
       ],
     },
     careerSteps: [
-      { date: "Sep 2019", label: "Trin 4", detail: "Ansat som fuldmægtig" },
+      { date: "Sep 2019", label: "Trin 4", detail: "Ansat som fuldmægtig (to-årigt trin)" },
       { date: "Sep 2021", label: "Trin 5", detail: "2 års anciennitet" },
-      { date: "Sep 2023", label: "Trin 6", detail: "4 års anciennitet" },
+      { date: "Sep 2022", label: "Trin 6", detail: "3 års anciennitet" },
+      { date: "Sep 2023", label: "Trin 7", detail: "4 års anciennitet (to-årigt trin)" },
       { date: "Sep 2025", label: "Trin 8 (sluttrin)", detail: "6 års anciennitet · Pension 18,07%", isCurrent: true },
       { date: "Næste MUS", label: "Kvalifikationstillæg?", detail: "Forhandling mulig ved næste MUS", isFuture: true },
     ],
