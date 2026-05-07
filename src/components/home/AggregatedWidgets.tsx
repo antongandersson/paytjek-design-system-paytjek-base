@@ -5,7 +5,7 @@ import { useDemo } from "@/contexts/DemoContext";
 import {
   CheckCircle2, AlertCircle, Clock, TrendingUp, Banknote,
   Moon, Sun as SunIcon, Briefcase, ShieldCheck, ChevronRight,
-  Receipt, Landmark, CalendarDays, FileText,
+  Receipt, Landmark, CalendarDays, FileText, Lock,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from "recharts";
 import type { AggregatedStats } from "@/contexts/PayslipContext";
@@ -114,6 +114,7 @@ interface DashboardContextRowProps {
   contractDetails: ContractDetails | null;
   shifts: Shift[];
   hasCalendar: boolean;
+  hasPayslipData?: boolean;
   demoProfile?: DemoProfile;
   demoContractComparison?: DemoContractComparison;
   demoContractAnalysis?: DemoContractAnalysis;
@@ -123,6 +124,7 @@ export function DashboardContextRow({
   contractDetails,
   shifts,
   hasCalendar,
+  hasPayslipData = false,
   demoProfile = "agreement",
   demoContractComparison,
   demoContractAnalysis,
@@ -144,6 +146,8 @@ export function DashboardContextRow({
 
   const formatKr = (n: number) =>
     n.toLocaleString("da-DK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const careerUnlocked = demoProfile === "contract" && !!contractDetails && hasPayslipData;
 
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -195,16 +199,17 @@ export function DashboardContextRow({
       {/* Højre card: Karriere (contract-profil) eller Vagtplan (agreement-profil) */}
       {demoProfile === "contract" ? (
         <Card
-          className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
-          onClick={() => navigate(`${basePath}/package`)}
+          className={`border-border/60 transition-colors ${careerUnlocked ? "cursor-pointer hover:border-primary/30" : "opacity-70"}`}
+          onClick={careerUnlocked ? () => navigate(`${basePath}/package`) : undefined}
         >
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <Briefcase className="h-3 w-3" /> Karriere
               </p>
+              {!careerUnlocked && <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />}
             </div>
-            {contractDetails ? (
+            {careerUnlocked && contractDetails ? (
               <>
                 <p className="text-sm font-bold text-foreground leading-snug">
                   Trin {contractDetails.salary.trin}
@@ -214,7 +219,9 @@ export function DashboardContextRow({
                 </p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground mt-1">Upload kontrakt først</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-snug">
+                Upload kontrakt + lønseddel for at se karriereforløb
+              </p>
             )}
           </CardContent>
         </Card>

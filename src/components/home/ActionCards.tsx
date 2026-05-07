@@ -1,4 +1,4 @@
-import { FileText, CalendarDays, GraduationCap } from "lucide-react";
+import { FileText, CalendarDays, GraduationCap, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DemoProfile } from "@/lib/demoUnionConfigs";
 
@@ -6,6 +6,8 @@ interface QuickActionsProps {
   onCheckPayslip?: () => void;
   onViewSchedule?: () => void;
   onViewPackage?: () => void;
+  onUploadContract?: () => void;
+  careerUnlocked?: boolean;
   demoProfile?: DemoProfile;
 }
 
@@ -15,6 +17,8 @@ export function QuickActions({
   onCheckPayslip,
   onViewSchedule,
   onViewPackage,
+  onUploadContract,
+  careerUnlocked = false,
   demoProfile = "agreement",
 }: QuickActionsProps) {
   return (
@@ -29,14 +33,25 @@ export function QuickActions({
       </Button>
 
       {demoProfile === "contract" ? (
-        <Button
-          variant="secondary"
-          className="h-12 rounded-2xl gap-2 font-semibold"
-          onClick={onViewPackage}
-        >
-          <GraduationCap className="h-4.5 w-4.5" />
-          Se karriere
-        </Button>
+        careerUnlocked ? (
+          <Button
+            variant="secondary"
+            className="h-12 rounded-2xl gap-2 font-semibold"
+            onClick={onViewPackage}
+          >
+            <GraduationCap className="h-4.5 w-4.5" />
+            Se karriere
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            className="h-12 rounded-2xl gap-2 font-semibold"
+            onClick={onUploadContract}
+          >
+            <Upload className="h-4.5 w-4.5" />
+            Upload kontrakt
+          </Button>
+        )
       ) : (
         <Button
           variant="secondary"

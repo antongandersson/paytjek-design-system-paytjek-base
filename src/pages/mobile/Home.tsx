@@ -65,6 +65,7 @@ export default function MobileHome() {
         contractDetails={contractDetails}
         shifts={shifts}
         hasCalendar={hasCalendar}
+        hasPayslipData={hasDashboardData}
         demoProfile={demoConfig.demoProfile}
         demoContractComparison={demoConfig.demoContractComparison}
         demoContractAnalysis={demoConfig.demoContractAnalysis}
@@ -75,6 +76,8 @@ export default function MobileHome() {
         onCheckPayslip={handleUploadClick}
         onViewSchedule={() => navigate(`${basePath}/calendar`)}
         onViewPackage={() => navigate(`${basePath}/package`)}
+        onUploadContract={() => navigate(`${basePath}/contract`)}
+        careerUnlocked={hasContract && hasDashboardData}
         demoProfile={demoConfig.demoProfile}
       />
 
