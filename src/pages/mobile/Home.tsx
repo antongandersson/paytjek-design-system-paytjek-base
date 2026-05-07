@@ -57,7 +57,10 @@ export default function MobileHome() {
         hasContract={hasContract}
       />
 
-      {/* 2. Status row — Kontrakt + Lønpakke/Vagtplan side by side */}
+      {/* 2. Løntjek resultat (or empty state) */}
+      <StatusHero stats={agg} />
+
+      {/* 3. Status row — Kontrakt + Karriere/Vagtplan side by side */}
       <DashboardContextRow
         contractDetails={contractDetails}
         shifts={shifts}
@@ -67,16 +70,13 @@ export default function MobileHome() {
         demoContractAnalysis={demoConfig.demoContractAnalysis}
       />
 
-      {/* 3. Action buttons */}
+      {/* 4. Action buttons */}
       <QuickActions
         onCheckPayslip={handleUploadClick}
         onViewSchedule={() => navigate(`${basePath}/calendar`)}
         onViewPackage={() => navigate(`${basePath}/package`)}
         demoProfile={demoConfig.demoProfile}
       />
-
-      {/* 4. Løntjek resultat (or empty state) */}
-      <StatusHero stats={agg} />
 
       {/* 5. Seneste lønudbetaling */}
       <PaymentWidget
