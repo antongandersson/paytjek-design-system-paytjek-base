@@ -795,14 +795,18 @@ function AnalysisConfidenceMeter() {
   const { hasDetails, contractDetails } = useContract();
   const { isConnected: calendarConnected } = useCalendar();
   const { currentPayslip } = usePayslip();
+  const { demoConfig } = useDemo();
 
+  const isContractProfile = demoConfig.demoProfile === "contract";
   const hasLokalaftale = false;
 
   const sources: Array<{ label: string; ready: boolean; icon: React.ElementType; weight: number }> = [
     { label: "Lønseddel", ready: !!currentPayslip, icon: FileText, weight: 25 },
     { label: "Kontrakt", ready: hasDetails, icon: BadgeCheck, weight: 25 },
     { label: "Overenskomst", ready: true, icon: ShieldCheck, weight: 25 },
-    { label: "Vagtplan", ready: calendarConnected, icon: Clock, weight: 17 },
+    ...(!isContractProfile
+      ? [{ label: "Vagtplan", ready: calendarConnected, icon: Clock, weight: 17 }]
+      : [{ label: "Lovgivning", ready: true, icon: ShieldCheck, weight: 17 }]),
     { label: "Lokalaftale", ready: hasLokalaftale, icon: Info, weight: 8 },
   ];
 
