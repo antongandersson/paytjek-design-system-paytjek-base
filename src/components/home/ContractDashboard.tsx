@@ -5,10 +5,14 @@ import {
   Banknote, ChevronRight, CheckCircle2, AlertTriangle, AlertCircle,
   TrendingUp, Lock, Lightbulb, GraduationCap, PiggyBank,
   ShieldCheck, Sparkles, ArrowRight, FileText,
+  Scale, Clock, Briefcase, Calendar, ChevronDown,
 } from "lucide-react";
+import { useState } from "react";
 import type {
   ContractIntelligence,
   DemoContractAnalysis,
+  TerminationIntelligence,
+  TerminationScenario,
 } from "@/lib/demoUnionConfigs";
 import type { AggregatedStats } from "@/contexts/PayslipContext";
 
@@ -482,6 +486,173 @@ export function NegotiationCard({ intel }: NegotiationCardProps) {
 
       <p className="text-[10px] text-muted-foreground/60 italic mt-1">
         Beløbsestimater er baseret på markedsdata
+      </p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 8. TERMINATION CARD — opsigelsesscenarier
+// ─────────────────────────────────────────────
+
+function computeLastWorkDay(today: Date, noticeMonths: number): Date {
+  const endOfNotice = new Date(today.getFullYear(), today.getMonth() + noticeMonths + 1, 0);
+  return endOfNotice;
+}
+
+function formatDanishDate(d: Date): string {
+  return d.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" });
+}
+
+const timelineIconMap = {
+  calendar: Calendar,
+  clock: Clock,
+  briefcase: Briefcase,
+  shield: ShieldCheck,
+  banknote: Banknote,
+  alert: AlertTriangle,
+} as const;
+
+const detailStatusStyles = {
+  info: "bg-muted/30 text-foreground",
+  warning: "bg-amber-50 text-amber-800",
+  positive: "bg-green-50 text-green-800",
+  future: "bg-primary/5 text-primary",
+} as const;
+
+const detailStatusIcons = {
+  info: null,
+  warning: AlertTriangle,
+  positive: CheckCircle2,
+  future: Clock,
+} as const;
+
+function ScenarioPanel({ scenario, noticeMonths }: { scenario: TerminationScenario; noticeMonths: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const today = new Date();
+  const lastDay = computeLastWorkDay(today, noticeMonths);
+
+  const todayStr = today.toLocaleDateString("da-DK", { day: "numeric", month: "long" });
+
+  return (
+    <div className="rounded-2xl border border-border/50 overflow-hidden">
+      <button
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/20 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div>
+          <p className="text-sm font-bold text-foreground">{scenario.title}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Varsel: {scenario.noticePeriod}
+          </p>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`} />
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3 animate-fade-in">
+          <div className="rounded-xl bg-primary/5 border border-primary/10 px-3 py-2.5">
+            <p className="text-xs text-primary font-semibold">
+              Opsiger du/opsiges du i dag ({todayStr})
+            </p>
+            <p className="text-sm font-bold text-foreground mt-0.5">
+              → Sidste arbejdsdag: {formatDanishDate(lastDay)}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              {scenario.legalBasis}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            {scenario.details.map((detail) => {
+              const StatusIcon = detailStatusIcons[detail.status];
+              return (
+                <div
+                  key={detail.label}
+                  className={`flex items-start gap-2.5 p-2.5 rounded-xl ${detailStatusStyles[detail.status]}`}
+                >
+                  {StatusIcon && <StatusIcon className="h-3.5 w-3.5 mt-0.5 shrink-0 opacity-70" />}
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold leading-snug">{detail.label}</p>
+                    <p className="text-xs opacity-80 leading-snug mt-0.5">{detail.value}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {scenario.timeline && scenario.timeline.length > 0 && (
+            <div className="pt-2">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                Forløb
+              </p>
+              <div className="relative pl-5">
+                <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
+                {scenario.timeline.map((step, i) => {
+                  const Icon = timelineIconMap[step.icon];
+                  const isLast = i === scenario.timeline!.length - 1;
+                  return (
+                    <div key={i} className="relative flex items-start gap-3 pb-3 last:pb-0">
+                      <div className="absolute left-[-13px] top-1 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary/30 flex items-center justify-center">
+                        <Icon className="h-2 w-2 text-primary/60" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className={`text-xs font-semibold ${isLast ? "text-primary" : "text-foreground"}`}>
+                          {step.label}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground leading-snug">{step.detail}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface TerminationCardProps {
+  termination: TerminationIntelligence;
+}
+
+export function TerminationCard({ termination }: TerminationCardProps) {
+  const today = new Date();
+  const start = new Date(termination.anciennityStartDate);
+  const anciennityYears = Math.floor((today.getTime() - start.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+        <Scale className="w-4 h-4" />
+        Opsigelse & Rettigheder
+      </h3>
+
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="px-2 py-1 rounded-lg bg-muted/30 font-medium">
+          {anciennityYears}+ års anciennitet
+        </span>
+        {termination.isFunktionaer && (
+          <span className="px-2 py-1 rounded-lg bg-primary/5 text-primary font-medium">
+            Funktionær
+          </span>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {termination.scenarios.map((scenario, i) => (
+          <ScenarioPanel
+            key={i}
+            scenario={scenario}
+            noticeMonths={i === 0 ? termination.employeeNoticePeriodMonths : termination.employerNoticePeriodMonths}
+          />
+        ))}
+      </div>
+
+      <p className="text-[10px] text-muted-foreground/60 italic">
+        Baseret på din kontrakt, overenskomst og funktionærloven
       </p>
     </div>
   );

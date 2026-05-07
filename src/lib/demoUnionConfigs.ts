@@ -83,12 +83,46 @@ export interface NegotiationPoint {
   benchmark?: string;
 }
 
+// ─── Termination Intelligence ─────────────────────────────────────────────────
+
+export interface TerminationDetail {
+  label: string;
+  value: string;
+  status: "info" | "warning" | "positive" | "future";
+}
+
+export interface TerminationTimelineStep {
+  label: string;
+  detail: string;
+  icon: "calendar" | "clock" | "briefcase" | "shield" | "banknote" | "alert";
+}
+
+export interface TerminationScenario {
+  title: string;
+  noticePeriod: string;
+  legalBasis: string;
+  details: TerminationDetail[];
+  timeline?: TerminationTimelineStep[];
+}
+
+export interface TerminationIntelligence {
+  isFunktionaer: boolean;
+  anciennityStartDate: string;
+  employerNoticePeriodMonths: number;
+  employeeNoticePeriodMonths: number;
+  severanceEligibleAfterYears: number;
+  severanceEligibleDate: string;
+  scenarios: TerminationScenario[];
+  relatedFinding?: string;
+}
+
 export interface ContractIntelligence {
   salaryComponents: SalaryComponent[];
   totalPackage: number;
   pension: PensionIntelligence;
   careerSteps: CareerStep[];
   negotiationPoints: NegotiationPoint[];
+  termination?: TerminationIntelligence;
 }
 
 // ─── Config interface ─────────────────────────────────────────────────────────
@@ -911,6 +945,48 @@ export const DJOEF_CONFIG: UnionDemoConfig = {
       { label: "Pension → fritvalg", status: "active", detail: "3,07%-point over minimumsgrænsen (15%) kan udbetales som løn", benchmark: "~1.245 kr/md" },
       { label: "Ekstra feriedage", status: "locked", detail: "Kræver lokal aftale — 5 særlige feriedage er standard" },
     ],
+    termination: {
+      isFunktionaer: true,
+      anciennityStartDate: "2019-09-01",
+      employerNoticePeriodMonths: 6,
+      employeeNoticePeriodMonths: 1,
+      severanceEligibleAfterYears: 12,
+      severanceEligibleDate: "2031-09-01",
+      scenarios: [
+        {
+          title: "Hvis du opsiger",
+          noticePeriod: "1 måned til udgangen af en måned",
+          legalBasis: "Funktionærloven §2, stk. 6",
+          details: [
+            { label: "Opsigelsesvarsel", value: "1 måned til udgangen af en måned", status: "info" },
+            { label: "Feriepenge", value: "Optjent ferie udbetales ved fratræden", status: "info" },
+            { label: "Pension", value: "P+ indbetaling stopper ved fratræden — kontakt P+ om overførsel", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Ingen — kun ved arbejdsgivers opsigelse", status: "warning" },
+          ],
+        },
+        {
+          title: "Hvis du bliver opsagt",
+          noticePeriod: "6 måneder",
+          legalBasis: "Funktionærloven §2, stk. 2 (6+ års anciennitet)",
+          details: [
+            { label: "Opsigelsesvarsel", value: "6 måneder (6+ års anciennitet)", status: "info" },
+            { label: "Fritstilling", value: "Arbejdsgiver kan fritstille dig — du modtager fuld løn i hele opsigelsesperioden", status: "positive" },
+            { label: "Modregning ved fritstilling", value: "Ny løn kan modregnes efter 3 måneder (funktionærloven §21)", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Kræver 12 års ansættelse (funktionærloven §2a) — du opnår ret i september 2031", status: "future" },
+            { label: "120-dagesreglen", value: "Gælder IKKE for dig — eksplicit udelukket for AC-ansatte (AC-ovk. §20)", status: "positive" },
+            { label: "Ferieafregning", value: "Optjent ferie + særlige feriedage afregnes ved fratræden", status: "info" },
+          ],
+          timeline: [
+            { label: "Opsigelse modtaget", detail: "Skriftlig opsigelse fra arbejdsgiver", icon: "calendar" },
+            { label: "Opsigelsesperiode (6 mdr.)", detail: "Fuld løn, pension og tillæg fortsætter", icon: "clock" },
+            { label: "Evt. fritstilling", detail: "Modregning i ny løn efter 3 mdr.", icon: "briefcase" },
+            { label: "Fratræden", detail: "Sidste arbejdsdag", icon: "shield" },
+            { label: "Ferieafregning + pension", detail: "Optjent ferie udbetales, P+ opgøres", icon: "banknote" },
+          ],
+        },
+      ],
+      relatedFinding: "Pkt. 12: 120-dagesreglen",
+    },
   },
 
   welcomeHeadline: "Er din pension beregnet korrekt?",
@@ -1111,6 +1187,50 @@ export const LEDERNE_CONFIG: UnionDemoConfig = {
       { label: "Firmabil-beskatning", status: "active", detail: "Nuværende ordning korrekt indberettet" },
       { label: "Resultatbonus", status: "potential", detail: "Kan forhandles oven i fast bonus ved næste revisionsrunde", benchmark: "5–15% af årsløn" },
     ],
+    termination: {
+      isFunktionaer: true,
+      anciennityStartDate: "2020-01-06",
+      employerNoticePeriodMonths: 12,
+      employeeNoticePeriodMonths: 1,
+      severanceEligibleAfterYears: 12,
+      severanceEligibleDate: "2032-01-06",
+      scenarios: [
+        {
+          title: "Hvis du opsiger",
+          noticePeriod: "1 måned til udgangen af en måned",
+          legalBasis: "Funktionærloven §2, stk. 6",
+          details: [
+            { label: "Opsigelsesvarsel", value: "1 måned til udgangen af en måned", status: "info" },
+            { label: "Konkurrenceklausul", value: "Træder i kraft ved din opsigelse — kompensation iht. funktionærloven §18a", status: "warning" },
+            { label: "Firmabil", value: "Skal afleveres ved fratræden — beskatning stopper", status: "info" },
+            { label: "Bonus", value: "Forholdsmæssig andel af årlig bonus udbetales", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Ingen — kun ved arbejdsgivers opsigelse", status: "warning" },
+          ],
+        },
+        {
+          title: "Hvis du bliver opsagt",
+          noticePeriod: "12 måneder",
+          legalBasis: "Lederkontrakt §9 (udvidet varsel)",
+          details: [
+            { label: "Opsigelsesvarsel", value: "12 måneder (individuelt aftalt i lederkontrakt)", status: "info" },
+            { label: "Fritstilling", value: "Arbejdsgiver kan fritstille dig — fuld løn inkl. tillæg i hele perioden", status: "positive" },
+            { label: "Firmabil", value: "Kan beholdes i opsigelsesperioden (beskatning fortsætter)", status: "info" },
+            { label: "Bonus i opsigelsesperioden", value: "Fuld bonus i opsigelsesperioden — forholdsmæssig andel ved fratræden", status: "positive" },
+            { label: "Konkurrenceklausul", value: "Gælder også ved arbejdsgivers opsigelse — 50% kompensation i klausulperioden", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Kræver 12 års ansættelse (funktionærloven §2a) — du opnår ret i januar 2032", status: "future" },
+            { label: "Pension", value: "PFA-indbetaling fortsætter i hele opsigelsesperioden", status: "positive" },
+          ],
+          timeline: [
+            { label: "Opsigelse modtaget", detail: "Skriftlig opsigelse fra arbejdsgiver", icon: "calendar" },
+            { label: "Opsigelsesperiode (12 mdr.)", detail: "Fuld løn, bonus, pension og firmabil fortsætter", icon: "clock" },
+            { label: "Evt. fritstilling", detail: "Modregning i ny løn efter 3 mdr.", icon: "briefcase" },
+            { label: "Konkurrenceklausul aktiveres", detail: "Kompensation 50% af løn i klausulperioden", icon: "alert" },
+            { label: "Fratræden", detail: "Sidste arbejdsdag", icon: "shield" },
+            { label: "Slutafregning", detail: "Bonus, ferie, pension opgøres", icon: "banknote" },
+          ],
+        },
+      ],
+    },
   },
 
   welcomeHeadline: "Leverer din arbejdsgiver det aftalte?",

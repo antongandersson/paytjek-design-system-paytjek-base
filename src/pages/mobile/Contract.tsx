@@ -27,6 +27,7 @@ import type { ContractDetails } from "@/lib/demoContract";
 import { cn } from "@/lib/utils";
 import {
   ContractChecklist,
+  TerminationCard,
 } from "@/components/home/ContractDashboard";
 
 type ViewState = "upload" | "analyzing" | "overview";
@@ -447,6 +448,13 @@ function OverviewView({
       {demoContractAnalysis && (
         <div className="bg-card rounded-2xl border border-border p-4">
           <ContractChecklist analysis={demoContractAnalysis} />
+        </div>
+      )}
+
+      {/* Opsigelse & rettigheder */}
+      {contractIntelligence?.termination && (
+        <div className="bg-card rounded-2xl border border-border p-4">
+          <TerminationCard termination={contractIntelligence.termination} />
         </div>
       )}
 
