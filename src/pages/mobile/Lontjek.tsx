@@ -10,12 +10,20 @@ import { useDemo } from "@/contexts/DemoContext";
 
 type FlowState = "upload" | "analysis" | "report";
 
-const initialAnalysisSteps: AnalysisStep[] = [
+const agreementAnalysisSteps: AnalysisStep[] = [
   { id: "read", label: "Læser dokument", status: "pending" },
   { id: "lon", label: "Tjekker grundløn", status: "pending" },
   { id: "tillæg", label: "Analyserer tillæg", status: "pending" },
   { id: "vagter", label: "Sammenligner vagter", status: "pending" },
   { id: "overenskomst", label: "Tjekker overenskomst", status: "pending" },
+];
+
+const contractAnalysisSteps: AnalysisStep[] = [
+  { id: "read", label: "Læser dokument", status: "pending" },
+  { id: "kontrakt", label: "Sammenholder med kontrakt", status: "pending" },
+  { id: "overenskomst", label: "Tjekker overenskomst", status: "pending" },
+  { id: "lovgivning", label: "Kontrollerer lovgivning", status: "pending" },
+  { id: "resultat", label: "Analyserer lønseddel mod data", status: "pending" },
 ];
 
 export default function MobileLontjek() {
@@ -34,7 +42,8 @@ export default function MobileLontjek() {
   );
   const [file, setFile] = useState<File | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [analysisSteps, setAnalysisSteps] = useState<AnalysisStep[]>(initialAnalysisSteps);
+  const initialSteps = demoConfig.demoProfile === "contract" ? contractAnalysisSteps : agreementAnalysisSteps;
+  const [analysisSteps, setAnalysisSteps] = useState<AnalysisStep[]>(initialSteps);
   const [isAnalysisComplete, setIsAnalysisComplete] = useState(false);
   
   // Lokal state til API data (også gemt i context)
