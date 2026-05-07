@@ -922,7 +922,7 @@ export const DJOEF_CONFIG: UnionDemoConfig = {
   collectiveAgreement: "AC-overenskomsten (Medst.nr. 067-25)",
 
   googleFontsImport:
-    "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap",
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&display=swap",
   theme: {
     "--primary": "216 100% 40%",
     "--primary-foreground": "0 0% 100%",
@@ -938,8 +938,8 @@ export const DJOEF_CONFIG: UnionDemoConfig = {
     "--muted-foreground": "0 0% 35%",
     "--border": "30 15% 88%",
     "--ring": "216 100% 40%",
-    "--font-heading": "'Plus Jakarta Sans', sans-serif",
-    "--font-body": "'Plus Jakarta Sans', sans-serif",
+    "--font-heading": "'Source Sans 3', sans-serif",
+    "--font-body": "'Source Sans 3', sans-serif",
   },
 
   payslip: DJOEF_DEC,
