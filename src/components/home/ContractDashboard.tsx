@@ -481,7 +481,7 @@ export function NegotiationCard({ intel }: NegotiationCardProps) {
       </div>
 
       <p className="text-[10px] text-muted-foreground/60 italic mt-1">
-        Estimater baseret på markedsdata — ikke udledt fra din kontrakt
+        Beløbsestimater er baseret på markedsdata
       </p>
     </div>
   );
