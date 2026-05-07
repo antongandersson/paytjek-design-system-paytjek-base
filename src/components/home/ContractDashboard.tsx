@@ -158,6 +158,9 @@ export function SmartActionCard({ stats, intel, onUploadClick }: SmartActionCard
             <p className="text-xs text-muted-foreground">
               {potentialPoints[0].label}: {potentialPoints[0].benchmark}
             </p>
+            <p className="text-[10px] text-muted-foreground/50 italic mt-0.5">
+              Baseret på markedsdata
+            </p>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
         </CardContent>
@@ -476,6 +479,10 @@ export function NegotiationCard({ intel }: NegotiationCardProps) {
           );
         })}
       </div>
+
+      <p className="text-[10px] text-muted-foreground/60 italic mt-1">
+        Estimater baseret på markedsdata — ikke udledt fra din kontrakt
+      </p>
     </div>
   );
 }
