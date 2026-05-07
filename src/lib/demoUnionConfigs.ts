@@ -690,8 +690,10 @@ const ZERO_ABSENCE = { dage: 0, timer: 0 };
 const DJOEF_EMPLOYER = { name: "Justitsministeriet", cvr: "39830000", department: "Departementet" };
 const DJOEF_ABSENCE = { sygdom: ZERO_ABSENCE, ferie: ZERO_ABSENCE, afspadsering: ZERO_ABSENCE, barnsSygdom: ZERO_ABSENCE };
 
-// ── L1-3: Rådighedstillæg forkert anciennitetstrin ──
-const DISC_L1_3 = (id: string): PayslipValidationResult["discrepancies"][0] => ({
+// ── Én gennemgående fejl: Rådighedstillæg forkert anciennitetstrin ──
+// SLS har ikke opdateret anciennitetstrin da Sofie passerede 4.–6. års grænsen.
+// Fejlen gentager sig automatisk hver måned — præcis som det sker i virkeligheden.
+const DISC_RAD_TRIN = (id: string): PayslipValidationResult["discrepancies"][0] => ({
   id,
   category: "supplement",
   field: "raadighestillaeg",
@@ -700,75 +702,22 @@ const DISC_L1_3 = (id: string): PayslipValidationResult["discrepancies"][0] => (
   actual: 3820.23,
   difference: -541.30,
   description:
-    "Rådighedstillægget er beregnet med 1.–3. års anciennitet (grundbeløb 36.700 kr. = 3.820,23 kr./md). Sofie har 5+ års anciennitet (ansat 1/9-2019) og skal have 4.–6. års satsen (grundbeløb 41.900 kr. = 4.361,53 kr./md).",
+    "Rådighedstillægget er beregnet med 1.–3. års anciennitet (grundbeløb 36.700 kr. = 3.820,23 kr./md). Sofie har 6+ års anciennitet (ansat 1/9-2019) og skal have 4.–6. års satsen (grundbeløb 41.900 kr. = 4.361,53 kr./md).",
   calculation:
     "Regel: AC-overenskomsten, bilag 6, pkt. 9 — Rådighedstillæg for fuldmægtige. Anciennitet: 1/9-2019 → 6+ år pr. okt. 2025. Korrekt trin: 4.–6. år. Grundbeløb 41.900 kr. × reguleringsprocent 24,9126% = 52.338 kr./år = 4.361,53 kr./md. Faktisk: 36.700 kr. × 24,9126% = 45.843 kr./år = 3.820,23 kr./md.",
   suggestion:
     "Kontakt lønadministrationen i Justitsministeriet og henvis til bilag 6, pkt. 9 i AC-overenskomsten. Rådighedstillæggets anciennitetstrin skal opdateres fra 1.–3. år til 4.–6. år. Differencen er 541,30 kr./md (6.496 kr./år) og skal efterbetales.",
 });
 
-// ── L1-4: ATP forkert sats ──
-const DISC_L1_4 = (id: string): PayslipValidationResult["discrepancies"][0] => ({
-  id,
-  category: "deduction",
-  field: "atp",
-  severity: "error",
-  expected: 99.00,
-  actual: 33.15,
-  difference: -65.85,
-  description:
-    "ATP-bidraget er beregnet med sats F (33,15 kr./md, deltid <78 timer). Sofie er fuldtidsansat (160,33 timer/md) og skal have sats A (99,00 kr./md). Alle AC-overenskomstansatte skal have sats A uanset faktisk timetal.",
-  calculation:
-    "Regel: AC-overenskomsten §10, cirkulærebemærkning + ATP-loven. Sats A (fuldtid, >117 timer): egetbidrag 99,00 kr. + AG-bidrag 198,00 kr. = 297,00 kr./md. Faktisk (sats F): egetbidrag 33,15 kr. + AG-bidrag 66,30 kr. = 99,45 kr./md. Difference egetbidrag: −65,85 kr./md.",
-  suggestion:
-    "Kontakt lønadministrationen og henvis til AC-overenskomstens §10, cirkulærebemærkning: alle AC-ansatte indplaceres på ATP sats A fra 1/4-2020. SLS har fejlagtigt registreret sats F (deltid). Fejlen påvirker også arbejdsgiverbidraget (−131,70 kr./md).",
-});
-
-// ── L1-1: Pension af basisløn — forkert sats ──
-const DISC_L1_1 = (id: string): PayslipValidationResult["discrepancies"][0] => ({
-  id,
-  category: "deduction",
-  field: "pension",
-  severity: "error",
-  expected: 6537.35,
-  actual: 6186.44,
-  difference: -350.91,
-  description:
-    "Pensionsbidraget af basisløn er beregnet med 17,1% (gammel sats, ophørt 31/3-2025). Den korrekte sats fra 1. april 2025 er 18,07%, jf. AC-overenskomstens §10, stk. 1. P+ modtager for lidt.",
-  calculation:
-    "Regel: AC-overenskomsten §10, stk. 1 (cirkulære af 11/4-2025). Korrekt: 18,07% × 36.178,01 kr. = 6.537,35 kr./md samlet pensionsbidrag. Faktisk: 17,1% × 36.178,01 kr. = 6.186,44 kr./md. Difference: −350,91 kr./md (−4.211 kr./år) i manglende indbetaling til P+.",
-  suggestion:
-    "Kontakt lønadministrationen i Justitsministeriet og henvis til AC-overenskomstens §10, stk. 1. Pensionssatsen blev forhøjet fra 17,1% til 18,07% pr. 1. april 2025. SLS er ikke opdateret med den nye sats. Differencen (350,91 kr./md) skal efterindbetales til P+.",
-});
-
-// ── L1-2: Pension af rådighedstillæg — mangler helt ──
-const DISC_L1_2 = (id: string): PayslipValidationResult["discrepancies"][0] => ({
-  id,
-  category: "deduction",
-  field: "pensionRaadighed",
-  severity: "error",
-  expected: 545.19,
-  actual: 0,
-  difference: -545.19,
-  description:
-    "Pensionsbidrag af rådighedstillæg mangler helt på lønsedlen. Rådighedstillæg efter bilag 6, pkt. 9 er pensionsgivende med en separat sats på 12,5%. Der skal indbetales 545,19 kr./md til P+.",
-  calculation:
-    "Regel: AC-overenskomsten, bilag 6, pkt. 9, 3. afsnit — rådighedstillæg er pensionsgivende med 12,5%. Korrekt: 12,5% × 4.361,53 kr. = 545,19 kr./md (eget 181,73 + AG 363,46). Faktisk: 0 kr. — ingen pensionslinje for rådighedstillæg på lønsedlen.",
-  suggestion:
-    "Kontakt lønadministrationen og henvis til bilag 6, pkt. 9. Rådighedstillæg skal have separat pensionsberegning (12,5%) med indbetaling til P+. Fejlen koster 545,19 kr./md (6.542 kr./år) i manglende pensionsindbetaling. Beløbet skal efterindbetales.",
-});
-
-// ── Oktober 2025 — L1-3 + L1-4 (beløbsfejl) ──
-const DJOEF_OKT: PayslipData = {
-  id: "ps-djoef-2025-10",
+// ── Fælles lønseddel-base (Sofie har fast månedsløn, kun perioden ændrer sig) ──
+const DJOEF_PAYSLIP_BASE = {
   userId: "demo-djoef",
-  period: { month: "Oktober", year: 2025, startDate: "2025-10-01", endDate: "2025-10-31" },
   employer: DJOEF_EMPLOYER,
   salary: {
     grundlon: 36178.01,
     timelon: 225.68,
     normalTimer: 160.33,
-    beregnetTimelon: { udenTillaeg: 225.68, medTillaeg: 249.47, afvigelse: 0, status: "ok" },
+    beregnetTimelon: { udenTillaeg: 225.68, medTillaeg: 249.47, afvigelse: 0, status: "ok" as const },
   },
   supplements: {
     aftentillaeg: ZERO_SUPP,
@@ -779,11 +728,18 @@ const DJOEF_OKT: PayslipData = {
   deductions: {
     pension: { beloeb: 2338.30, procent: 18.07, grundlag: 36178.01 },
     skat: { beloeb: 12148.00, procent: 37 },
-    atp: { beloeb: 33.15 },
+    atp: { beloeb: 99.00 },
     amBidrag: { beloeb: 3199.86, procent: 8 },
   },
   absence: DJOEF_ABSENCE,
-  totals: { bruttolon: 39998.24, nettolon: 22278.93, totalFradrag: 17719.31, totalTillaeg: 3820.23 },
+  totals: { bruttolon: 39998.24, nettolon: 22213.08, totalFradrag: 17785.16, totalTillaeg: 3820.23 },
+};
+
+// ── Oktober 2025 ──
+const DJOEF_OKT: PayslipData = {
+  ...DJOEF_PAYSLIP_BASE,
+  id: "ps-djoef-2025-10",
+  period: { month: "Oktober", year: 2025, startDate: "2025-10-01", endDate: "2025-10-31" },
   uploadedAt: "2025-10-31T08:00:00Z",
   analyzedAt: "2025-10-31T08:00:04Z",
 };
@@ -792,39 +748,16 @@ const DJOEF_VAL_OKT: PayslipValidationResult = {
   id: "val-djoef-2025-10",
   payslipId: "ps-djoef-2025-10",
   status: "errors",
-  discrepancies: [DISC_L1_3("err-djoef-okt-1"), DISC_L1_4("err-djoef-okt-2")],
-  summary: { totalDifference: -607.15, issuesCount: 2, warningsCount: 0 },
+  discrepancies: [DISC_RAD_TRIN("err-djoef-okt-1")],
+  summary: { totalDifference: -541.30, issuesCount: 1, warningsCount: 0 },
   validatedAt: "2025-10-31T08:00:04Z",
 };
 
-// ── November 2025 — L1-1 + L1-2 (pensionsfejl) ──
-// Bruttoløn er korrekt (4.-6. år råd.tillæg + sats A ATP)
-// Men pension beregnes med 17,1% og råd.tillæg-pension mangler
+// ── November 2025 ──
 const DJOEF_NOV: PayslipData = {
+  ...DJOEF_PAYSLIP_BASE,
   id: "ps-djoef-2025-11",
-  userId: "demo-djoef",
   period: { month: "November", year: 2025, startDate: "2025-11-01", endDate: "2025-11-30" },
-  employer: DJOEF_EMPLOYER,
-  salary: {
-    grundlon: 36178.01,
-    timelon: 225.68,
-    normalTimer: 160.33,
-    beregnetTimelon: { udenTillaeg: 225.68, medTillaeg: 252.84, afvigelse: 0, status: "ok" },
-  },
-  supplements: {
-    aftentillaeg: ZERO_SUPP,
-    nattillaeg: ZERO_SUPP,
-    soenHelligdag: ZERO_SUPP,
-    raadighestillaeg: { timer: 0, sats: 0, beloeb: 4361.53 },
-  },
-  deductions: {
-    pension: { beloeb: 2062.15, procent: 17.1, grundlag: 36178.01 },
-    skat: { beloeb: 12448.00, procent: 37 },
-    atp: { beloeb: 99.00 },
-    amBidrag: { beloeb: 3243.16, procent: 8 },
-  },
-  absence: DJOEF_ABSENCE,
-  totals: { bruttolon: 40539.54, nettolon: 22687.23, totalFradrag: 17852.31, totalTillaeg: 4361.53 },
   uploadedAt: "2025-11-28T08:00:00Z",
   analyzedAt: "2025-11-28T08:00:04Z",
 };
@@ -833,37 +766,16 @@ const DJOEF_VAL_NOV: PayslipValidationResult = {
   id: "val-djoef-2025-11",
   payslipId: "ps-djoef-2025-11",
   status: "errors",
-  discrepancies: [DISC_L1_1("err-djoef-nov-1"), DISC_L1_2("err-djoef-nov-2")],
-  summary: { totalDifference: -896.10, issuesCount: 2, warningsCount: 0 },
+  discrepancies: [DISC_RAD_TRIN("err-djoef-nov-1")],
+  summary: { totalDifference: -541.30, issuesCount: 1, warningsCount: 0 },
   validatedAt: "2025-11-28T08:00:04Z",
 };
 
-// ── December 2025 — Alle fejl (L1-1 + L1-2 + L1-3 + L1-4) ──
+// ── December 2025 ──
 const DJOEF_DEC: PayslipData = {
+  ...DJOEF_PAYSLIP_BASE,
   id: "ps-djoef-2025-12",
-  userId: "demo-djoef",
   period: { month: "December", year: 2025, startDate: "2025-12-01", endDate: "2025-12-31" },
-  employer: DJOEF_EMPLOYER,
-  salary: {
-    grundlon: 36178.01,
-    timelon: 225.68,
-    normalTimer: 160.33,
-    beregnetTimelon: { udenTillaeg: 225.68, medTillaeg: 249.47, afvigelse: 0, status: "ok" },
-  },
-  supplements: {
-    aftentillaeg: ZERO_SUPP,
-    nattillaeg: ZERO_SUPP,
-    soenHelligdag: ZERO_SUPP,
-    raadighestillaeg: { timer: 0, sats: 0, beloeb: 3820.23 },
-  },
-  deductions: {
-    pension: { beloeb: 2062.15, procent: 17.1, grundlag: 36178.01 },
-    skat: { beloeb: 12148.00, procent: 37 },
-    atp: { beloeb: 33.15 },
-    amBidrag: { beloeb: 3199.86, procent: 8 },
-  },
-  absence: DJOEF_ABSENCE,
-  totals: { bruttolon: 39998.24, nettolon: 22555.08, totalFradrag: 17443.16, totalTillaeg: 3820.23 },
   uploadedAt: "2025-12-23T08:00:00Z",
   analyzedAt: "2025-12-23T08:00:04Z",
 };
@@ -872,13 +784,8 @@ const DJOEF_VAL_DEC: PayslipValidationResult = {
   id: "val-djoef-2025-12",
   payslipId: "ps-djoef-2025-12",
   status: "errors",
-  discrepancies: [
-    DISC_L1_1("err-djoef-dec-1"),
-    DISC_L1_2("err-djoef-dec-2"),
-    DISC_L1_3("err-djoef-dec-3"),
-    DISC_L1_4("err-djoef-dec-4"),
-  ],
-  summary: { totalDifference: -1503.25, issuesCount: 4, warningsCount: 0 },
+  discrepancies: [DISC_RAD_TRIN("err-djoef-dec-1")],
+  summary: { totalDifference: -541.30, issuesCount: 1, warningsCount: 0 },
   validatedAt: "2025-12-23T08:00:04Z",
 };
 
