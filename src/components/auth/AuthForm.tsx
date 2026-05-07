@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, KeyRound, Eye, EyeOff } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import PasswordChecklist from "./PasswordChecklist";
 import { FeedbackModal, FeedbackModalState } from "@/components/ui/feedback-modal";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
 
 type AuthMode = "signup" | "login";
 
@@ -15,6 +16,7 @@ interface AuthFormProps {
 
 const AuthForm = ({ variant = "web" }: AuthFormProps) => {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   const [mode, setMode] = useState<AuthMode>("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ const AuthForm = ({ variant = "web" }: AuthFormProps) => {
 
   // Redirect based on variant
   const getRedirectPath = () => {
-    return variant === "mobile" ? "/m/home" : "/app/dashboard";
+    return variant === "mobile" ? `${basePath}/home` : "/app/dashboard";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +77,7 @@ const AuthForm = ({ variant = "web" }: AuthFormProps) => {
     <div className="flex flex-col items-center">
       {/* Logo - only visible on mobile variant or when branding is hidden */}
       <div className={variant === "web" ? "lg:hidden mb-6" : "mb-6"}>
-        <img src={hkLogo} alt="HK Handel" className="h-16 w-auto mix-blend-multiply" />
+        <img src={paytjekLogo} alt="PayTjek" className="h-12 w-auto" />
       </div>
 
       {/* Title */}

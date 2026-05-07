@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { FileText, AlertCircle, CheckCircle, Clock, Send, Mail, ExternalLink } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,6 +52,7 @@ function RequestStatusBadge({ status }: { status: RequestStatus }) {
 
 export default function MobileHistory() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   
   // Hent lønseddel-historie fra global context
   const { payslipHistory, loadFromHistory, isAnalyzing } = usePayslip();
@@ -59,13 +61,13 @@ export default function MobileHistory() {
   const { requests, pendingCount } = useRequests();
 
   const handleUploadClick = () => {
-    navigate("/m/lontjek");
+    navigate(`${basePath}/lontjek`);
   };
   
   const handlePayslipClick = (item: PayslipHistoryItem) => {
     // Load denne lønseddel som aktiv og naviger til rapport
     loadFromHistory(item.id);
-    navigate("/m/lontjek");
+    navigate(`${basePath}/lontjek`);
   };
 
   return (

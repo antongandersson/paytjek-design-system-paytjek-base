@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDemo } from "@/contexts/DemoContext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import AuthLayout from "@/components/layout/AuthLayout";
@@ -45,8 +46,8 @@ interface OnboardingProps {
 
 const Onboarding = ({ variant = "web" }: OnboardingProps) => {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const basePath = variant === "mobile" ? "/m" : "/app";
 
   const isLastSlide = currentSlide === slides.length - 1;
 

@@ -1,5 +1,6 @@
 import { Link2, FileText, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDemo } from "@/contexts/DemoContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContract } from "@/contexts/ContractContext";
@@ -7,57 +8,39 @@ import { useContract } from "@/contexts/ContractContext";
 interface HomeHeaderProps {
   name?: string | null;
   isLoading?: boolean;
-  hasPayslipData?: boolean;  // Om der er lønseddeldata
-  hasCalendar?: boolean;     // Om kalender er tilsluttet
-  hasContract?: boolean;     // Om kontrakt er uploadet
+  hasPayslipData?: boolean;
+  hasCalendar?: boolean;
+  hasContract?: boolean;
 }
 
-export function HomeHeader({ 
-  name, 
+export function HomeHeader({
+  name,
   isLoading = false,
   hasPayslipData = false,
-  hasCalendar = false,
-  hasContract = false,
 }: HomeHeaderProps) {
-  // Bestem hvilken besked der skal vises
-  const getMessage = () => {
-    // Har data = overblik er klar
-    if (hasPayslipData) {
-      return "Din lønseddel er tjekket — her er dit overblik.";
-    }
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 10 ? "God morgen" : hour < 17 ? "Hej" : "God aften";
 
-    // Ingen data = onboarding guide
-    const missingSteps: string[] = [];
-    if (!hasCalendar) missingSteps.push("arbejdskalender");
-    if (!hasContract) missingSteps.push("kontrakt");
-    if (!hasPayslipData) missingSteps.push("lønseddel");
-
-    if (missingSteps.length === 3) {
-      return "Som HK Handel-medlem er du dækket, hvis din løn er forkert. Kom i gang nedenfor.";
-    } else if (missingSteps.length > 0) {
-      return `Næste skridt: ${missingSteps.join(", ")}`;
-    }
-
-    return "Velkommen til PayTjek × HK Handel!";
-  };
+  if (isLoading) {
+    return (
+      <div className="pt-2 pb-1 space-y-1">
+        <Skeleton className="h-7 w-36" />
+        <Skeleton className="h-4 w-52" />
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-primary px-4 py-5 -mx-4 -mt-6">
-      {isLoading ? (
-        <>
-          <Skeleton className="h-8 w-32 bg-primary-foreground/20 mb-2" />
-          <Skeleton className="h-4 w-48 bg-primary-foreground/20" />
-        </>
-      ) : (
-        <>
-          <h1 className="text-2xl font-bold text-primary-foreground">
-            Hej {name || "Bruger"}
-          </h1>
-          <p className="text-primary-foreground/80 text-sm">
-            {getMessage()}
-          </p>
-        </>
-      )}
+    <div className="pt-2 pb-1">
+      <h1 className="text-2xl font-bold text-foreground tracking-tight">
+        {greeting}, {name || "der"} 👋
+      </h1>
+      <p className="text-sm text-muted-foreground mt-0.5">
+        {hasPayslipData
+          ? "Her er dit lønoverblik"
+          : "Din løn skal være korrekt"}
+      </p>
     </div>
   );
 }
@@ -69,9 +52,10 @@ interface CalendarLinkButtonProps {
 
 export function CalendarLinkButton({ isConnected = false, shiftCount = 0 }: CalendarLinkButtonProps) {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   
   const handleClick = () => {
-    navigate("/m/calendar");
+    navigate(`${basePath}/calendar`);
   };
 
   // Hvis kalender er tilsluttet, vis status
@@ -105,10 +89,11 @@ export function CalendarLinkButton({ isConnected = false, shiftCount = 0 }: Cale
 // Contract Link Button
 export function ContractLinkButton() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   const { hasDetails } = useContract();
 
   const handleClick = () => {
-    navigate("/m/contract");
+    navigate(`${basePath}/contract`);
   };
 
   if (hasDetails) {

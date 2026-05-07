@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Bell, Settings } from "lucide-react";
 import { NotificationSheet } from "@/components/notifications/NotificationSheet";
 import { useNotifications } from "@/contexts/NotificationContext";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
+import { useDemo } from "@/contexts/DemoContext";
 
 interface AppHeaderProps {
   showActions?: boolean;
@@ -13,9 +14,10 @@ export function AppHeader({ showActions = true }: AppHeaderProps) {
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { unreadCount } = useNotifications();
+  const { demoConfig, basePath } = useDemo();
 
   const handleLogoClick = () => {
-    navigate("/m/home");
+    navigate(`${basePath}/home`);
   };
 
   return (
@@ -27,7 +29,11 @@ export function AppHeader({ showActions = true }: AppHeaderProps) {
             className="flex items-center hover:opacity-80 transition-opacity"
             aria-label="Gå til forsiden"
           >
-            <img src={hkLogo} alt="HK Handel" className="h-8 w-auto mix-blend-multiply" />
+            <img
+              src={demoConfig.id !== "hk" ? demoConfig.logo : paytjekLogo}
+              alt={demoConfig.id !== "hk" ? demoConfig.name : "PayTjek"}
+              className="h-8 w-auto object-contain"
+            />
           </button>
           
           {showActions && (

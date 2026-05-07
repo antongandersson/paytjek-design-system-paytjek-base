@@ -79,7 +79,7 @@ function HomeDashboardPreview() {
   return (
     <div className="flex flex-col h-full bg-[#fafafa]">
       {/* Blue Header */}
-      <div className="bg-[#090cd2] px-4 py-5 pt-14">
+      <div className="bg-[#4F46E5] px-4 py-5 pt-14">
         <h1 className="text-xl font-bold text-white">Hej Kim</h1>
         <p className="text-white/80 text-sm">Dit personlige overblik er klar!</p>
       </div>
@@ -106,8 +106,8 @@ function HomeDashboardPreview() {
       {/* Payment Widget */}
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base font-bold text-[#090cd2]">Næste lønudbetaling</h2>
-          <ChevronRight className="h-4 w-4 text-[#090cd2]" />
+          <h2 className="text-base font-bold text-[#4F46E5]">Næste lønudbetaling</h2>
+          <ChevronRight className="h-4 w-4 text-[#4F46E5]" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white border border-gray-100 rounded-2xl p-3">
@@ -126,8 +126,8 @@ function HomeDashboardPreview() {
         <div className="bg-white border border-gray-100 rounded-2xl p-3">
           <p className="text-xs text-gray-500 mb-2">Optjent til dato: 9. januar</p>
           <div className="flex items-end justify-center gap-2">
-            <TrendingUp className="h-8 w-8 text-[#090cd2]" />
-            <p className="text-2xl font-bold text-[#090cd2]">8.450 <span className="text-sm text-gray-400">Kr</span></p>
+            <TrendingUp className="h-8 w-8 text-[#4F46E5]" />
+            <p className="text-2xl font-bold text-[#4F46E5]">8.450 <span className="text-sm text-gray-400">Kr</span></p>
           </div>
           <p className="text-xs text-gray-400 text-center mt-1">: Samlet hele måneden 20.117Kr</p>
         </div>
@@ -147,8 +147,8 @@ function UploadScreenPreview() {
       <div className="pt-14 pb-4 px-6">
         <div className="flex items-center justify-center gap-2">
           <div className="flex items-center gap-1">
-            <div className="w-8 h-8 bg-[#090cd2] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-            <span className="text-xs font-medium text-[#090cd2]">Upload</span>
+            <div className="w-8 h-8 bg-[#4F46E5] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+            <span className="text-xs font-medium text-[#4F46E5]">Upload</span>
           </div>
           <div className="w-8 h-0.5 bg-gray-200" />
           <div className="flex items-center gap-1">
@@ -173,11 +173,11 @@ function UploadScreenPreview() {
       <div className="flex-1 px-6">
         <div className="h-full border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 flex flex-col items-center justify-center p-6">
           <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mb-4">
-            <Upload className="w-7 h-7 text-[#090cd2]" strokeWidth={2.5} />
+            <Upload className="w-7 h-7 text-[#4F46E5]" strokeWidth={2.5} />
           </div>
           <h3 className="text-base font-semibold text-[#101320] mb-1">Tryk for at uploade</h3>
           <p className="text-sm text-gray-500 text-center mb-4">Eller træk din fil herind</p>
-          <button className="border border-[#090cd2] text-[#090cd2] px-4 py-2 rounded-xl text-sm font-medium">
+          <button className="border border-[#4F46E5] text-[#4F46E5] px-4 py-2 rounded-xl text-sm font-medium">
             Vælg fil
           </button>
         </div>
@@ -204,8 +204,8 @@ function UploadWithFilePreview() {
       <div className="pt-14 pb-4 px-6">
         <div className="flex items-center justify-center gap-2">
           <div className="flex items-center gap-1">
-            <div className="w-8 h-8 bg-[#090cd2] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-            <span className="text-xs font-medium text-[#090cd2]">Upload</span>
+            <div className="w-8 h-8 bg-[#4F46E5] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+            <span className="text-xs font-medium text-[#4F46E5]">Upload</span>
           </div>
           <div className="w-8 h-0.5 bg-gray-200" />
           <div className="flex items-center gap-1">
@@ -258,7 +258,7 @@ function UploadWithFilePreview() {
               <span className="font-medium">100%</span>
             </div>
             <div className="h-1.5 bg-gray-100 rounded-full">
-              <div className="h-full bg-[#090cd2] rounded-full w-full" />
+              <div className="h-full bg-[#4F46E5] rounded-full w-full" />
             </div>
           </div>
         </div>
@@ -278,7 +278,7 @@ function UploadWithFilePreview() {
 
       {/* Bottom */}
       <div className="p-6">
-        <button className="w-full h-12 bg-[#090cd2] text-white rounded-2xl font-semibold shadow-lg">
+        <button className="w-full h-12 bg-[#4F46E5] text-white rounded-2xl font-semibold shadow-lg">
           Start Løntjek
         </button>
       </div>
@@ -305,13 +305,13 @@ function AnalysisScreenPreview() {
       <div className="pt-14 pb-4 px-6">
         <div className="flex items-center justify-center gap-2">
           <div className="flex items-center gap-1">
-            <div className="w-8 h-8 bg-[#090cd2]/20 text-[#090cd2] rounded-full flex items-center justify-center text-sm font-bold">✓</div>
+            <div className="w-8 h-8 bg-[#4F46E5]/20 text-[#4F46E5] rounded-full flex items-center justify-center text-sm font-bold">✓</div>
             <span className="text-xs text-gray-400">Upload</span>
           </div>
-          <div className="w-8 h-0.5 bg-[#090cd2]" />
+          <div className="w-8 h-0.5 bg-[#4F46E5]" />
           <div className="flex items-center gap-1">
-            <div className="w-8 h-8 bg-[#090cd2] text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-            <span className="text-xs font-medium text-[#090cd2]">Analyse</span>
+            <div className="w-8 h-8 bg-[#4F46E5] text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+            <span className="text-xs font-medium text-[#4F46E5]">Analyse</span>
           </div>
           <div className="w-8 h-0.5 bg-gray-200" />
           <div className="flex items-center gap-1">
@@ -329,7 +329,7 @@ function AnalysisScreenPreview() {
             <circle 
               cx="50" cy="50" r="42" 
               fill="none" 
-              stroke="#090cd2" 
+              stroke="#4F46E5" 
               strokeWidth="6"
               strokeLinecap="round"
               strokeDasharray={`${55 * 2.64} ${100 * 2.64}`}
@@ -350,22 +350,22 @@ function AnalysisScreenPreview() {
             key={i}
             className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
               step.status === "active" 
-                ? "bg-white border-[#090cd2] shadow-lg" 
+                ? "bg-white border-[#4F46E5] shadow-lg" 
                 : step.status === "completed"
                 ? "bg-gray-50 border-transparent opacity-60"
                 : "opacity-30"
             }`}
           >
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              step.status === "active" ? "bg-[#090cd2]/10" : 
+              step.status === "active" ? "bg-[#4F46E5]/10" : 
               step.status === "completed" ? "bg-[#b1e63e]/20" : "bg-gray-100"
             }`}>
-              {step.status === "active" && <Loader2 className="w-4 h-4 text-[#090cd2] animate-spin" />}
+              {step.status === "active" && <Loader2 className="w-4 h-4 text-[#4F46E5] animate-spin" />}
               {step.status === "completed" && <CheckCircle2 className="w-4 h-4 text-[#b1e63e]" />}
               {step.status === "pending" && <div className="w-1.5 h-1.5 bg-gray-300 rounded-full" />}
             </div>
             <span className={`text-sm font-medium ${
-              step.status === "active" ? "text-[#090cd2]" : "text-[#101320]"
+              step.status === "active" ? "text-[#4F46E5]" : "text-[#101320]"
             }`}>
               {step.label}
             </span>
@@ -384,7 +384,7 @@ function ErnestChatPreview() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-[#090cd2] p-4 pt-12 flex items-center gap-3 shrink-0">
+      <div className="bg-[#4F46E5] p-4 pt-12 flex items-center gap-3 shrink-0">
         <div className="bg-white rounded-full p-2 w-10 h-10 flex items-center justify-center">
           <span className="text-lg">🤖</span>
         </div>
@@ -402,7 +402,7 @@ function ErnestChatPreview() {
         {/* Ernest message */}
         <div className="flex justify-start">
           <div className="max-w-[85%] p-3 bg-white text-slate-800 rounded-2xl rounded-tl-sm shadow-sm border border-slate-100 text-sm">
-            <p className="font-medium text-[#090cd2] mb-1">Hej Kim! 👋</p>
+            <p className="font-medium text-[#4F46E5] mb-1">Hej Kim! 👋</p>
             <p>Jeg har fundet <strong>1 fejl</strong> i din lønseddel for december.</p>
             <p className="mt-2">⚠️ <strong>Manglende aftentillæg:</strong> Du mangler 455,09 kr.</p>
           </div>
@@ -410,7 +410,7 @@ function ErnestChatPreview() {
 
         {/* User message */}
         <div className="flex justify-end">
-          <div className="max-w-[85%] p-3 bg-[#090cd2] text-white rounded-2xl rounded-tr-sm text-sm">
+          <div className="max-w-[85%] p-3 bg-[#4F46E5] text-white rounded-2xl rounded-tr-sm text-sm">
             Hvad skal jeg gøre?
           </div>
         </div>
@@ -468,7 +468,7 @@ function SuccessPreview() {
 
         {/* Case Card */}
         <div className="w-full bg-gray-50 rounded-2xl p-4 flex items-center gap-4 text-left">
-          <div className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center font-bold text-[#090cd2] text-sm">
+          <div className="w-11 h-11 rounded-xl bg-white border border-gray-200 flex items-center justify-center font-bold text-[#4F46E5] text-sm">
             RH
           </div>
           <div>
@@ -487,7 +487,7 @@ function SuccessPreview() {
 
       {/* Bottom CTA */}
       <div className="p-6 pb-8">
-        <button className="w-full h-12 bg-[#090cd2] text-white rounded-2xl font-semibold">
+        <button className="w-full h-12 bg-[#4F46E5] text-white rounded-2xl font-semibold">
           Tilbage til forsiden
         </button>
       </div>
@@ -510,7 +510,7 @@ function ReportErrorPreview() {
       </div>
 
       {/* Blue Card */}
-      <div className="mx-4 mt-4 bg-[#090cd2] rounded-3xl p-5 text-white">
+      <div className="mx-4 mt-4 bg-[#4F46E5] rounded-3xl p-5 text-white">
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="font-bold">Kim Jørgensen</p>
@@ -534,11 +534,11 @@ function ReportErrorPreview() {
 
       {/* Tabs */}
       <div className="mx-4 mt-4">
-        <div className="flex bg-[#090cd2] rounded-2xl p-1">
+        <div className="flex bg-[#4F46E5] rounded-2xl p-1">
           <button className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white/70">
             Lønoverblik
           </button>
-          <button className="flex-1 py-2.5 bg-white rounded-xl text-sm font-semibold text-[#090cd2] flex items-center justify-center gap-1">
+          <button className="flex-1 py-2.5 bg-white rounded-xl text-sm font-semibold text-[#4F46E5] flex items-center justify-center gap-1">
             Fejl
             <span className="bg-amber-400 text-[#101320] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">1</span>
           </button>
@@ -659,7 +659,7 @@ export default function MockupGenerator() {
           <Button
             onClick={downloadAll}
             disabled={isDownloadingAll}
-            className="bg-[#090cd2] hover:bg-[#090cd2]/90 text-white gap-2"
+            className="bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white gap-2"
           >
             {isDownloadingAll ? (
               <>

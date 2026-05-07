@@ -36,9 +36,9 @@ export interface UserProfile {
   employer: string;                    // Fx "Region Hovedstaden"
   employerType?: EmployerType;
   workplace?: string;                  // Fx "Bispebjerg Hospital"
-  jobTitle?: string;                   // Fx "Warehouse Assistant", "Butiksmedarbejder"
-  department?: string;                 // Fx "Warehouse"
-  unit?: string;                       // Fx "Warehouse, Team 3"
+  jobTitle?: string;                   // Fx "Butiksassistent", "SOSU-hjælper"
+  department?: string;                 // Fx "Lager & Logistik"
+  unit?: string;                       // Fx "Team 3, Daghold"
   area?: 1 | 2 | 3 | 4;                // Lønområde (1-4) fra lønseddel
   
   // Uddannelse & Ansættelse
@@ -218,7 +218,9 @@ export interface SupplementEntry {
 export interface SupplementsData {
   aftentillaeg: SupplementEntry;    // Aftentillæg (typisk 17:00-23:00)
   nattillaeg: SupplementEntry;      // Nattillæg (typisk 23:00-06:00)
+  lordagstillaeg?: SupplementEntry; // Lørdagstillæg (typisk lør 06:00-24:00)
   soenHelligdag: SupplementEntry;   // Søn- og helligdagstillæg
+  raadighestillaeg?: SupplementEntry; // Rådighedstillæg (AC/fuldmægtige)
 }
 
 /**
@@ -336,10 +338,14 @@ export type PayslipField =
   | "normalTimer"
   // Tillæg
   | "aftentillaeg" 
-  | "nattillaeg" 
+  | "nattillaeg"
+  | "lordagstillaeg"
   | "soenHelligdag"
+  | "raadighestillaeg"
+  | "overtid"
   // Fradrag  
   | "pension" 
+  | "pensionRaadighed"
   | "skat" 
   | "atp"
   // Fravær

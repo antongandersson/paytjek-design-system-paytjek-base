@@ -6,7 +6,7 @@ import { ReportScreen } from "@/components/lontjek/ReportScreen";
 import type { AnalysisStep } from "@/components/lontjek/AnalysisStepList";
 import type { PayslipData, PayslipValidationResult } from "@/lib/api/types";
 import { usePayslip } from "@/contexts/PayslipContext";
-import { getDemoPayslip } from "@/lib/demoPayslips";
+import { useDemo } from "@/contexts/DemoContext";
 
 type FlowState = "upload" | "analysis" | "report";
 
@@ -22,6 +22,7 @@ export default function MobileLontjek() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setAnalysis, startAnalysis, clearAnalysis, hasActiveAnalysis, currentPayslip, currentValidation } = usePayslip();
+  const { demoConfig, basePath } = useDemo();
   
   const isFreshUpload = (location.state as { fresh?: boolean })?.fresh === true;
   
@@ -59,13 +60,30 @@ export default function MobileLontjek() {
       const stepDuration = 1500;
       let currentStep = 0;
 
-      // Load demo data once at analysis start
+      // Load union-specific demo data once at analysis start
       if (!dataFetchedRef.current && file) {
         dataFetchedRef.current = true;
-        const demo = getDemoPayslip(file.name);
-        setPayslipData(demo.payslip);
-        setValidationResult(demo.validation);
-        setAnalysis(demo.payslip, demo.validation);
+
+        // Match filename against demoPayslips map (if available)
+        let matched = false;
+        if (demoConfig.demoPayslips && file.name) {
+          const nameLower = file.name.toLowerCase();
+          for (const [key, data] of Object.entries(demoConfig.demoPayslips)) {
+            if (nameLower.includes(key)) {
+              setPayslipData(data.payslip);
+              setValidationResult(data.validation);
+              setAnalysis(data.payslip, data.validation);
+              matched = true;
+              break;
+            }
+          }
+        }
+
+        if (!matched) {
+          setPayslipData(demoConfig.payslip);
+          setValidationResult(demoConfig.validation);
+          setAnalysis(demoConfig.payslip, demoConfig.validation);
+        }
       }
 
       const interval = setInterval(() => {
@@ -88,7 +106,7 @@ export default function MobileLontjek() {
 
       return () => clearInterval(interval);
     }
-  }, [flowState, isAnalysisComplete]);
+  }, [flowState, isAnalysisComplete, demoConfig]);
 
   const handleFileSelect = (selectedFile: File) => {
     setFile(selectedFile);
@@ -108,7 +126,7 @@ export default function MobileLontjek() {
   };
 
   const handleGoHome = () => {
-    navigate("/m/home");
+    navigate(`${basePath}/home`);
   };
 
   const handleNewAnalysis = () => {

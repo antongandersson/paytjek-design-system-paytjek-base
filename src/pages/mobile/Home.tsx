@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { HomeHeader, CalendarLinkButton, ContractLinkButton } from "@/components/home/HomeHeader";
+import { HomeHeader } from "@/components/home/HomeHeader";
 import { QuickActions } from "@/components/home/ActionCards";
 import { PaymentWidget } from "@/components/home/PaymentWidget";
 import {
   StatusHero,
-  JobCard,
+  DashboardContextRow,
   WorkBreakdown,
   PayTrendChart,
   YtdSummary,
@@ -15,6 +15,7 @@ import { useCalendar } from "@/contexts/CalendarContext";
 import { useApp } from "@/contexts/AppContext";
 import { useUser } from "@/contexts/UserContext";
 import { useContract } from "@/contexts/ContractContext";
+import { useDemo } from "@/contexts/DemoContext";
 
 interface OutletContextType {
   setUploadDrawerOpen: (open: boolean) => void;
@@ -29,6 +30,7 @@ export default function MobileHome() {
   const { updateSetupStatus } = useApp();
   const { user } = useUser();
   const { hasContract, contractDetails } = useContract();
+  const { demoConfig, basePath } = useDemo();
 
   const dashboardData = getDashboardData();
   const agg = dashboardData.aggregated;
@@ -46,8 +48,8 @@ export default function MobileHome() {
   };
 
   return (
-    <main className="px-4 py-6 space-y-5 pb-24 animate-fade-in">
-      {/* 1. Header */}
+    <main className="px-4 py-5 space-y-4 pb-24 animate-fade-in">
+      {/* 1. Greeting */}
       <HomeHeader
         name={user?.firstName}
         hasPayslipData={hasDashboardData}
@@ -55,19 +57,28 @@ export default function MobileHome() {
         hasContract={hasContract}
       />
 
-      {/* 2. Quick link pills */}
-      <div className="flex justify-center gap-2 -mt-2 flex-wrap">
-        <CalendarLinkButton
-          isConnected={hasCalendar}
-          shiftCount={shifts.length}
-        />
-        <ContractLinkButton />
-      </div>
+      {/* 2. Status row — Kontrakt + Lønpakke/Vagtplan side by side */}
+      <DashboardContextRow
+        contractDetails={contractDetails}
+        shifts={shifts}
+        hasCalendar={hasCalendar}
+        demoProfile={demoConfig.demoProfile}
+        demoContractComparison={demoConfig.demoContractComparison}
+        demoContractAnalysis={demoConfig.demoContractAnalysis}
+      />
 
-      {/* 3. Status hero — "Du mangler 253 kr" / "Alt korrekt" */}
+      {/* 3. Action buttons */}
+      <QuickActions
+        onCheckPayslip={handleUploadClick}
+        onViewSchedule={() => navigate(`${basePath}/calendar`)}
+        onViewPackage={() => navigate(`${basePath}/package`)}
+        demoProfile={demoConfig.demoProfile}
+      />
+
+      {/* 4. Løntjek resultat (or empty state) */}
       <StatusHero stats={agg} />
 
-      {/* 4. Seneste løn */}
+      {/* 5. Seneste lønudbetaling */}
       <PaymentWidget
         amount={dashboardData.paymentAmount}
         daysLeft={dashboardData.paymentDaysLeft}
@@ -76,22 +87,14 @@ export default function MobileHome() {
         onUploadClick={handleUploadClick}
       />
 
-      {/* 5. Din ansættelse (fra kontrakt) */}
-      <JobCard contractDetails={contractDetails} />
-
-      {/* 6. Denne måneds arbejde — timer + tillæg breakdown */}
+      {/* Arbejdstid + trend — vises for alle profiler når der er data */}
       <WorkBreakdown
         stats={agg}
         contractWeeklyHours={contractDetails?.employment.weeklyHours}
       />
 
-      {/* 7. Quick actions */}
-      <QuickActions onCheckPayslip={handleUploadClick} onViewSchedule={() => navigate("/m/calendar")} />
-
-      {/* 8. Løn-trend (2+ lønsedler) */}
       <PayTrendChart stats={agg} />
 
-      {/* 9. Din opsparing (2+ lønsedler) */}
       {agg.payslipsChecked >= 2 && (
         <YtdSummary
           stats={agg}

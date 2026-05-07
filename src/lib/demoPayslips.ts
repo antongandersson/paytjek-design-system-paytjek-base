@@ -1,7 +1,7 @@
 import type { PayslipData, PayslipValidationResult } from "@/lib/api/types";
 
-// Coolshop A/S — Funktionæroverenskomst for Handel, Viden og Service (HK/DE)
-const TIMELON = 125.00;
+// Nordic Retail A/S — HK/DI Butiksoverenskomsten
+const TIMELON = 132.00;
 
 interface DemoPayslip {
   payslip: PayslipData;
@@ -23,17 +23,17 @@ const SEP_PAYSLIP: PayslipData = {
     endDate: "2025-09-20",
   },
   employer: {
-    name: "Coolshop A/S",
-    cvr: "26457602",
-    department: "Warehouse",
+    name: "Nordic Retail A/S",
+    cvr: "38147205",
+    department: "Lager & Logistik",
   },
   salary: {
-    grundlon: 20285.00,        // 162,28t × 125 kr/t
+    grundlon: 21421.00,        // 162,28t × 132 kr/t
     timelon: TIMELON,
     normalTimer: 162.28,
     beregnetTimelon: {
-      udenTillaeg: 125.00,
-      medTillaeg: 131.65,      // 21364.93 / 162.28
+      udenTillaeg: 132.00,
+      medTillaeg: 139.02,      // 22561 / 162.28
       afvigelse: 0.00,
       status: "ok",
     },
@@ -44,22 +44,22 @@ const SEP_PAYSLIP: PayslipData = {
     soenHelligdag: { timer: 0, sats: 0, beloeb: 0 },
   },
   deductions: {
-    pension: { beloeb: 519.17, procent: 2, grundlag: 25958.39 },
-    skat: { beloeb: 7474.00, procent: 39 },
+    pension: { beloeb: 548.00, procent: 2, grundlag: 27412.00 },
+    skat: { beloeb: 7893.00, procent: 39 },
     atp: { beloeb: 99.00 },
-    amBidrag: { beloeb: 1581.00, procent: 8 },
+    amBidrag: { beloeb: 1670.00, procent: 8 },
   },
   absence: {
-    sygdom: { dage: 1, timer: 7.5, beloeb: 986.18 },
+    sygdom: { dage: 1, timer: 7.5, beloeb: 1041.00 },
     ferie: { dage: 0, timer: 0 },
     afspadsering: { dage: 0, timer: 0 },
     barnsSygdom: { dage: 0, timer: 0 },
   },
   totals: {
-    bruttolon: 21364.93,       // 20285.00 + 986.18 + 93.75
-    nettolon: 11466.76,
-    totalFradrag: 9898.17,     // 519.17 + 7474 + 99 + 1581 + 25 + 200
-    totalTillaeg: 1079.93,     // sygedagpenge 986.18 + overtid 93.75
+    bruttolon: 22561.00,       // 21421.00 + 1041.00 + 99.00
+    nettolon: 12109.00,
+    totalFradrag: 10452.00,    // 548 + 7893 + 99 + 1670 + 242
+    totalTillaeg: 1140.00,     // sygedagpenge 1041.00 + overtid 99.00
   },
   uploadedAt: "2025-10-01T08:00:00Z",
   analyzedAt: "2025-10-01T08:00:04Z",
@@ -81,7 +81,7 @@ const SEP_VALIDATION: PayslipValidationResult = {
 // ──────────────────────────────────────────────
 // Oktober 2025 — Lønperiode 21. sep – 20. okt
 // FEJL: Overarbejde d. 5. oktober (søndag) er takseret med 50 %
-// i stedet for 100 % jf. Funktionæroverenskomsten § 3, pkt. 1A.
+// i stedet for 100 % jf. HK/DI Butiksoverenskomsten § 3, pkt. 1A.
 // ──────────────────────────────────────────────
 
 const OKT_PAYSLIP: PayslipData = {
@@ -94,17 +94,17 @@ const OKT_PAYSLIP: PayslipData = {
     endDate: "2025-10-20",
   },
   employer: {
-    name: "Coolshop A/S",
-    cvr: "26457602",
-    department: "Warehouse",
+    name: "Nordic Retail A/S",
+    cvr: "38147205",
+    department: "Lager & Logistik",
   },
   salary: {
-    grundlon: 19557.50,        // 156,46t × 125 kr/t
+    grundlon: 20653.00,        // 156,46t × 132 kr/t
     timelon: TIMELON,
     normalTimer: 156.46,
     beregnetTimelon: {
-      udenTillaeg: 125.00,
-      medTillaeg: 125.80,      // 19682.50 / 156.46
+      udenTillaeg: 132.00,
+      medTillaeg: 132.84,      // 20785 / 156.46
       afvigelse: 0.00,
       status: "ok",
     },
@@ -112,13 +112,13 @@ const OKT_PAYSLIP: PayslipData = {
   supplements: {
     aftentillaeg: { timer: 0, sats: 0, beloeb: 0 },
     nattillaeg: { timer: 0, sats: 0, beloeb: 0 },
-    soenHelligdag: { timer: 1, sats: 62.50, beloeb: 62.50 },
+    soenHelligdag: { timer: 1, sats: 66.00, beloeb: 66.00 },
   },
   deductions: {
-    pension: { beloeb: 478.28, procent: 2, grundlag: 19682.50 },
-    skat: { beloeb: 6855.00, procent: 39 },
+    pension: { beloeb: 505.00, procent: 2, grundlag: 20785.00 },
+    skat: { beloeb: 7239.00, procent: 39 },
     atp: { beloeb: 99.00 },
-    amBidrag: { beloeb: 1528.00, procent: 8 },
+    amBidrag: { beloeb: 1614.00, procent: 8 },
   },
   absence: {
     sygdom: { dage: 0, timer: 0 },
@@ -127,10 +127,10 @@ const OKT_PAYSLIP: PayslipData = {
     barnsSygdom: { dage: 0, timer: 0 },
   },
   totals: {
-    bruttolon: 19682.50,       // 19557.50 + 62.50 + 62.50
-    nettolon: 10497.22,
-    totalFradrag: 9185.28,     // 478.28 + 6855 + 99 + 1528 + 25 + 200
-    totalTillaeg: 125.00,      // overtid 1-3t: 62.50 + overtid +4t: 62.50
+    bruttolon: 20785.00,       // 20653.00 + 66.00 + 66.00
+    nettolon: 11085.00,
+    totalFradrag: 9700.00,     // 505 + 7239 + 99 + 1614 + 243
+    totalTillaeg: 132.00,      // overtid 1-3t: 66.00 + overtid +4t: 66.00
   },
   uploadedAt: "2025-11-01T09:00:00Z",
   analyzedAt: "2025-11-01T09:00:05Z",
@@ -146,19 +146,19 @@ const OKT_VALIDATION: PayslipValidationResult = {
       category: "supplement",
       field: "soenHelligdag",
       severity: "error",
-      expected: 125.00,        // 1t × 125,00 kr (100 % tillæg på søndag)
-      actual: 62.50,           // 1t × 62,50 kr (50 % tillæg — forkert)
-      difference: -62.50,
+      expected: 132.00,        // 1t × 132,00 kr (100 % tillæg på søndag)
+      actual: 66.00,           // 1t × 66,00 kr (50 % tillæg — forkert)
+      difference: -66.00,
       description:
-        "Den 5. oktober 2025 er en søndag. Du har arbejdet 1 times overarbejde denne dag, men lønsystemet har kun givet 50 % tillæg (62,50 kr). Ifølge Funktionæroverenskomsten § 3, pkt. 1A skal overarbejde på søn- og helligdage altid betales med 100 % tillæg (125,00 kr).",
+        "Den 5. oktober 2025 er en søndag. Du har arbejdet 1 times overarbejde denne dag, men lønsystemet har kun givet 50 % tillæg (66,00 kr). Ifølge HK/DI Butiksoverenskomsten § 3, pkt. 1A skal overarbejde på søn- og helligdage altid betales med 100 % tillæg (132,00 kr).",
       calculation:
-        "Rule: Funktionæroverenskomst-§3-pkt1A-søndag, Sats: 125.00 kr/t, Forventet: 1t, Faktisk: 0t",
+        "Rule: HK/DI Butiksoverenskomsten §3-pkt1A-søndag, Sats: 132.00 kr/t, Forventet: 1t, Faktisk: 0t",
       suggestion:
-        "Kontakt din leder eller lønadministrationen og henvis til Funktionæroverenskomsten § 3, pkt. 1A. Overarbejdet d. 5. oktober (søndag) skal takseres med 100 % tillæg i stedet for 50 %. Du mangler 62,50 kr i efterbetaling.",
+        "Kontakt din leder eller lønadministrationen og henvis til HK/DI Butiksoverenskomsten § 3, pkt. 1A. Overarbejdet d. 5. oktober (søndag) skal takseres med 100 % tillæg i stedet for 50 %. Du mangler 66,00 kr i efterbetaling.",
     },
   ],
   summary: {
-    totalDifference: -62.50,
+    totalDifference: -66.00,
     issuesCount: 1,
     warningsCount: 0,
   },
@@ -180,43 +180,43 @@ const DEC_PAYSLIP: PayslipData = {
     endDate: "2025-12-17",
   },
   employer: {
-    name: "Coolshop A/S",
-    cvr: "26457602",
-    department: "Warehouse",
+    name: "Nordic Retail A/S",
+    cvr: "38147205",
+    department: "Lager & Logistik",
   },
   salary: {
-    grundlon: 20761.25,        // 166,09t × 125 kr/t
+    grundlon: 21924.00,        // 166,09t × 132 kr/t
     timelon: TIMELON,
     normalTimer: 166.09,
     beregnetTimelon: {
-      udenTillaeg: 125.00,
-      medTillaeg: 152.27,      // 25289.43 / 166.09
+      udenTillaeg: 132.00,
+      medTillaeg: 160.79,      // 26706 / 166.09
       afvigelse: 0.00,
       status: "ok",
     },
   },
   supplements: {
     aftentillaeg: { timer: 0, sats: 0, beloeb: 0 },
-    nattillaeg: { timer: 10.27, sats: 15.00, beloeb: 154.05 },
+    nattillaeg: { timer: 10.27, sats: 16.00, beloeb: 164.00 },
     soenHelligdag: { timer: 0, sats: 0, beloeb: 0 },
   },
   deductions: {
-    pension: { beloeb: 614.53, procent: 2, grundlag: 25289.43 },
-    skat: { beloeb: 8848.00, procent: 39 },
+    pension: { beloeb: 649.00, procent: 2, grundlag: 26706.00 },
+    skat: { beloeb: 9343.00, procent: 39 },
     atp: { beloeb: 99.00 },
-    amBidrag: { beloeb: 1887.00, procent: 8 },
+    amBidrag: { beloeb: 1993.00, procent: 8 },
   },
   absence: {
-    sygdom: { dage: 1, timer: 7.5, beloeb: 986.18 },
+    sygdom: { dage: 1, timer: 7.5, beloeb: 1041.00 },
     ferie: { dage: 0, timer: 0 },
     afspadsering: { dage: 0, timer: 0 },
     barnsSygdom: { dage: 0, timer: 0 },
   },
   totals: {
-    bruttolon: 25289.43,       // grundløn + sygedagpenge + rød trøje + overtid rød trøje + nattillæg + nattillæg OT + overtid 1-3 + overtid +4
-    nettolon: 13615.90,
-    totalFradrag: 11673.53,    // pension + skat + atp + am-bidrag + personaleforening + kantine
-    totalTillaeg: 4528.18,     // 986.18 + 830.45 + 50.00 + 47.50 + 154.05 + 22.50 + 1250.00 + 1187.50
+    bruttolon: 26706.00,       // grundløn + sygedagpenge + rød trøje + overtid rød trøje + nattillæg + nattillæg OT + overtid 1-3 + overtid +4
+    nettolon: 14378.00,
+    totalFradrag: 12328.00,    // pension + skat + atp + am-bidrag + personaleforening + kantine
+    totalTillaeg: 4782.00,     // 1041 + 877 + 53 + 50 + 164 + 24 + 1320 + 1253
   },
   uploadedAt: "2026-01-02T10:00:00Z",
   analyzedAt: "2026-01-02T10:00:04Z",

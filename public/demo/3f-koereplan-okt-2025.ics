@@ -1,0 +1,159 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Scanlog AS//Transport//DA
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Mads Jensen - Køreplan Maj 2026
+X-WR-TIMEZONE:Europe/Copenhagen
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260501T060000
+DTEND;TZID=Europe/Copenhagen:20260501T140000
+SUMMARY:Kørsel: Padborg → København
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-01@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260504T060000
+DTEND;TZID=Europe/Copenhagen:20260504T143000
+SUMMARY:Kørsel: Padborg → København (lang rute)
+DESCRIPTION:Uge 19 - mandag. Tachograf: 8,5 timer køretid.
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-04@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260505T060000
+DTEND;TZID=Europe/Copenhagen:20260505T143000
+SUMMARY:Kørsel: København → Odense → Padborg
+DESCRIPTION:Uge 19 - tirsdag. Tachograf: 8,5 timer køretid.
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-05@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260506T060000
+DTEND;TZID=Europe/Copenhagen:20260506T140000
+SUMMARY:Kørsel: Padborg → Aarhus → Randers
+DESCRIPTION:Uge 19 - onsdag. Tachograf: 8,0 timer køretid.
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-06@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260507T060000
+DTEND;TZID=Europe/Copenhagen:20260507T143000
+SUMMARY:Kørsel: Randers → Aalborg → Frederikshavn
+DESCRIPTION:Uge 19 - torsdag. Tachograf: 8,5 timer køretid.
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-07@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260508T060000
+DTEND;TZID=Europe/Copenhagen:20260508T140000
+SUMMARY:Kørsel: Frederikshavn → Padborg (retur)
+DESCRIPTION:Uge 19 - fredag. Tachograf: 8,0 timer køretid. UGETOTAL: 41,5 timer.
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-08@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260511T060000
+DTEND;TZID=Europe/Copenhagen:20260511T140000
+SUMMARY:Kørsel: Padborg → Kolding → Vejle
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-11@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260512T060000
+DTEND;TZID=Europe/Copenhagen:20260512T140000
+SUMMARY:Kørsel: Vejle → Esbjerg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-12@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260513T070000
+DTEND;TZID=Europe/Copenhagen:20260513T143000
+SUMMARY:Kørsel: Esbjerg → Herning → Viborg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-13@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260514T060000
+DTEND;TZID=Europe/Copenhagen:20260514T140000
+SUMMARY:Kørsel: Viborg → Padborg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-14@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260515T070000
+DTEND;TZID=Europe/Copenhagen:20260515T143000
+SUMMARY:Kørsel: Padborg → Flensburg → Kiel
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-15@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260518T060000
+DTEND;TZID=Europe/Copenhagen:20260518T140000
+SUMMARY:Kørsel: Padborg → København
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-18@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260519T060000
+DTEND;TZID=Europe/Copenhagen:20260519T140000
+SUMMARY:Kørsel: København → Næstved → Padborg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-19@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260520T070000
+DTEND;TZID=Europe/Copenhagen:20260520T143000
+SUMMARY:Kørsel: Padborg → Aarhus
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-20@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260521T060000
+DTEND;TZID=Europe/Copenhagen:20260521T140000
+SUMMARY:Kørsel: Aarhus → Aalborg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-21@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260522T070000
+DTEND;TZID=Europe/Copenhagen:20260522T140000
+SUMMARY:Kørsel: Aalborg → Padborg (retur)
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-22@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260525T060000
+DTEND;TZID=Europe/Copenhagen:20260525T143000
+SUMMARY:Kørsel: Padborg → Hamburg (DK/DE)
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-25@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260526T060000
+DTEND;TZID=Europe/Copenhagen:20260526T140000
+SUMMARY:Kørsel: Hamburg → Padborg (retur)
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-26@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260527T070000
+DTEND;TZID=Europe/Copenhagen:20260527T143000
+SUMMARY:Kørsel: Padborg → Kolding → Odense
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-27@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260528T060000
+DTEND;TZID=Europe/Copenhagen:20260528T140000
+SUMMARY:Kørsel: Odense → Padborg
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-28@paytjek.demo
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Copenhagen:20260529T070000
+DTEND;TZID=Europe/Copenhagen:20260529T140000
+SUMMARY:Kørsel: Padborg → Vejle (halv dag)
+LOCATION:Scanlog A/S, Padborg
+UID:3f-maj-29@paytjek.demo
+END:VEVENT
+END:VCALENDAR

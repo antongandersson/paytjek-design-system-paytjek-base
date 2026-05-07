@@ -1,5 +1,5 @@
 /**
- * Ernest Client - HK Handel Løn-assistent integration
+ * Ernest Client - PayTjek løn-assistent integration
  * 
  * Plug & play client til Ernest chatbot
  * 
@@ -16,10 +16,10 @@
  * // Med brugerdata:
  * await streamErnest("Hvad er overarbejdstillæg?", setSvar, {
  *   user: {
- *     firstName: "Emil",
- *     employer: "Coolshop A/S",
- *     jobTitle: "Warehouse Assistant",
- *     collectiveAgreement: "Funktionæroverenskomst for Handel, Viden og Service",
+ *     firstName: "Sara",
+ *     employer: "Nordic Retail A/S",
+ *     jobTitle: "Butiksassistent",
+ *     collectiveAgreement: "HK/DI Butiksoverenskomsten",
  *     primaryShiftType: "day",
  *   }
  * });
@@ -35,7 +35,7 @@ const ERNEST_CONFIG = {
   defaultMode: 'mix' as QueryMode,
   
   // Ernest's personlighed og rolle
-  systemPrompt: `Du er Ernest, løn-ekspert for HK Handel-medlemmer ansat under Funktionæroverenskomsten for Handel, Viden og Service (Dansk Erhverv / HK Privat og HK HANDEL).
+  systemPrompt: `Du er Ernest, PayTjeks AI-løn-ekspert. Du hjælper lønmodtagere med at forstå deres overenskomst og tjekke om deres løn er korrekt.
 
 SVARSTIL (KRITISK):
 - Svar ALTID direkte på spørgsmålet - du ER ekspert
@@ -46,18 +46,17 @@ SVARSTIL (KRITISK):
 - Vær selvsikker og hjælpsom
 
 OVERENSKOMST:
-- Funktionæroverenskomsten for Handel, Viden og Service (FO-HVS)
-- Mellem Dansk Erhverv Arbejdsgiver og HK Privat / HK HANDEL
+- HK/DI Butiksoverenskomsten
 - § 2: Løn — § 3: Overarbejde — § 6: Pension — § 9: Ferie
 
 EKSEMPEL - GODT:
 "Overarbejde på søn- og helligdage betales altid med 100 % tillæg jf. § 3, pkt. 1A. De første 3 timer efter normal arbejdstids ophør giver 50 %, men på søn- og helligdage springer det straks til 100 %."
 
 EKSEMPEL - DÅRLIGT (undgå):
-"Hej Emil, jeg kan ikke give dig et præcist svar på overarbejdstillæg, men..."
+"Hej Sara, jeg kan ikke give dig et præcist svar på overarbejdstillæg, men..."
 
 EKSPERTISE:
-- Funktionæroverenskomsten for Handel, Viden og Service
+- HK/DI Butiksoverenskomsten
 - Overarbejde, tillæg, vagttyper (§ 3)
 - Løn, pension, feriepenge, ATP`,
 };
@@ -79,8 +78,8 @@ export interface UserContext {
   firstName?: string;
   employer?: string;
   employerType?: string;
-  jobTitle?: string;              // Stilling, fx "Warehouse Assistant"
-  department?: string;            // Afdeling/enhed, fx "Warehouse"
+  jobTitle?: string;              // Stilling, fx "Butiksassistent"
+  department?: string;            // Afdeling/enhed, fx "Lager & Logistik"
   area?: 1 | 2 | 3 | 4;           // Lønområde (1-4) fra lønseddel
   yearsOfExperience?: number;     // Anciennitet i år
   collectiveAgreement?: string;

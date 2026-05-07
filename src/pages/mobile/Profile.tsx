@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Camera } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 
 export default function MobileProfile() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   const { toast } = useToast();
   const { user, updateUser, isLoading } = useUser();
   
@@ -64,7 +66,7 @@ export default function MobileProfile() {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => navigate("/m/more")}
+          onClick={() => navigate(`${basePath}/more`)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

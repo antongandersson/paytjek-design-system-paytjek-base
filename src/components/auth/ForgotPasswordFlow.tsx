@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Mail, ArrowLeft, KeyRound, Eye, EyeOff, RefreshCw, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PasswordStrengthMeter, { isPasswordValid } from "./PasswordStrengthMeter";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
 
 type ForgotPasswordStep = "email" | "code" | "newPassword" | "success";
 
@@ -363,7 +363,7 @@ const ForgotPasswordFlow = ({
     <div className="flex flex-col items-center w-full">
       {/* Logo */}
       <div className={variant === "web" ? "lg:hidden mb-6" : "mb-6"}>
-        <img src={hkLogo} alt="HK Handel" className="h-14 w-auto mix-blend-multiply" />
+        <img src={paytjekLogo} alt="PayTjek" className="h-10 w-auto" />
       </div>
 
       {/* Back to Login - only show on email step */}

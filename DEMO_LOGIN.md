@@ -9,7 +9,7 @@ Del kun med autoriserede personer (team members, udvalgte kunder).
 
 **Demo login:**
 ```
-Email:    emil@demo.dk
+Email:    sara@demo.dk
 Password: demo1234
 ```
 
@@ -19,13 +19,13 @@ Password: demo1234
 
 ### Web Version
 1. Gå til https://paytjek-design-system.vercel.app/app/auth?mode=login
-2. Indtast email: `emil@demo.dk`
+2. Indtast email: `sara@demo.dk`
 3. Indtast password: `demo1234`
 4. Klik "Log ind"
 
 ### Mobile Version
 1. Gå til https://paytjek-design-system.vercel.app/m/auth?mode=login
-2. Indtast email: `emil@demo.dk`
+2. Indtast email: `sara@demo.dk`
 3. Indtast password: `demo1234`
 4. Klik "Log ind"
 

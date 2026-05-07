@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { User, HelpCircle, LogOut, ChevronRight } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { usePayslip } from "@/contexts/PayslipContext";
@@ -7,6 +8,7 @@ import { useCalendar } from "@/contexts/CalendarContext";
 import { useApp } from "@/contexts/AppContext";
 import { useContract } from "@/contexts/ContractContext";
 import { useRequests } from "@/contexts/RequestContext";
+import * as demoAuth from "@/lib/demoAuth";
 
 interface MenuItem {
   icon: React.ElementType;
@@ -23,6 +25,7 @@ const menuItems: MenuItem[] = [
 
 export default function MobileMore() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   
   // Import contexts for logout
   const { clearAllData: clearPayslipData } = usePayslip();
@@ -33,9 +36,9 @@ export default function MobileMore() {
 
   const handleMenuClick = (id: string) => {
     if (id === "profile") {
-      navigate("/m/profile");
+      navigate(`${basePath}/profile`);
     } else if (id === "help") {
-      navigate("/m/help");
+      navigate(`${basePath}/help`);
     } else if (id === "logout") {
       // Ryd al app data ved logout
       clearPayslipData();
@@ -43,9 +46,8 @@ export default function MobileMore() {
       clearAppData();
       clearContractData();
       clearRequestData();
-      // Ryd også brugerprofil fra localStorage
-      localStorage.removeItem('paytjek_user_profile');
-      navigate("/welcome");
+      demoAuth.logout();
+      navigate(`${basePath}/welcome`);
     }
   };
 

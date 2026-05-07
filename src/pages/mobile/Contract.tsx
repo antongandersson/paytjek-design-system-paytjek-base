@@ -15,13 +15,19 @@ import {
   Building2,
   BadgeCheck,
   Loader2,
+  AlertTriangle,
+  Scale,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContract } from "@/contexts/ContractContext";
 import { useUser } from "@/contexts/UserContext";
+import { useDemo } from "@/contexts/DemoContext";
 import { CONTRACT_ANALYSIS_STEPS } from "@/lib/demoContract";
 import type { ContractDetails } from "@/lib/demoContract";
 import { cn } from "@/lib/utils";
+import {
+  ContractChecklist,
+} from "@/components/home/ContractDashboard";
 
 type ViewState = "upload" | "analyzing" | "overview";
 
@@ -38,8 +44,11 @@ export default function MobileContract() {
     uploadContract,
   } = useContract();
   const { updateUser } = useUser();
+  const { demoConfig, basePath } = useDemo();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileUpdatedRef = useRef(false);
+
+  const isContractProfile = demoConfig.demoProfile === "contract";
 
   const [view, setView] = useState<ViewState>(() => {
     if (hasDetails) return "overview";
@@ -111,13 +120,15 @@ export default function MobileContract() {
         <UploadView onSelect={handleFileSelect} isUploading={isUploading} />
       )}
       {view === "analyzing" && (
-        <AnalyzingView progress={analysisProgress} />
+        <AnalyzingView progress={analysisProgress} isContractProfile={isContractProfile} />
       )}
       {view === "overview" && contractDetails && (
         <OverviewView
           details={contractDetails}
           filename={contract?.filename}
-          onGoHome={() => navigate("/m/home")}
+          onGoHome={() => navigate(`${basePath}/home`)}
+          demoContractAnalysis={isContractProfile ? demoConfig.demoContractAnalysis : undefined}
+          contractIntelligence={isContractProfile ? demoConfig.contractIntelligence : undefined}
         />
       )}
     </main>
@@ -164,10 +175,14 @@ function UploadView({ onSelect, isUploading }: { onSelect: () => void; isUploadi
 // ANALYZING VIEW
 // ──────────────────────────────────────────────
 
-function AnalyzingView({ progress }: { progress: number }) {
+function AnalyzingView({ progress, isContractProfile }: { progress: number; isContractProfile: boolean }) {
+  const steps = isContractProfile
+    ? [...CONTRACT_ANALYSIS_STEPS, { id: "legal", label: "Tjekker mod gældende lovgivning" }]
+    : CONTRACT_ANALYSIS_STEPS;
+
   const stepIndex = Math.min(
-    Math.floor((progress / 100) * CONTRACT_ANALYSIS_STEPS.length),
-    CONTRACT_ANALYSIS_STEPS.length - 1
+    Math.floor((progress / 100) * steps.length),
+    steps.length - 1
   );
 
   return (
@@ -191,7 +206,7 @@ function AnalyzingView({ progress }: { progress: number }) {
       <h2 className="text-xl font-bold text-foreground mb-6">Analyserer kontrakt</h2>
 
       <div className="w-full max-w-xs space-y-3">
-        {CONTRACT_ANALYSIS_STEPS.map((step, i) => {
+        {steps.map((step, i) => {
           const isComplete = i < stepIndex;
           const isActive = i === stepIndex;
           return (
@@ -235,10 +250,14 @@ function OverviewView({
   details,
   filename,
   onGoHome,
+  demoContractAnalysis,
+  contractIntelligence,
 }: {
   details: ContractDetails;
   filename?: string;
   onGoHome: () => void;
+  demoContractAnalysis?: import("@/lib/demoUnionConfigs").DemoContractAnalysis;
+  contractIntelligence?: import("@/lib/demoUnionConfigs").ContractIntelligence;
 }) {
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -325,7 +344,7 @@ function OverviewView({
           </span>
         </div>
 
-        {details.salary.fritvalgPercent > 0 && (
+        {details.salary.fritvalgPercent > 0 && !contractIntelligence && (
           <div className="flex items-center justify-between py-2 px-1 mb-2">
             <div className="flex items-center gap-2.5">
               <Coins className="w-4 h-4 text-muted-foreground" />
@@ -358,6 +377,16 @@ function OverviewView({
             </div>
           )}
         </div>
+
+        {/* Bruttoløn total — only for contract profiles with intel data */}
+        {contractIntelligence && (
+          <div className="flex items-center justify-between py-3 px-1 mt-2 border-t border-border/40">
+            <p className="text-sm font-bold text-foreground">Bruttoløn i alt</p>
+            <span className="text-sm font-bold text-primary">
+              {contractIntelligence.totalPackage.toLocaleString("da-DK")} kr/md
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Pension */}
@@ -381,6 +410,21 @@ function OverviewView({
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-2 text-center">{details.pension.provider}</p>
+
+        {/* Fritvalg nudge */}
+        {contractIntelligence && contractIntelligence.pension.fritvalgPercent > 0 && (
+          <div className="mt-3 rounded-xl bg-primary/5 border border-primary/10 p-3 flex items-start gap-2">
+            <Coins className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Fritvalg: ~{contractIntelligence.pension.fritvalgMonthly.toLocaleString("da-DK")} kr/md
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {contractIntelligence.pension.fritvalgPercent}%-point over minimumsgrænsen ({contractIntelligence.pension.minimumPercent}%) kan udbetales som løn
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Ferie */}
@@ -398,6 +442,13 @@ function OverviewView({
       <div className="text-center text-xs text-muted-foreground pt-2">
         Kontrakt underskrevet {formatDate(details.signedDate)}
       </div>
+
+      {/* Vilkårstjek — contract profiles get the enhanced checklist */}
+      {demoContractAnalysis && (
+        <div className="bg-card rounded-2xl border border-border p-4">
+          <ContractChecklist analysis={demoContractAnalysis} />
+        </div>
+      )}
 
       {/* CTA */}
       <Button

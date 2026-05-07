@@ -4,6 +4,7 @@ import type { PayslipAnalysisContext } from '@/lib/ernestClient';
 import { Sun, Heart, Clock, Receipt, Landmark, Timer } from "lucide-react";
 import React from 'react';
 import { api } from '@/lib/api/client';
+import { useDemo } from '@/contexts/DemoContext';
 
 // ============================================
 // LOCALSTORAGE KEYS
@@ -264,66 +265,23 @@ function removeFromStorage(key: string): void {
 const PayslipContext = createContext<PayslipContextType | undefined>(undefined);
 
 export function PayslipProvider({ children }: { children: ReactNode }) {
-  // Current analysis state
+  const { demoConfig } = useDemo();
+
+  // Start empty — data injiceres først når brugeren uploader en lønseddel
   const [currentPayslip, setCurrentPayslip] = useState<PayslipData | null>(null);
   const [currentValidation, setCurrentValidation] = useState<PayslipValidationResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  
+
   // History state
   const [historyEntries, setHistoryEntries] = useState<PayslipHistoryEntry[]>([]);
-  
-  // ============================================
-  // LOAD FROM LOCALSTORAGE ON MOUNT
-  // ============================================
-  
-  useEffect(() => {
-    const storedVersion = localStorage.getItem(PAYSLIP_VERSION_KEY);
-    if (storedVersion !== PAYSLIP_STORAGE_VERSION) {
-      removeFromStorage(STORAGE_KEYS.CURRENT_PAYSLIP);
-      removeFromStorage(STORAGE_KEYS.CURRENT_VALIDATION);
-      removeFromStorage(STORAGE_KEYS.PAYSLIP_HISTORY);
-      localStorage.setItem(PAYSLIP_VERSION_KEY, PAYSLIP_STORAGE_VERSION);
-      return;
-    }
 
-    const savedPayslip = loadFromStorage<PayslipData>(STORAGE_KEYS.CURRENT_PAYSLIP);
-    const savedValidation = loadFromStorage<PayslipValidationResult>(STORAGE_KEYS.CURRENT_VALIDATION);
-    
-    if (savedPayslip && savedValidation) {
-      setCurrentPayslip(savedPayslip);
-      setCurrentValidation(savedValidation);
-    }
-    
-    const savedHistory = loadFromStorage<PayslipHistoryEntry[]>(STORAGE_KEYS.PAYSLIP_HISTORY);
-    if (savedHistory) {
-      setHistoryEntries(savedHistory);
-    }
-  }, []);
-  
-  // ============================================
-  // SAVE TO LOCALSTORAGE ON CHANGE
-  // ============================================
-  
+  // Reset when union changes (client-side navigation)
   useEffect(() => {
-    if (currentPayslip) {
-      saveToStorage(STORAGE_KEYS.CURRENT_PAYSLIP, currentPayslip);
-    } else {
-      removeFromStorage(STORAGE_KEYS.CURRENT_PAYSLIP);
-    }
-  }, [currentPayslip]);
+    setCurrentPayslip(null);
+    setCurrentValidation(null);
+    setHistoryEntries([]);
+  }, [demoConfig.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
-  useEffect(() => {
-    if (currentValidation) {
-      saveToStorage(STORAGE_KEYS.CURRENT_VALIDATION, currentValidation);
-    } else {
-      removeFromStorage(STORAGE_KEYS.CURRENT_VALIDATION);
-    }
-  }, [currentValidation]);
-  
-  useEffect(() => {
-    saveToStorage(STORAGE_KEYS.PAYSLIP_HISTORY, historyEntries);
-  }, [historyEntries]);
-
   // ============================================
   // ACTIONS
   // ============================================
@@ -395,16 +353,11 @@ export function PayslipProvider({ children }: { children: ReactNode }) {
     setCurrentValidation(null);
   }, []);
   
-  // 🆕 Ryd ALT data inkl. localStorage (til logout)
   const clearAllData = useCallback(() => {
     setHistoryEntries([]);
     setCurrentPayslip(null);
     setCurrentValidation(null);
     setIsAnalyzing(false);
-    // Ryd localStorage
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_PAYSLIP);
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_VALIDATION);
-    localStorage.removeItem(STORAGE_KEYS.PAYSLIP_HISTORY);
   }, []);
   
   // ============================================

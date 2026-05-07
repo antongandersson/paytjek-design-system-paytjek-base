@@ -10,7 +10,7 @@
 // ============================================
 
 const DEMO_CREDENTIALS = {
-  email: 'emil@demo.dk',
+  email: 'sara@demo.dk',
   password: 'demo1234',
 };
 

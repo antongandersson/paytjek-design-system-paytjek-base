@@ -4,15 +4,17 @@ import { MobileContainer } from "@/components/layout/MobileContainer";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { UploadDrawer } from "@/components/layout/UploadDrawer";
-import { ErnestFAB } from "@/components/ernest/ErnestFAB";
+// import { ErnestFAB } from "@/components/ernest/ErnestFAB"; // TEMPORARILY DISABLED
 import { OvertimeCheckSheet } from "@/components/calendar/OvertimeCheckSheet";
 import { useCalendar } from "@/contexts/CalendarContext";
 import { useContract } from "@/contexts/ContractContext";
+import { useDemo } from "@/contexts/DemoContext";
 import { usePayslip } from "@/contexts/PayslipContext";
 
 export function MobileLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { basePath } = useDemo();
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const { pendingOvertimeCheck, confirmShift, snoozeOvertimeCheck, isConnected: hasCalendar } = useCalendar();
   const { hasContract } = useContract();
@@ -48,6 +50,7 @@ export function MobileLayout() {
   const getActiveTab = () => {
     const path = location.pathname;
     if (path.includes("/calendar")) return "kalender";
+    if (path.includes("/contract")) return "kontrakt";
     if (path.includes("/history")) return "historie";
     if (path.includes("/more") || path.includes("/profile") || path.includes("/settings") || path.includes("/help") || path.includes("/membership")) return "mere";
     if (path.includes("/lontjek")) return "lontjek";
@@ -59,13 +62,15 @@ export function MobileLayout() {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     if (tab === "hjem") {
-      navigate("/m/home");
+      navigate(`${basePath}/home`);
     } else if (tab === "kalender") {
-      navigate("/m/calendar");
+      navigate(`${basePath}/calendar`);
+    } else if (tab === "kontrakt") {
+      navigate(`${basePath}/contract`);
     } else if (tab === "historie") {
-      navigate("/m/history");
+      navigate(`${basePath}/history`);
     } else if (tab === "mere") {
-      navigate("/m/more");
+      navigate(`${basePath}/more`);
     } else if (tab === "lontjek") {
       setUploadDrawerOpen(true);
     }
@@ -77,7 +82,7 @@ export function MobileLayout() {
 
   const handleUploadOption = (option: string) => {
     console.log("Selected upload option:", option);
-    navigate("/m/lontjek", { state: { fresh: true } });
+    navigate(`${basePath}/lontjek`, { state: { fresh: true } });
   };
 
   return (
@@ -87,7 +92,7 @@ export function MobileLayout() {
       {/* Outlet renders child routes */}
       <Outlet context={{ setUploadDrawerOpen }} />
 
-      <ErnestFAB />
+      {/* <ErnestFAB /> */}{/* TEMPORARILY DISABLED */}
 
       <BottomNavigation
         activeTab={activeTab}

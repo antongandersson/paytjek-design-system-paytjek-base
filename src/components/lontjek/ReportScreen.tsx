@@ -11,10 +11,10 @@ import {
   ArrowRight,
   CheckCircle2,
   XCircle,
-  Sparkles,
+  // Sparkles, // TEMPORARILY DISABLED (Ernest Tip)
   FileText,
   Calculator,
-  MessageCircle,
+  // MessageCircle, // TEMPORARILY DISABLED (Spørg Ernest)
   Activity,
   Baby,
   CalendarOff,
@@ -23,10 +23,11 @@ import {
   TrendingDown,
   BadgeCheck,
   ShieldCheck,
+  Briefcase,
   Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ErnestChatSheet } from "@/components/ernest/ErnestChatSheet";
+// import { ErnestChatSheet } from "@/components/ernest/ErnestChatSheet"; // TEMPORARILY DISABLED
 import { Chip } from "@/components/ui/chip";
 import {
   Collapsible,
@@ -35,7 +36,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useCalendar } from "@/contexts/CalendarContext";
 import { SendCaseScreen } from "./SendCaseScreen";
-import ernestAvatar from "@/assets/ernest-avatar.svg";
+// import ernestAvatar from "@/assets/ernest-avatar.svg"; // TEMPORARILY DISABLED
 import { cn } from "@/lib/utils";
 import { usePayslip } from "@/contexts/PayslipContext";
 import { useContract } from "@/contexts/ContractContext";
@@ -59,7 +60,8 @@ interface ReportScreenProps {
 
 // Demo data imported from shared module (used as fallback in dev mode)
 import { getDemoPayslip } from "@/lib/demoPayslips";
-const _demoFallback = getDemoPayslip("2025-10-30_Lønseddel");
+import { useDemo } from "@/contexts/DemoContext";
+const _hkFallback = getDemoPayslip("2025-10-30_Lønseddel");
 
 // Helper: Få dansk label for felt
 function getFieldLabel(field: PayslipField): string {
@@ -69,8 +71,12 @@ function getFieldLabel(field: PayslipField): string {
     normalTimer: "Normal timer",
     aftentillaeg: "Manglende aftentillæg",
     nattillaeg: "Manglende nattillæg",
+    lordagstillaeg: "Manglende lørdagstillæg",
     soenHelligdag: "Manglende søn/helligdagstillæg",
+    raadighestillaeg: "Rådighedstillæg",
+    overtid: "Overtid",
     pension: "Pension",
+    pensionRaadighed: "Pension af råd.tillæg",
     skat: "Skat",
     atp: "ATP",
     sygdom: "Sygdom",
@@ -106,19 +112,21 @@ export function ReportScreen({
   payslipData: propPayslipData,
   validationResult: propValidationResult,
 }: ReportScreenProps) {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  // const [isChatOpen, setIsChatOpen] = useState(false); // TEMPORARILY DISABLED
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [currentView, setCurrentView] = useState<ViewType>("report");
 
-  // 🆕 Hent data fra global context (prioriteret over props)
+  // Hent data fra global context (prioriteret over props)
   const { 
     currentPayslip: contextPayslip, 
     currentValidation: contextValidation,
   } = usePayslip();
-  
-  const isDev = import.meta.env.DEV;
-  const payslipData = contextPayslip ?? propPayslipData ?? (isDev ? _demoFallback.payslip : null);
-  const validationResult = contextValidation ?? propValidationResult ?? (isDev ? _demoFallback.validation : null);
+
+  // Demo fallback: brug union-specifik config når ingen rigtig data er tilgængelig
+  const { demoConfig } = useDemo();
+
+  const payslipData = contextPayslip ?? propPayslipData ?? demoConfig.payslip ?? _hkFallback.payslip;
+  const validationResult = contextValidation ?? propValidationResult ?? demoConfig.validation ?? _hkFallback.validation;
   
   // Hvis ingen data og ikke dev-mode, vis loading/fejl
   if (!payslipData || !validationResult) {
@@ -234,10 +242,10 @@ export function ReportScreen({
               <div className="flex items-center justify-between border-t border-white/10 pt-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">
-                    EH
+                    {payslipData.employer.name?.split(" ").map(w => w[0]).join("").slice(0,2) || "EH"}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold">Emil Hansen</p>
+                    <p className="text-sm font-semibold">{demoConfig.persona.name}</p>
                     <p className="text-xs text-primary-foreground/60">{payslipData.employer.department || payslipData.employer.name}</p>
                   </div>
                 </div>
@@ -305,7 +313,7 @@ export function ReportScreen({
             <ErrorsContent 
               payslipData={payslipData}
               validationResult={validationResult}
-              onOpenChat={() => setIsChatOpen(true)}
+              onOpenChat={() => {}} /* TEMPORARILY DISABLED - was: () => setIsChatOpen(true) */
               onSendCase={handleSendToUnion}
             />
           )}
@@ -313,12 +321,8 @@ export function ReportScreen({
 
       </div>
 
-      {/* Ernest Chat Sheet - Analysis context (henter lønseddel-data fra PayslipContext) */}
-      <ErnestChatSheet 
-        open={isChatOpen} 
-        onOpenChange={setIsChatOpen} 
-        context="analysis"
-      />
+      {/* Ernest Chat Sheet - TEMPORARILY DISABLED */}
+      {/* <ErnestChatSheet open={isChatOpen} onOpenChange={setIsChatOpen} context="analysis" /> */}
     </div>
   );
 }
@@ -344,8 +348,10 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
 
   // Tillæg med issues
   const supplementsWithIssues = [
+    ...(supplements.raadighestillaeg ? [{ field: "raadighestillaeg" as PayslipField, label: "Rådighedstillæg", icon: Briefcase, ...supplements.raadighestillaeg }] : []),
     { field: "aftentillaeg" as PayslipField, label: "Aftentillæg", icon: Moon, ...supplements.aftentillaeg },
     { field: "nattillaeg" as PayslipField, label: "Nattillæg", icon: Moon, ...supplements.nattillaeg },
+    ...(supplements.lordagstillaeg ? [{ field: "lordagstillaeg" as PayslipField, label: "Lørdagstillæg", icon: Sun, ...supplements.lordagstillaeg }] : []),
     { field: "soenHelligdag" as PayslipField, label: "Weekend/helligdag", icon: Sun, ...supplements.soenHelligdag },
   ].filter(s => s.beloeb > 0 || getFieldStatus(s.field, discrepancies) !== "ok");
 
@@ -445,6 +451,9 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
               {[
                 { field: "skat" as PayslipField, label: `Skat (${deductions.skat.procent}%)`, beloeb: deductions.skat.beloeb },
                 { field: "pension" as PayslipField, label: `Pension (${deductions.pension.procent}%)`, beloeb: deductions.pension.beloeb },
+                ...(getFieldStatus("pensionRaadighed", discrepancies) !== "ok"
+                  ? [{ field: "pensionRaadighed" as PayslipField, label: "Pension af råd.tillæg", beloeb: 0 }]
+                  : []),
                 { field: "atp" as PayslipField, label: "ATP", beloeb: deductions.atp.beloeb },
               ].map((item) => {
                 const status = getFieldStatus(item.field, discrepancies);
@@ -534,8 +543,8 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
       {/* 3. Sikkerhedsbarometer */}
       <AnalysisConfidenceMeter />
 
-      {/* 4. Ernest Tip */}
-      <div className={cn(
+      {/* 4. Ernest Tip - TEMPORARILY DISABLED */}
+      {/* <div className={cn(
         "rounded-2xl p-4 flex gap-3 border",
         hasIssues 
           ? (hasErrors ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200")
@@ -554,7 +563,7 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
             }
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -682,12 +691,15 @@ function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
           isError ? "bg-red-50/30 border-red-100" : "bg-amber-50/30 border-amber-100"
         )}>
           
-          {/* Ernest beskrivelse */}
-          <div className="flex gap-3">
+          {/* Ernest beskrivelse - TEMPORARILY DISABLED */}
+          {/* <div className="flex gap-3">
             <img src={ernestAvatar} className="w-8 h-8 shrink-0" alt="Ernest" />
             <div className="bg-white rounded-2xl rounded-tl-sm p-3 text-sm text-foreground border border-border/50 flex-1">
               {issue.description}
             </div>
+          </div> */}
+          <div className="bg-white rounded-2xl p-3 text-sm text-foreground border border-border/50">
+            {issue.description}
           </div>
           
           {/* Beregnings-blokken ("Bonnen") */}
@@ -765,14 +777,14 @@ function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
           {/* Dokumentation / Referencer */}
           <ContractDocBadge rule={calc?.rule} />
           
-          {/* Spørg Ernest */}
-          <button 
+          {/* Spørg Ernest - TEMPORARILY DISABLED */}
+          {/* <button
             onClick={(e) => { e.stopPropagation(); onOpenChat(); }}
             className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-primary bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors border border-primary/20"
           >
             <MessageCircle className="w-4 h-4" />
             Spørg Ernest om denne fejl
-          </button>
+          </button> */}
         </div>
       )}
     </div>

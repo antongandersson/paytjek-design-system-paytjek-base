@@ -1,4 +1,4 @@
-// Parsed contract details for Emil Hansen — Coolshop A/S (Dansk Erhverv / HK Handel)
+// Demo contract data — fiktiv person og arbejdsgiver (anonymiseret)
 
 export interface ContractDetails {
   // Personalia
@@ -50,6 +50,7 @@ export interface ContractDetails {
     | {
         type: "fixed";
         evening: { rate: number; label: string; hours: string };
+        night?: { rate: number; label: string; hours: string };
         saturday: { rate: number; label: string; hours: string };
         sunday: { rate: number; label: string; hours: string };
       }
@@ -79,21 +80,21 @@ export interface ContractDetails {
 
 export const DEMO_CONTRACT: ContractDetails = {
   employee: {
-    name: "Emil Hansen",
+    name: "Sara Nielsen",
     cpr: "••••••-••••",
-    address: "Myrdalstræde 76, st., 9220 Aalborg Ø",
+    address: "Havnegade 14, 2. tv., 8000 Aarhus C",
   },
 
   employer: {
-    name: "Coolshop A/S",
-    cvr: "26 45 76 02",
-    address: "Loftbrovej 28-30, 9400 Nørresundby",
-    department: "Warehouse",
+    name: "Nordic Retail A/S",
+    cvr: "38 14 72 05",
+    address: "Industrivej 42, 8200 Aarhus N",
+    department: "Lager & Logistik",
   },
 
   employment: {
-    title: "Warehouse Assistant",
-    startDate: "2025-01-13",
+    title: "Butiksassistent",
+    startDate: "2024-08-01",
     type: "permanent",
     weeklyHours: 37,
     probationMonths: 3,
@@ -101,19 +102,19 @@ export const DEMO_CONTRACT: ContractDetails = {
   },
 
   collectiveAgreement: {
-    name: "Funktionæroverenskomst for Handel, Viden og Service",
-    id: "hk-handel-dansk-erhverv",
+    name: "HK/DI Butiksoverenskomsten",
+    id: "hk-di-butik",
     union: "HK",
     unionFullName: "HK Privat og HK HANDEL",
-    employerOrg: "Dansk Erhverv Arbejdsgiver",
+    employerOrg: "Dansk Industri",
   },
 
   salary: {
-    hourlyRate: 125.00,
+    hourlyRate: 132.00,
     trin: 0,
     trinLabel: "Individuel aftale",
     seniorityYears: 2,
-    seniorityFrom: "2023-09-18",
+    seniorityFrom: "2024-08-01",
     fritvalgPercent: 9,
   },
 
@@ -130,7 +131,7 @@ export const DEMO_CONTRACT: ContractDetails = {
   pension: {
     employeePercent: 2,
     employerPercent: 11,
-    provider: "AP Pension (Warehouse)",
+    provider: "PensionDanmark",
   },
 
   vacation: {
@@ -138,8 +139,8 @@ export const DEMO_CONTRACT: ContractDetails = {
     type: "Feriegodtgørelse iht. ferieloven",
   },
 
-  signedDate: "2025-01-10",
-  documentId: "ANS-2025-01-10-ESC",
+  signedDate: "2024-07-28",
+  documentId: "ANS-2024-07-28-SN4",
 };
 
 // Analysis steps for the contract parsing animation

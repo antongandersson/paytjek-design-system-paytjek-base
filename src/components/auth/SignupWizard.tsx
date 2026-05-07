@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDemo } from "@/contexts/DemoContext";
 import StepIndicator from "./StepIndicator";
 import SignupStep1Email from "./SignupStep1Email";
 import SignupStep2Password from "./SignupStep2Password";
 import SignupStep3Verify from "./SignupStep3Verify";
 import { FeedbackModal, FeedbackModalState } from "@/components/ui/feedback-modal";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
 import * as demoAuth from "@/lib/demoAuth";
 
 interface SignupWizardProps {
@@ -15,6 +16,7 @@ interface SignupWizardProps {
 
 const SignupWizard = ({ variant = "web", onSwitchToLogin }: SignupWizardProps) => {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   const [currentStep, setCurrentStep] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +27,7 @@ const SignupWizard = ({ variant = "web", onSwitchToLogin }: SignupWizardProps) =
   const [modalMessage, setModalMessage] = useState("");
 
   const getRedirectPath = () => {
-    return variant === "mobile" ? "/m/home" : "/app/dashboard";
+    return variant === "mobile" ? `${basePath}/home` : "/app/dashboard";
   };
 
   const handleSocialLogin = async (provider: string) => {
@@ -122,7 +124,7 @@ const SignupWizard = ({ variant = "web", onSwitchToLogin }: SignupWizardProps) =
     <div className="flex flex-col items-center w-full">
       {/* Logo - mobile only or when no branding sidebar */}
       <div className={variant === "web" ? "lg:hidden mb-4" : "mb-4"}>
-        <img src={hkLogo} alt="HK Handel" className="h-14 w-auto mix-blend-multiply" />
+        <img src={paytjekLogo} alt="PayTjek" className="h-10 w-auto" />
       </div>
 
       {/* Step Indicator */}

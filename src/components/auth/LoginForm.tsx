@@ -4,8 +4,9 @@ import { Mail, KeyRound, Eye, EyeOff, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FeedbackModal, FeedbackModalState } from "@/components/ui/feedback-modal";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
 import * as demoAuth from "@/lib/demoAuth";
+import { useDemo } from "@/contexts/DemoContext";
 
 interface LoginFormProps {
   variant?: "mobile" | "web";
@@ -19,6 +20,8 @@ const LoginForm = ({
   onForgotPassword,
 }: LoginFormProps) => {
   const navigate = useNavigate();
+  const { demoConfig, basePath } = useDemo();
+  const isDemoMode = demoConfig.id !== "hk";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +34,7 @@ const LoginForm = ({
   const [modalMessage, setModalMessage] = useState("");
 
   const getRedirectPath = () => {
-    return variant === "mobile" ? "/m/home" : "/app/dashboard";
+    return variant === "mobile" ? `${basePath}/home` : "/app/dashboard";
   };
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -72,17 +75,18 @@ const LoginForm = ({
     <div className="flex flex-col items-center w-full animate-in fade-in duration-300">
       {/* Logo - mobile only or when no branding sidebar */}
       <div className={variant === "web" ? "lg:hidden mb-6" : "mb-6"}>
-        <img src={hkLogo} alt="HK Handel" className="h-16 w-auto mix-blend-multiply" />
+        <img
+          src={isDemoMode ? demoConfig.logo : paytjekLogo}
+          alt={isDemoMode ? demoConfig.name : "PayTjek"}
+          className="h-12 w-auto object-contain"
+        />
       </div>
 
       {/* Header */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-          Velkommen tilbage 👋
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+          Log ind
         </h1>
-        <p className="text-muted-foreground">
-          Log ind for at fortsætte
-        </p>
       </div>
 
       {/* Form Container */}

@@ -1,9 +1,12 @@
 import { ReactNode } from "react";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekLogo from "@/assets/paytjek-logo.svg";
 
 interface AuthLayoutProps {
   children: ReactNode;
   showBranding?: boolean;
+  accentColor?: string;
+  unionLogo?: string;
+  authFeatures?: [string, string, string];
 }
 
 /**
@@ -11,12 +14,30 @@ interface AuthLayoutProps {
  * - Desktop: Left branding panel + right content
  * - Mobile: Full-width centered content
  */
-const AuthLayout = ({ children, showBranding = true }: AuthLayoutProps) => {
+const AuthLayout = ({
+  children,
+  showBranding = true,
+  accentColor,
+  unionLogo,
+  authFeatures,
+}: AuthLayoutProps) => {
+  const defaultFeatures: [string, string, string] = [
+    "Automatisk tjek af din butiksløn",
+    "Synkroniser vagter efter butiksoverenskomsten",
+    "AI-rådgivning baseret på din overenskomst",
+  ];
+  const features = authFeatures ?? defaultFeatures;
+  const panelBg = accentColor
+    ? `linear-gradient(135deg, ${accentColor} 0%, color-mix(in srgb, ${accentColor} 80%, black) 100%)`
+    : undefined;
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left branding panel - only visible on large screens */}
       {showBranding && (
-        <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden">
+        <div
+          className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden"
+          style={panelBg ? { background: panelBg } : undefined}
+        >
           {/* Decorative background elements */}
           <div className="absolute inset-0">
             {/* Gradient overlay */}
@@ -37,19 +58,15 @@ const AuthLayout = ({ children, showBranding = true }: AuthLayoutProps) => {
           
           {/* Content */}
           <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-primary-foreground">
-            {/* HK Logo */}
-            <div className="bg-white rounded-2xl p-5 mb-10 shadow-xl">
+            {/* Union logo — eller PayTjek som fallback */}
+            <div className="mb-10 flex flex-col items-center">
               <img
-                src={hkLogo}
-                alt="HK Handel"
-                className="h-16 w-auto"
+                src={unionLogo ?? paytjekLogo}
+                alt={unionLogo ? "Fagforening" : "PayTjek"}
+                className="h-14 w-auto object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
               />
             </div>
-
-            {/* Brand Name */}
-            <h1 className="text-5xl font-bold tracking-tight mb-3">
-              HK Handel
-            </h1>
 
             {/* Tagline */}
             <p className="text-xl font-light opacity-90 text-center max-w-xs">
@@ -67,7 +84,7 @@ const AuthLayout = ({ children, showBranding = true }: AuthLayoutProps) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-base font-light opacity-90">Automatisk tjek af din butiksløn</p>
+                <p className="text-base font-light opacity-90">{features[0]}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -75,7 +92,7 @@ const AuthLayout = ({ children, showBranding = true }: AuthLayoutProps) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <p className="text-base font-light opacity-90">Synkroniser vagter efter butiksoverenskomsten</p>
+                <p className="text-base font-light opacity-90">{features[1]}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -83,7 +100,7 @@ const AuthLayout = ({ children, showBranding = true }: AuthLayoutProps) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                   </svg>
                 </div>
-                <p className="text-base font-light opacity-90">AI-rådgivning baseret på HK Handels overenskomst</p>
+                <p className="text-base font-light opacity-90">{features[2]}</p>
               </div>
             </div>
           </div>

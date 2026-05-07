@@ -32,7 +32,7 @@ export function WebHeader() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { unreadCount } = useNotifications();
 
-  const currentPageName = routeNames[location.pathname] || "HK Handel";
+  const currentPageName = routeNames[location.pathname] || "PayTjek";
 
   return (
     <>
@@ -45,7 +45,7 @@ export function WebHeader() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/app">HK Handel</BreadcrumbLink>
+                  <BreadcrumbLink href="/app">PayTjek</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>

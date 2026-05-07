@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
 import { api } from '@/lib/api/client';
 import type { UserProfile, EmployerType, CollectiveAgreement } from '@/lib/api/types';
+import { useDemo } from '@/contexts/DemoContext';
 
 // ============================================
 // LIGHTRAG API KONFIGURATION
@@ -47,21 +48,21 @@ const EMPLOYER_PATTERNS: Array<{
   {
     pattern: /(coolshop|elgiganten|power|bilka|føtex|netto|salling|magasin|matas|imerco|jysk|ikea|bauhaus|bog\s*&\s*idé|coop|dagrofa)/i,
     employerType: 'other',
-    agreement: 'Funktionæroverenskomst for Handel, Viden og Service',
-    agreementId: 'hk-handel-dansk-erhverv',
+    agreement: 'HK/DI Butiksoverenskomsten',
+    agreementId: 'hk-di-butik',
   },
   // Logistik og warehouse
   {
     pattern: /(warehouse|lager|logistik|postnord|gls|dao|bring|dsv)/i,
     employerType: 'other',
-    agreement: 'Funktionæroverenskomst for Handel, Viden og Service',
-    agreementId: 'hk-handel-dansk-erhverv',
+    agreement: 'HK/DI Butiksoverenskomsten',
+    agreementId: 'hk-di-butik',
   },
   // Kontor og administration (HK Privat)
   {
     pattern: /(kontor|administration|service|it\s|finans|bank|forsikring)/i,
     employerType: 'other',
-    agreement: 'Funktionæroverenskomst for Handel, Viden og Service',
+    agreement: 'HK/DI Butiksoverenskomsten',
     agreementId: 'hk-privat-dansk-erhverv',
   },
 ];
@@ -110,121 +111,72 @@ function calculatePrimaryShiftType(shifts: Array<{ type: string }>): 'day' | 'ev
 }
 
 // ============================================
-// MOCK DATA - Bruges når API ikke er tilgængelig
-// ============================================
-
-const MOCK_USER: UserProfile = {
-  id: 'user-1',
-  firstName: 'Emil',
-  lastName: 'Hansen',
-  email: 'emil.hansen@example.dk',
-  phone: '+45 12 34 56 78',
-  address: 'Myrdalstræde 76, st., 9220 Aalborg Ø',
-
-  employer: 'Coolshop A/S',
-  employerType: 'other',
-  jobTitle: 'Warehouse Assistant',
-  department: 'Warehouse',
-  area: 1,
-
-  seniorityDate: '2023-09-18',
-  yearsOfExperience: 2,
-
-  union: 'HK',
-  unionFullName: 'HK Privat og HK HANDEL',
-  memberNumber: 'HK-2025-48291',
-  memberSince: 'September 2023',
-
-  primaryShiftType: 'day',
-  avgHoursPerWeek: 37,
-
-  collectiveAgreement: 'Funktionæroverenskomst for Handel, Viden og Service',
-  collectiveAgreementId: 'hk-handel-dansk-erhverv',
-
-  createdAt: '2023-09-18T10:00:00Z',
-  updatedAt: '2025-01-15T14:30:00Z',
-};
-
-// ============================================
 // CONTEXT
 // ============================================
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const { demoConfig } = useDemo();
+
+  // Bygger en demo-bruger fra den aktive unions persona
+  const demoMockUser = useMemo<UserProfile>(() => {
+    const nameParts = demoConfig.persona.name.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ');
+    return {
+      id: `demo-${demoConfig.id}`,
+      firstName,
+      lastName,
+      email: `${firstName.toLowerCase()}@example.dk`,
+      phone: '+45 12 34 56 78',
+      address: '',
+      employer: demoConfig.persona.employer,
+      employerType: 'other' as EmployerType,
+      jobTitle: demoConfig.persona.jobTitle,
+      department: '',
+      area: 1,
+      seniorityDate: '2022-01-01',
+      yearsOfExperience: 3,
+      union: demoConfig.name,
+      unionFullName: demoConfig.fullName,
+      memberNumber: `${demoConfig.name.toUpperCase()}-DEMO`,
+      memberSince: 'Januar 2022',
+      primaryShiftType: 'day',
+      avgHoursPerWeek: 37,
+      collectiveAgreement: demoConfig.collectiveAgreement,
+      collectiveAgreementId: `${demoConfig.id}-demo`,
+      createdAt: '2022-01-01T10:00:00Z',
+      updatedAt: new Date().toISOString(),
+    };
+  }, [demoConfig]);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [usingDemoFallback, setUsingDemoFallback] = useState(false);
 
-  // Hent brugerdata fra API
+  // Ref so fetchUser closure always reads current demo user without recreating
+  const demoMockUserRef = useRef(demoMockUser);
+  useEffect(() => {
+    demoMockUserRef.current = demoMockUser;
+  }, [demoMockUser]);
+
+  // When union switches and we're already in demo fallback mode, update immediately
+  useEffect(() => {
+    if (usingDemoFallback) {
+      setUser(demoMockUser);
+    }
+  }, [demoMockUser, usingDemoFallback]);
+
+  // Hent brugerdata — i demo mode bruges altid demoMockUser direkte
   const fetchUser = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
-    try {
-      // 🆕 Prøv LightRAG API først
-      const lightragResponse = await fetch(`${LIGHTRAG_API_URL}/api/profile`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (lightragResponse.ok) {
-        const lightragData = await lightragResponse.json();
-        console.log('[UserContext] Bruger LightRAG API profil:', lightragData);
-        
-        let userData = lightragData as UserProfile;
-        
-        // Auto-detect overenskomst hvis ikke sat
-        if (!userData.collectiveAgreement && userData.employer) {
-          const detected = detectAgreementLocally(userData.employer);
-          if (detected) {
-            userData = {
-              ...userData,
-              collectiveAgreement: detected.agreement,
-              collectiveAgreementId: detected.agreementId,
-              employerType: detected.employerType,
-            };
-          }
-        }
-        
-        setUser(userData);
-        return;
-      }
-      
-      // Fallback til standard API
-      const response = await api.getUserProfile();
-      
-      if (response.success && response.data) {
-        let userData = response.data;
-        
-        // Auto-detect overenskomst hvis ikke sat
-        if (!userData.collectiveAgreement && userData.employer) {
-          const detected = detectAgreementLocally(userData.employer);
-          if (detected) {
-            userData = {
-              ...userData,
-              collectiveAgreement: detected.agreement,
-              collectiveAgreementId: detected.agreementId,
-              employerType: detected.employerType,
-            };
-          }
-        }
-        
-        setUser(userData);
-      } else {
-        // API ikke tilgængelig - brug mock data (development)
-        console.warn('API ikke tilgængelig, bruger mock data');
-        setUser(MOCK_USER);
-      }
-    } catch (err) {
-      console.warn('Fejl ved hentning af brugerdata, bruger mock data:', err);
-      // Fallback til mock data
-      setUser(MOCK_USER);
-    } finally {
-      setIsLoading(false);
-    }
+    // Always use demo persona — no API call
+    setUsingDemoFallback(true);
+    setUser(demoMockUserRef.current);
+    setIsLoading(false);
   }, []);
 
   // Initial load
@@ -333,7 +285,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         id: local.agreementId,
         name: local.agreement,
         shortName: local.agreementId,
-        union: MOCK_USER.union,
+        union: demoMockUserRef.current.union,
         employerTypes: [local.employerType],
         validFrom: '2024-04-01',
         validTo: '2026-03-31',

@@ -1,10 +1,10 @@
 import { CalendarView } from "@/components/calendar/CalendarView";
 import { CalendarSyncSetup } from "@/components/calendar/CalendarSyncSetup";
 import { useCalendar, type ConnectionSource } from "@/contexts/CalendarContext";
+import { useDemo } from "@/contexts/DemoContext";
 import type { Shift } from "@/components/calendar/CalendarGrid";
 
 export default function MobileCalendar() {
-  // Hent alt fra CalendarContext (persisteret i localStorage)
   const { 
     isConnected, 
     isConnecting, 
@@ -13,6 +13,7 @@ export default function MobileCalendar() {
     connect,
     disconnect,
   } = useCalendar();
+  const { demoConfig } = useDemo();
 
   // Konverter shifts fra context (string dates) til CalendarView format (Date objects)
   const calendarShifts: Shift[] = shifts.map(s => ({
@@ -40,20 +41,19 @@ export default function MobileCalendar() {
       )}
 
       {isConnected ? (
-        <CalendarView 
+        <CalendarView
           shifts={calendarShifts}
           isLoading={false}
           onDisconnect={handleDisconnect}
         />
       ) : (
-        <CalendarSyncSetup 
+        <CalendarSyncSetup
           onConnect={handleConnect}
           isConnecting={isConnecting}
+          demoIcsUrl={demoConfig.demoIcsUrl}
+          demoIcsDisplayUrl={demoConfig.demoIcsDisplayUrl}
         />
       )}
     </main>
   );
 }
-
-
-

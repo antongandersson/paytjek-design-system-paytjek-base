@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { WebHeader } from "./WebHeader";
-import { ErnestFAB } from "@/components/ernest/ErnestFAB";
+// import { ErnestFAB } from "@/components/ernest/ErnestFAB"; // TEMPORARILY DISABLED
 
 export function WebLayout() {
   return (
@@ -23,8 +23,8 @@ export function WebLayout() {
           </main>
         </SidebarInset>
 
-        {/* Ernest AI FAB */}
-        <ErnestFAB />
+        {/* Ernest AI FAB - TEMPORARILY DISABLED */}
+        {/* <ErnestFAB /> */}
       </div>
     </SidebarProvider>
   );

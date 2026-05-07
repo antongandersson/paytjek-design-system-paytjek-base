@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Crown, Check } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function MobileMembership() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
 
   return (
     <main className="px-4 py-6 pb-24 animate-fade-in">
@@ -14,7 +16,7 @@ export default function MobileMembership() {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => navigate("/m/more")}
+          onClick={() => navigate(`${basePath}/more`)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

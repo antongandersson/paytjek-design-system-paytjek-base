@@ -51,7 +51,7 @@ function getAgreementReference(field: string): { ok: string; kontraktRef: string
       kontraktRef: "Ansættelseskontrakt, pkt. Lønsatser (125,00 kr/t)",
     },
   };
-  return references[field] || { ok: "Funktionæroverenskomst for Handel, Viden og Service", kontraktRef: "Ansættelseskontrakt" };
+  return references[field] || { ok: "HK/DI Butiksoverenskomsten", kontraktRef: "Ansættelseskontrakt" };
 }
 
 // Map felt til dansk label
@@ -83,8 +83,8 @@ export function SendCaseScreen({ onBack, onSuccess }: SendCaseScreenProps) {
   // Brug mock data hvis ingen context data
   const period = currentPayslip?.period.month || "Oktober";
   const year = currentPayslip?.period.year || 2025;
-  const employer = currentPayslip?.employer.name || "Coolshop A/S";
-  const department = currentPayslip?.employer.department || "Warehouse";
+  const employer = currentPayslip?.employer.name || "Nordic Retail A/S";
+  const department = currentPayslip?.employer.department || "Lager & Logistik";
   const timelon = currentPayslip?.salary.timelon || 125.00;
   const bruttolon = currentPayslip?.totals.bruttolon || 19682.50;
   const normalTimer = currentPayslip?.salary.normalTimer || 156.46;
@@ -94,9 +94,9 @@ export function SendCaseScreen({ onBack, onSuccess }: SendCaseScreenProps) {
   ) || [];
   const totalDifference = currentValidation?.summary.totalDifference || -62.50;
   
-  const userName = user ? `${user.firstName} ${user.lastName}` : "Emil Hansen";
-  const firstName = user?.firstName || "Emil";
-  const jobTitle = user?.jobTitle || "Warehouse Assistant";
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Sara Nielsen";
+  const firstName = user?.firstName || "Sara";
+  const jobTitle = user?.jobTitle || "Butiksassistent";
   const union = user?.unionFullName || "HK Privat og HK HANDEL";
 
   // Generer brugervenlig email-tekst

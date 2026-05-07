@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Bell, Moon, Globe, Shield, LogOut } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -10,6 +11,7 @@ import * as demoAuth from "@/lib/demoAuth";
 
 export default function MobileSettings() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   
   const [settings, setSettings] = useState({
     notifications: true,
@@ -19,7 +21,7 @@ export default function MobileSettings() {
 
   const handleLogout = () => {
     demoAuth.logout();
-    navigate("/m/auth?mode=login");
+    navigate(`${basePath}/welcome`);
   };
 
   return (
@@ -29,7 +31,7 @@ export default function MobileSettings() {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => navigate("/m/more")}
+          onClick={() => navigate(`${basePath}/more`)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

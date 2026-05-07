@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 interface CalendarSyncSetupProps {
   onConnect: (source: string, icsUrlOrFile?: string | File) => void;
   isConnecting?: boolean;
+  demoIcsUrl?: string;
+  demoIcsDisplayUrl?: string;
 }
 
-export function CalendarSyncSetup({ onConnect, isConnecting = false }: CalendarSyncSetupProps) {
-  const [icsUrl, setIcsUrl] = useState("");
+export function CalendarSyncSetup({ onConnect, isConnecting = false, demoIcsUrl, demoIcsDisplayUrl }: CalendarSyncSetupProps) {
+  const [icsUrl, setIcsUrl] = useState(demoIcsDisplayUrl || demoIcsUrl || "");
   const [icsFile, setIcsFile] = useState<File | null>(null);
   const [icsError, setIcsError] = useState<string | null>(null);
   const [inputMode, setInputMode] = useState<"url" | "file">("url");
@@ -40,6 +42,10 @@ export function CalendarSyncSetup({ onConnect, isConnecting = false }: CalendarS
       setIcsError("Indtast venligst et ICS link");
       return false;
     }
+    if (url.startsWith("/")) {
+      setIcsError(null);
+      return true;
+    }
     try {
       new URL(url);
     } catch {
@@ -55,7 +61,8 @@ export function CalendarSyncSetup({ onConnect, isConnecting = false }: CalendarS
       onConnect("ics-file", icsFile);
     } else if (inputMode === "url" && icsUrl) {
       if (!validateIcsUrl(icsUrl)) return;
-      onConnect("ics", icsUrl);
+      const actualUrl = (demoIcsDisplayUrl && icsUrl === demoIcsDisplayUrl) ? demoIcsUrl! : icsUrl;
+      onConnect("ics", actualUrl);
     } else {
       setIcsError(inputMode === "file" ? "Vælg venligst en fil" : "Indtast venligst et link");
     }

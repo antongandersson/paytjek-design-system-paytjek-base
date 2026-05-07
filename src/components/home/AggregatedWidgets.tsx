@@ -1,17 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useDemo } from "@/contexts/DemoContext";
 import {
-  CheckCircle2, AlertTriangle, Clock, TrendingUp, Banknote,
+  CheckCircle2, AlertCircle, Clock, TrendingUp, Banknote,
   Moon, Sun as SunIcon, Briefcase, ShieldCheck, ChevronRight,
-  Receipt, Landmark,
+  Receipt, Landmark, CalendarDays, FileText,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from "recharts";
 import type { AggregatedStats } from "@/contexts/PayslipContext";
 import type { ContractDetails } from "@/lib/demoContract";
+import type { Shift } from "@/contexts/CalendarContext";
+import type { DemoProfile, DemoContractComparison, DemoContractAnalysis } from "@/lib/demoUnionConfigs";
 
 // ─────────────────────────────────────────────
-// 1. STATUS HERO — "Du mangler 253 kr"
+// 1. STATUS HERO — stor bold card (reference style)
 // ─────────────────────────────────────────────
 
 interface StatusHeroProps {
@@ -20,59 +23,237 @@ interface StatusHeroProps {
 
 export function StatusHero({ stats }: StatusHeroProps) {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   if (stats.payslipsChecked === 0) return null;
 
   const hasIssues = stats.payslipsWithErrors > 0;
-  const formatKr = (n: number) =>
-    Math.abs(n).toLocaleString("da-DK", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const amountStr = Math.abs(stats.totalDifferenceOwed)
+    .toLocaleString("da-DK", { maximumFractionDigits: 0 });
 
   if (hasIssues) {
     return (
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 shadow-sm">
-        <CardContent className="p-5 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-              <Banknote className="h-5.5 w-5.5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xl font-bold text-primary">
-                {formatKr(stats.totalDifferenceOwed)} kr til gode
-              </p>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {stats.payslipsWithErrors} uoverensstemmelse{stats.payslipsWithErrors === 1 ? "" : "r"} fundet i {stats.payslipsWithErrors} lønsed{stats.payslipsWithErrors === 1 ? "del" : "ler"}
-              </p>
-            </div>
+      <div
+        className="rounded-3xl bg-primary px-6 pt-6 pb-5 cursor-pointer active:scale-[0.99] transition-transform"
+        onClick={() => navigate(`${basePath}/history`)}
+      >
+        {/* Eyebrow row */}
+        <div className="flex items-center justify-between mb-5">
+          <p className="text-[11px] font-bold text-primary-foreground/50 uppercase tracking-widest">
+            Løntjek resultat
+          </p>
+          <span className="text-[11px] text-primary-foreground/40">
+            {stats.payslipsChecked} lønsedler
+          </span>
+        </div>
+
+        {/* Hero number */}
+        <p className="text-6xl font-black text-primary-foreground leading-none tracking-tight tabular-nums">
+          −{amountStr}
+        </p>
+        <p className="text-2xl font-bold text-primary-foreground/60 mt-1">kr</p>
+
+        <p className="text-primary-foreground/70 text-sm mt-3 leading-snug">
+          mangler i efterbetaling — klik for at se hvad du kan gøre
+        </p>
+
+        {/* Divider + action row */}
+        <div className="border-t border-primary-foreground/10 mt-5 pt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-3.5 w-3.5 text-primary-foreground/40" />
+            <span className="text-xs text-primary-foreground/50">
+              {stats.payslipsWithErrors} fejl fundet
+            </span>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full rounded-xl border-primary/30 text-primary hover:bg-primary/10"
-            onClick={() => navigate("/m/history")}
-          >
+          <div className="flex items-center gap-1 text-xs text-primary-foreground font-semibold">
             Se detaljer
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        </CardContent>
-      </Card>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </div>
+        </div>
+      </div>
     );
   }
 
+  // OK state — teal/success card
   return (
-    <Card className="border-green-200 bg-gradient-to-br from-green-50 to-green-50/30">
-      <CardContent className="p-4 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
+    <div className="rounded-3xl px-6 pt-6 pb-5" style={{ background: "hsl(var(--success))" }}>
+      <div className="flex items-center justify-between mb-5">
+        <p className="text-[11px] font-bold text-white/50 uppercase tracking-widest">
+          Løntjek resultat
+        </p>
+        <span className="text-[11px] text-white/40">{stats.payslipsChecked} lønsedler</span>
+      </div>
+
+      <p className="text-6xl font-black text-white leading-none tracking-tight">Alt ok</p>
+      <p className="text-white/70 text-sm mt-3 leading-snug">
+        Ingen fejl fundet — din løn ser rigtig ud
+      </p>
+
+      <div className="border-t border-white/10 mt-5 pt-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-3.5 w-3.5 text-white/40" />
+          <span className="text-xs text-white/50">
+            {stats.payslipsChecked} lønsed{stats.payslipsChecked === 1 ? "del" : "ler"} tjekket
+          </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-green-800">
-            {stats.payslipsChecked} lønsed{stats.payslipsChecked === 1 ? "del" : "ler"} tjekket — alt korrekt
-          </p>
-          <p className="text-xs text-green-600/70">
-            Ingen fejl fundet i din løn
-          </p>
+        <div
+          className="flex items-center gap-1 text-xs text-white font-semibold cursor-pointer"
+          onClick={() => navigate(`${basePath}/history`)}
+        >
+          Se historik <ChevronRight className="h-3.5 w-3.5" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 1b. DASHBOARD CONTEXT ROW — kontrakt + vagtplan
+// ─────────────────────────────────────────────
+
+interface DashboardContextRowProps {
+  contractDetails: ContractDetails | null;
+  shifts: Shift[];
+  hasCalendar: boolean;
+  demoProfile?: DemoProfile;
+  demoContractComparison?: DemoContractComparison;
+  demoContractAnalysis?: DemoContractAnalysis;
+}
+
+export function DashboardContextRow({
+  contractDetails,
+  shifts,
+  hasCalendar,
+  demoProfile = "agreement",
+  demoContractComparison,
+  demoContractAnalysis,
+}: DashboardContextRowProps) {
+  const navigate = useNavigate();
+  const { basePath } = useDemo();
+
+  // Find næste kommende vagt
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nextShift = shifts
+    .filter((s) => new Date(s.date) >= today && s.type !== "day-off")
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+
+  const formatShiftDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("da-DK", { weekday: "short", day: "numeric", month: "short" });
+  };
+
+  const formatKr = (n: number) =>
+    n.toLocaleString("da-DK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {/* Kontrakt card — altid til venstre */}
+      <Card
+        className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
+        onClick={() => navigate(`${basePath}/contract`)}
+      >
+        <CardContent className="p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <FileText className="h-3 w-3" /> Kontrakt
+            </p>
+            {contractDetails && (
+              demoProfile === "contract" && demoContractAnalysis && demoContractAnalysis.deviations > 0
+                ? <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                : <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+            )}
+          </div>
+          {contractDetails ? (
+            <>
+              <p className="text-sm font-bold text-foreground leading-snug">
+                {contractDetails.employer.name}
+              </p>
+              {demoProfile === "contract" && demoContractAnalysis ? (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  {demoContractAnalysis.deviations > 0 ? (
+                    <span className="text-amber-600 font-semibold">
+                      {demoContractAnalysis.deviations} afvigelse fundet
+                    </span>
+                  ) : (
+                    <span>Alle vilkår OK</span>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {contractDetails.salary.hourlyRate.toFixed(0)} kr/t
+                  {" · "}
+                  {contractDetails.employment.weeklyHours}t/uge
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground mt-1">Ikke uploadet</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Højre card: Karriere (contract-profil) eller Vagtplan (agreement-profil) */}
+      {demoProfile === "contract" ? (
+        <Card
+          className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
+          onClick={() => navigate(`${basePath}/package`)}
+        >
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Briefcase className="h-3 w-3" /> Karriere
+              </p>
+            </div>
+            {contractDetails ? (
+              <>
+                <p className="text-sm font-bold text-foreground leading-snug">
+                  Trin {contractDetails.salary.trin}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {contractDetails.employment.weeklyHours}t/uge · {contractDetails.salary.seniorityYears} års anciennitet
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground mt-1">Upload kontrakt først</p>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card
+          className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
+          onClick={() => navigate(`${basePath}/calendar`)}
+        >
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <CalendarDays className="h-3 w-3" /> Vagtplan
+              </p>
+              {hasCalendar && (
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              )}
+            </div>
+            {hasCalendar && nextShift ? (
+              <>
+                <p className="text-sm font-bold text-foreground leading-snug">
+                  {nextShift.label}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatShiftDate(nextShift.date)}
+                  {nextShift.time ? ` · ${nextShift.time}` : ""}
+                </p>
+              </>
+            ) : hasCalendar ? (
+              <>
+                <p className="text-sm font-bold text-foreground">Synkroniseret</p>
+                <p className="text-xs text-muted-foreground">{shifts.length} vagter</p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground mt-1">Ikke tilsluttet</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 
@@ -86,6 +267,7 @@ interface JobCardProps {
 
 export function JobCard({ contractDetails }: JobCardProps) {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
   if (!contractDetails) return null;
 
   const { employer, employment, collectiveAgreement, salary } = contractDetails;
@@ -93,7 +275,7 @@ export function JobCard({ contractDetails }: JobCardProps) {
   return (
     <Card
       className="border-border/50 cursor-pointer hover:border-primary/30 transition-colors"
-      onClick={() => navigate("/m/contract")}
+      onClick={() => navigate(`${basePath}/contract`)}
     >
       <CardContent className="p-4 space-y-2">
         <div className="flex items-center justify-between">

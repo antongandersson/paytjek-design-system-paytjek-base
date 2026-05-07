@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, MessageCircle, Mail, Phone, ChevronRight } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ const faqItems = [
 
 export default function MobileHelp() {
   const navigate = useNavigate();
+  const { basePath } = useDemo();
 
   return (
     <main className="px-4 py-6 pb-24 animate-fade-in">
@@ -34,7 +36,7 @@ export default function MobileHelp() {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => navigate("/m/more")}
+          onClick={() => navigate(`${basePath}/more`)}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

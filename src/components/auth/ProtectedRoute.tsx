@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { isLoggedIn } from "@/lib/demoAuth";
+import { useDemo } from "@/contexts/DemoContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,11 +15,11 @@ interface ProtectedRouteProps {
  */
 export default function ProtectedRoute({ children, variant = "mobile" }: ProtectedRouteProps) {
   const location = useLocation();
+  const { basePath } = useDemo();
   
   // Check if user is logged in
   if (!isLoggedIn()) {
-    // Redirect to auth page with return URL
-    const authPath = variant === "mobile" ? "/m/auth" : "/app/auth";
+    const authPath = variant === "mobile" ? `${basePath}/auth` : "/app/auth";
     const redirectUrl = `${authPath}?mode=login&redirect=${encodeURIComponent(location.pathname)}`;
     
     console.log('🔒 Access denied - redirecting to login:', location.pathname);

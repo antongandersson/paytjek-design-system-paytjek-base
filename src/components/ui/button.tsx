@@ -9,32 +9,32 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary - Blue background, white text (main CTA)
+        // Primary — indigo (#4F46E5), pill-formet, hvid tekst
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
-        // Accent - Lime green background, dark text (secondary CTA)
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(79,70,229,0.35)]",
+        // Outline — transparent med indigo-kant
         accent:
-          "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm",
-        // Destructive - Red for dangerous actions
+          "border-2 bg-transparent hover:bg-primary/5 text-primary",
+        // Destructive
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
-        // Outline - Border only (tertiary actions)
+        // Outline — neutral kant
         outline:
-          "border-2 border-border bg-transparent hover:bg-muted hover:border-primary text-foreground",
-        // Secondary - Light blue background
+          "border border-border bg-transparent hover:bg-muted text-foreground",
+        // Secondary — blød indigo tint
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        // Ghost - No background until hover
+        // Ghost
         ghost: "hover:bg-muted hover:text-foreground",
-        // Link style
+        // Link
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-12 px-6 py-3 text-base rounded-2xl",
-        sm: "h-10 px-4 py-2 text-sm rounded-xl",
-        lg: "h-14 px-8 py-4 text-lg rounded-2xl",
-        icon: "h-12 w-12 rounded-2xl",
-        "icon-sm": "h-10 w-10 rounded-xl",
+        default: "h-12 px-6 py-3 text-base rounded-full",
+        sm: "h-10 px-4 py-2 text-sm rounded-full",
+        lg: "h-14 px-8 py-4 text-lg rounded-full",
+        icon: "h-12 w-12 rounded-full",
+        "icon-sm": "h-10 w-10 rounded-full",
       },
     },
     defaultVariants: {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { useUser } from "@/contexts/UserContext";
-import hkLogo from "@/assets/hk-logo.png";
+import paytjekIconLogo from "@/assets/paytjek-icon-logo.svg";
 import foaLogo from "@/assets/foa-logo.png";
 
 interface UnionInfo {
@@ -19,16 +19,16 @@ interface UnionInfo {
 
 const UNION_INFO: Record<string, UnionInfo> = {
   HK: {
-    logo: hkLogo,
+    logo: paytjekIconLogo,
     website: "https://www.hk.dk",
     phone: "7011 4545",
     email: "hk@hk.dk",
     address: "Weidekampsgade 8, 0900 København C",
     benefits: [
-      "Ubegrænset løntjek af dine HK Handel lønsedler",
-      "AI-analyse med Ernest — tilpasset butiksoverenskomsten",
-      "Direkte kontakt til HK Handel ved lønfejl",
-      "Vagtplan-synkronisering efter butiksoverenskomsten",
+      "Ubegrænset løntjek af dine lønsedler",
+      "AI-analyse med Ernest — tilpasset din overenskomst",
+      "Direkte kontakt til din fagforening ved lønfejl",
+      "Vagtplan-synkronisering efter overenskomsten",
       "Historik over alle dine løntjek",
     ],
   },
@@ -49,11 +49,11 @@ const UNION_INFO: Record<string, UnionInfo> = {
 };
 
 const FALLBACK_UNION: UnionInfo = {
-  logo: hkLogo,
-  website: "https://www.hk.dk",
-  phone: "7011 4545",
-  email: "hk@hk.dk",
-  address: "Weidekampsgade 8, 0900 København C",
+  logo: paytjekIconLogo,
+  website: "https://paytjek.io",
+  phone: "—",
+  email: "kontakt@paytjek.io",
+  address: "Danmark",
   benefits: [
     "Ubegrænset løntjek af dine lønsedler",
     "AI-analyse med Ernest",
@@ -112,7 +112,7 @@ const Membership = () => {
                       {user?.union ?? "HK"}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {user?.unionFullName ?? "HK Handel"}
+                      {user?.unionFullName ?? "Din fagforening"}
                     </p>
                   </>
                 )}
@@ -146,7 +146,7 @@ const Membership = () => {
             PayTjek gennem {user?.union ?? "HK"}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Som medlem af {user?.unionFullName ?? "HK Handel"} har du adgang til PayTjek med følgende fordele:
+            Som medlem af {user?.unionFullName ?? "din fagforening"} har du adgang til PayTjek med følgende fordele:
           </p>
 
           <Card>

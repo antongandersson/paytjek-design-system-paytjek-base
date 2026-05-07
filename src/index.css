@@ -8,92 +8,118 @@
 
 @layer base {
   :root {
-    /* HK × PayTjek Brand Colors */
-    --primary: 199 100% 44%;          /* #009de0 - HK Sky Blue */
-    --primary-foreground: 0 0% 100%;  /* White text on primary */
-    
-    --secondary: 199 60% 88%;         /* #cceef9 - Light HK blue tint */
-    --secondary-foreground: 210 100% 16%; /* HK navy text on secondary */
-    
-    --accent: 93 50% 37%;             /* #5da423 - HK Green */
-    --accent-foreground: 0 0% 100%;   /* White text on accent */
-    
-    --destructive: 358 86% 42%;       /* #c60f13 - HK Red (alerts) */
+    /* PayTjek Brand Colors — verificeret fra docs/paytjek-designguide.md */
+
+    /* Primary — PayTjek Indigo #4F46E5 (knapper, aktive elementer, fokusringe) */
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary — blød indigo tint */
+    --secondary: 243 40% 94%;
+    --secondary-foreground: 202 44% 11%;
+
+    /* Accent — blød hover-tint */
+    --accent: 243 40% 94%;
+    --accent-foreground: 202 44% 11%;
+
+    /* Destructive — #DC2626 */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    
-    --warning: 38 92% 50%;            /* Orange/Yellow for warnings */
-    --warning-foreground: 210 100% 16%;
-    
-    --success: 93 50% 37%;            /* #5da423 - HK Green for success */
+
+    /* Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 202 44% 11%;
+
+    /* Success — #146B68 (teal) */
+    --success: 178 69% 25%;
     --success-foreground: 0 0% 100%;
-    
-    /* Neutral Colors */
-    --background: 0 0% 98%;           /* #fafafa - Light background */
-    --foreground: 210 100% 16%;       /* #003755 - HK Navy */
-    
-    --card: 0 0% 100%;                /* White cards */
-    --card-foreground: 210 100% 16%;
-    
+
+    /* Backgrounds */
+    --background: 210 20% 97%;        /* #F5F7F8 */
+    --foreground: 202 44% 11%;        /* #102029 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 202 44% 11%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 210 100% 16%;
-    
-    --muted: 199 40% 95%;             /* Very light HK blue tint */
-    --muted-foreground: 210 30% 45%;
-    
-    --border: 199 25% 88%;
-    --input: 199 40% 95%;
-    --ring: 199 100% 44%;             /* Focus ring matches HK primary */
-    
-    --radius: 0.75rem;                /* Slightly less rounded — more HK geometric */
-    
+    --popover-foreground: 202 44% 11%;
+
+    /* Muted */
+    --muted: 243 30% 96%;
+    --muted-foreground: 204 10% 41%;  /* #5F6B73 */
+
+    --border: 206 13% 89%;            /* #E0E4E7 */
+    --input: 243 30% 96%;
+    --ring: 243 75% 59%;              /* Fokusring = indigo accent */
+
+    --radius: 0.75rem;
+
+    /* Font variables — overrides injected dynamically by DemoContext */
+    --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* PayTjek Design Tokens — direkte adgang til brand-værdier */
+    --pt-primary: #090CD2;
+    --pt-primary-hover: #0709A8;
+    --pt-accent: #4F46E5;
+    --pt-accent-hover: #4338CA;
+    --pt-accent-glow: rgba(79, 70, 229, 0.20);
+    --pt-accent-soft: rgba(79, 70, 229, 0.08);
+    --pt-accent-text: #818CF8;
+    --pt-border-dark: rgba(99, 102, 241, 0.12);
+    --pt-border-dark-strong: rgba(99, 102, 241, 0.22);
+    --pt-text-light: #EEF2FF;
+    --pt-text-muted-dark: #94A3B8;
+
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 210 100% 16%;
-    --sidebar-primary: 199 100% 44%;
+    --sidebar-foreground: 202 44% 11%;
+    --sidebar-primary: 243 75% 59%;   /* Indigo for active items */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 60% 88%;
-    --sidebar-accent-foreground: 210 100% 16%;
-    --sidebar-border: 199 25% 88%;
-    --sidebar-ring: 199 100% 44%;
+    --sidebar-accent: 243 40% 94%;
+    --sidebar-accent-foreground: 202 44% 11%;
+    --sidebar-border: 206 13% 89%;
+    --sidebar-ring: 243 75% 59%;
   }
 
   .dark {
-    --background: 210 100% 10%;
-    --foreground: 0 0% 98%;
-    
-    --card: 210 60% 14%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 210 60% 14%;
-    --popover-foreground: 0 0% 98%;
-    
-    --primary: 199 100% 50%;
+    /* Mørkt tema — PayTjek primær visuel profil */
+    --background: 224 60% 6%;         /* #060C18 — dyb nat */
+    --foreground: 226 100% 97%;       /* #EEF2FF — lys tekst */
+
+    --card: 221 39% 11%;              /* #111827 */
+    --card-foreground: 226 100% 97%;
+
+    --popover: 224 52% 8%;            /* #0A1020 */
+    --popover-foreground: 226 100% 97%;
+
+    --primary: 239 85% 65%;
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 199 40% 25%;
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 210 30% 18%;
-    --muted-foreground: 199 20% 65%;
-    
-    --accent: 93 50% 42%;
+
+    --secondary: 243 35% 20%;
+    --secondary-foreground: 226 100% 97%;
+
+    --muted: 221 39% 14%;
+    --muted-foreground: 215 20% 65%;  /* #94A3B8 */
+
+    --accent: 243 75% 65%;
     --accent-foreground: 0 0% 100%;
-    
-    --destructive: 358 86% 50%;
+
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 210 30% 22%;
-    --input: 210 30% 18%;
-    --ring: 199 100% 50%;
-    
-    --sidebar-background: 210 60% 12%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 199 100% 50%;
+
+    --border: 243 30% 18%;            /* rgba(99,102,241,0.12) tilnærmet */
+    --input: 221 39% 14%;
+    --ring: 243 75% 65%;
+
+    --sidebar-background: 224 55% 8%;
+    --sidebar-foreground: 226 100% 97%;
+    --sidebar-primary: 243 75% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 40% 25%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 210 30% 22%;
-    --sidebar-ring: 199 100% 50%;
+    --sidebar-accent: 243 35% 20%;
+    --sidebar-accent-foreground: 226 100% 97%;
+    --sidebar-border: 243 30% 18%;
+    --sidebar-ring: 243 75% 65%;
   }
 }
 
@@ -103,15 +129,19 @@
   }
   
   html {
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font-body);
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font-body);
   }
   
-  /* Typography Scale - Urbanist */
+  /* Typography Scale — headings use --font-heading (overridden by DemoContext) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+
   h1 {
     @apply text-5xl md:text-6xl font-bold tracking-tight;
   }
