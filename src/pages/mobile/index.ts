@@ -9,6 +9,7 @@ export { default as MobileHelp } from "./Help";
 export { default as MobileMembership } from "./Membership";
 export { default as MobileContract } from "./Contract";
 export { default as MobilePackage } from "./Package";
+export { default as MobileBooking } from "./Booking";
 
 
 

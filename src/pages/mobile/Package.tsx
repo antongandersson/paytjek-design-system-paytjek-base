@@ -37,7 +37,10 @@ export default function MobilePackage() {
           <div className="bg-card rounded-2xl border border-border p-4">
             <NegotiationCard intel={intel} />
           </div>
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold active:scale-[0.98] transition-transform">
+          <button
+            className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold active:scale-[0.98] transition-transform"
+            onClick={() => navigate(`${basePath}/booking`)}
+          >
             <MessageCircle className="h-4.5 w-4.5" />
             Få sparring med {demoConfig.name}
           </button>

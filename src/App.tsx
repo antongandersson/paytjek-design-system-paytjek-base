@@ -38,6 +38,7 @@ import {
   MobileMembership,
   MobileContract,
   MobilePackage,
+  MobileBooking,
 } from "./pages/mobile";
 
 // Web Layout & Pages
@@ -111,6 +112,7 @@ const App = () => (
                             <Route path="membership" element={<MobileMembership />} />
                             <Route path="contract" element={<MobileContract />} />
                             <Route path="package" element={<MobilePackage />} />
+                            <Route path="booking" element={<MobileBooking />} />
                           </Route>
 
                           {/* ===== LEGACY ROUTES - Redirect to selector ===== */}
