@@ -16,6 +16,8 @@ import { useApp } from "@/contexts/AppContext";
 import { useUser } from "@/contexts/UserContext";
 import { useContract } from "@/contexts/ContractContext";
 import { useDemo } from "@/contexts/DemoContext";
+import { Video, Clock, ChevronRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface OutletContextType {
   setUploadDrawerOpen: (open: boolean) => void;
@@ -30,7 +32,7 @@ export default function MobileHome() {
   const { updateSetupStatus } = useApp();
   const { user } = useUser();
   const { hasContract, contractDetails } = useContract();
-  const { demoConfig, basePath } = useDemo();
+  const { demoConfig, basePath, bookedMeeting } = useDemo();
 
   const dashboardData = getDashboardData();
   const agg = dashboardData.aggregated;
@@ -81,7 +83,39 @@ export default function MobileHome() {
         demoProfile={demoConfig.demoProfile}
       />
 
-      {/* 5. Seneste lønudbetaling */}
+      {/* 5. Næste møde (vises kun når en booking er foretaget) */}
+      {bookedMeeting && (
+        <Card
+          className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
+          onClick={() => navigate(`${basePath}/booking`)}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Video className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">
+                  Næste møde
+                </p>
+                <p className="text-sm font-bold text-foreground">
+                  Lønrådgivning — {bookedMeeting.unionName}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                  <Clock className="h-3 w-3" />
+                  <span className="capitalize">
+                    {bookedMeeting.date.toLocaleDateString("da-DK", { weekday: "short", day: "numeric", month: "short" })}
+                  </span>
+                  <span>· kl. {bookedMeeting.time}</span>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 6. Seneste lønudbetaling */}
       <PaymentWidget
         amount={dashboardData.paymentAmount}
         daysLeft={dashboardData.paymentDaysLeft}

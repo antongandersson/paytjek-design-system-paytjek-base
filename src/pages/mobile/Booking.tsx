@@ -38,7 +38,7 @@ function generateSlots(date: Date): TimeSlot[] {
 
 export default function MobileBooking() {
   const navigate = useNavigate();
-  const { demoConfig } = useDemo();
+  const { demoConfig, setBookedMeeting } = useDemo();
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -63,6 +63,9 @@ export default function MobileBooking() {
     });
 
   const handleBook = () => {
+    if (selectedDate && selectedTime) {
+      setBookedMeeting({ date: selectedDate, time: selectedTime, unionName: demoConfig.name });
+    }
     setBooked(true);
   };
 

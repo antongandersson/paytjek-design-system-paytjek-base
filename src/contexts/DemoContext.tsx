@@ -4,6 +4,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 import { useLocation } from "react-router-dom";
@@ -17,6 +18,12 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export interface BookedMeeting {
+  date: Date;
+  time: string;
+  unionName: string;
+}
+
 interface DemoContextType {
   demoConfig: UnionDemoConfig;
   selectedUnionId: UnionId;
@@ -24,6 +31,8 @@ interface DemoContextType {
   showSwitcher: boolean;
   availableUnions: { id: UnionId; name: string; fullName: string }[];
   basePath: string;
+  bookedMeeting: BookedMeeting | null;
+  setBookedMeeting: (meeting: BookedMeeting | null) => void;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -35,6 +44,8 @@ const DemoContext = createContext<DemoContextType>({
   showSwitcher: false,
   availableUnions: [],
   basePath: "/hk",
+  bookedMeeting: null,
+  setBookedMeeting: () => {},
 });
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -45,6 +56,7 @@ const AVAILABLE_UNIONS: { id: UnionId; name: string; fullName: string }[] = [
   { id: "djoef", name: "Djøf", fullName: "Djøf – Danmarks Jurist- og Økonomforbund" },
   { id: "3f", name: "3F", fullName: "3F – Fagligt Fælles Forbund" },
   { id: "lederne", name: "Lederne", fullName: "Lederne" },
+  { id: "sef", name: "Serviceforbundet", fullName: "Serviceforbundet" },
 ];
 
 export function DemoProvider({ children }: { children: ReactNode }) {
@@ -66,6 +78,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const showSwitcher = false;
   const demoConfig = getUnionConfig(selectedUnionId);
   const basePath = `/${selectedUnionId}`;
+
+  const [bookedMeeting, setBookedMeeting] = useState<BookedMeeting | null>(null);
 
   // ─── Inject CSS-tema + Google Fonts ────────────────────────────────────────
   useEffect(() => {
@@ -107,6 +121,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         showSwitcher,
         availableUnions: AVAILABLE_UNIONS,
         basePath,
+        bookedMeeting,
+        setBookedMeeting,
       }}
     >
       {children}
