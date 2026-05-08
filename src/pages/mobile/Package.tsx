@@ -37,6 +37,10 @@ export default function MobilePackage() {
           <div className="bg-card rounded-2xl border border-border p-4">
             <NegotiationCard intel={intel} />
           </div>
+          <button className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold active:scale-[0.98] transition-transform">
+            <MessageCircle className="h-4.5 w-4.5" />
+            Få sparring med {demoConfig.name}
+          </button>
         </div>
       ) : (
         <div className="px-4 pt-16 flex flex-col items-center text-center space-y-4">
@@ -72,14 +76,6 @@ export default function MobilePackage() {
         </div>
       )}
 
-      {careerUnlocked && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-border/50 z-20">
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold active:scale-[0.98] transition-transform">
-            <MessageCircle className="h-4.5 w-4.5" />
-            Få sparring med {demoConfig.name}
-          </button>
-        </div>
-      )}
     </main>
   );
 }
