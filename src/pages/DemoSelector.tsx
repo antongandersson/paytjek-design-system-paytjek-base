@@ -8,6 +8,7 @@ const unions: { id: UnionId; ready: boolean }[] = [
   { id: "3f", ready: true },
   { id: "djoef", ready: true },
   { id: "lederne", ready: true },
+  { id: "sef", ready: true },
 ];
 
 export default function DemoSelector() {

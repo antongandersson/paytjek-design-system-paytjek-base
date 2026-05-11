@@ -56,7 +56,7 @@ const AVAILABLE_UNIONS: { id: UnionId; name: string; fullName: string }[] = [
   { id: "djoef", name: "Djøf", fullName: "Djøf – Danmarks Jurist- og Økonomforbund" },
   { id: "3f", name: "3F", fullName: "3F – Fagligt Fælles Forbund" },
   { id: "lederne", name: "Lederne", fullName: "Lederne" },
-  { id: "sef", name: "Serviceforbundet", fullName: "Serviceforbundet" },
+  { id: "sef", name: "Serviceforbundet", fullName: "Serviceforbundet / VSL" },
 ];
 
 export function DemoProvider({ children }: { children: ReactNode }) {

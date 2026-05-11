@@ -4,6 +4,7 @@ import hkLogo from "@/assets/hk-logo.png";
 import threeFLogo from "@/assets/3f-logo.png";
 import djoefLogo from "@/assets/djoef-logo.png";
 import lederneLogo from "@/assets/lederne-logo.png";
+import sefLogo from "@/assets/sef-logo.png";
 
 // ─── Theme interface ──────────────────────────────────────────────────────────
 
@@ -127,7 +128,7 @@ export interface ContractIntelligence {
 
 // ─── Config interface ─────────────────────────────────────────────────────────
 
-export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne";
+export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne" | "sef";
 
 export interface UnionDemoConfig {
   id: UnionId;
@@ -1190,6 +1191,223 @@ export const LEDERNE_CONFIG: UnionDemoConfig = {
   validation: LEDERNE_VALIDATION,
 };
 
+// ─── Serviceforbundet / VSL ───────────────────────────────────────────────────
+// Persona: Mikkel Brandt, Vagtassistent (kontrolcentral), Securitas A/S
+// Brancheoverenskomst for vagtassistenter 2025-2028 (DI nr. 854609)
+// DI Overenskomst II × Serviceforbundet for VSL
+// Fejlene eskalerer over Q1 2026:
+//   Januar:  Gammel lørdagstillægssats (32,80 i stedet for 34,16 kr/t)
+//   Februar: Gammel pensionssats (12% i stedet for 13%)
+//   Marts:   Manglende stigning i særlig opsparing (9% i stedet for 10%)
+
+const SEF_EMPLOYER = { name: "Securitas A/S", cvr: "17565844", department: "Kontrolcentral, Ballerup" };
+const SEF_ABSENCE = { sygdom: { dage: 0, timer: 0 }, ferie: { dage: 0, timer: 0 }, afspadsering: { dage: 0, timer: 0 }, barnsSygdom: { dage: 0, timer: 0 } };
+
+// Korrekt januar 2026 lønseddel (baseline)
+const SEF_JAN_CORRECT: PayslipData = {
+  id: "ps-sef-2026-01-ok",
+  userId: "demo-sef",
+  period: { month: "Januar", year: 2026, startDate: "2026-01-01", endDate: "2026-01-31" },
+  employer: SEF_EMPLOYER,
+  salary: {
+    grundlon: 32195.13,
+    timelon: 200.80,
+    normalTimer: 154.12,
+    beregnetTimelon: { udenTillaeg: 200.80, medTillaeg: 207.83, afvigelse: 0, status: "ok" },
+  },
+  supplements: {
+    aftentillaeg: { timer: 0, sats: 0, beloeb: 0 },
+    nattillaeg: { timer: 0, sats: 0, beloeb: 0 },
+    soenHelligdag: { timer: 8, sats: 51.44, beloeb: 411.52 },
+    lordagstillaeg: { timer: 16, sats: 34.16, beloeb: 546.56 },
+  },
+  deductions: {
+    pension: { beloeb: 683.63, procent: 2.0, grundlag: 34181.49 },
+    skat: { beloeb: 8833.85, procent: 38 },
+    atp: { beloeb: 99.00 },
+    amBidrag: { beloeb: 2734.52, procent: 8 },
+  },
+  absence: SEF_ABSENCE,
+  totals: {
+    bruttolon: 34280.49,
+    nettolon: 22613.12,
+    totalFradrag: 11667.37,
+    totalTillaeg: 2085.36,
+  },
+  uploadedAt: "2026-02-01T08:00:00Z",
+  analyzedAt: "2026-02-01T08:00:04Z",
+};
+
+// FEJL 1: Gammel lørdagstillægssats (32,80 i stedet for 34,16 kr/t)
+const SEF_JAN_ERROR1: PayslipData = {
+  ...SEF_JAN_CORRECT,
+  id: "ps-sef-2026-01-err1",
+  supplements: {
+    ...SEF_JAN_CORRECT.supplements,
+    lordagstillaeg: { timer: 16, sats: 32.80, beloeb: 524.80 },
+  },
+  totals: { bruttolon: 34258.73, nettolon: 22598.36, totalFradrag: 11660.37, totalTillaeg: 2063.60 },
+};
+
+const SEF_VAL_ERROR1: PayslipValidationResult = {
+  id: "val-sef-err1",
+  payslipId: "ps-sef-2026-01-err1",
+  status: "errors",
+  discrepancies: [{
+    id: "err-sef-1",
+    category: "supplement",
+    field: "lordagstillaeg",
+    severity: "error",
+    expected: 546.56,
+    actual: 524.80,
+    difference: -21.76,
+    description: "Lørdagstillægget er beregnet med den gamle sats 32,80 kr/t — men den korrekte sats fra 1. maj 2025 er 34,16 kr/t. Lønsystemet har ikke fået satsopdateringen.",
+    calculation: "Regel: Brancheoverenskomst for vagtassistenter §7, stk. 1 — Genetillæg lørdag kl. 14:00–mandag kl. 06:00. Sats pr. 01.05.2025: 34,16 kr/t. Forventet: 16t × 34,16 = 546,56 kr. Faktisk: 16t × 32,80 = 524,80 kr.",
+    suggestion: "Kontakt lønadministrationen hos Securitas A/S og henvis til vagtassistentoverenskomsten §7, stk. 1. Lørdagstillægssatsen blev opdateret 1. maj 2025 fra 32,80 kr/t til 34,16 kr/t. Du mangler 21,76 kr i efterbetaling for januar.",
+  }],
+  summary: { totalDifference: -21.76, issuesCount: 1, warningsCount: 0 },
+  validatedAt: "2026-02-01T08:00:04Z",
+};
+
+// FEJL 2: Gammel pensionssats (12% i stedet for 13%)
+const SEF_FEB_ERROR2: PayslipData = {
+  ...SEF_JAN_CORRECT,
+  id: "ps-sef-2026-02-err2",
+  period: { month: "Februar", year: 2026, startDate: "2026-02-01", endDate: "2026-02-28" },
+  deductions: {
+    ...SEF_JAN_CORRECT.deductions,
+    pension: { beloeb: 683.63, procent: 2.0, grundlag: 34181.49 },
+  },
+};
+
+const SEF_VAL_ERROR2: PayslipValidationResult = {
+  id: "val-sef-err2",
+  payslipId: "ps-sef-2026-02-err2",
+  status: "errors",
+  discrepancies: [{
+    id: "err-sef-2",
+    category: "deduction",
+    field: "pension",
+    severity: "error",
+    expected: 4443.59,
+    actual: 4101.78,
+    difference: -341.81,
+    description: "Pensionen er beregnet med samlet 12% (AG 10% + MA 2%) — men den korrekte sats fra 1. maj 2025 er samlet 13% (AG 11% + MA 2%). Der indbetales ca. 342 kr/md for lidt til PensionDanmark.",
+    calculation: "Regel: Brancheoverenskomst for vagtassistenter §8, stk. 1. Pensionssats pr. 01.05.2025: samlet 13% af A-skattepligtig løn (AG 11% + MA 2%). A-skattepligtig løn: 34.181,49 kr. Forventet samlet pension: 34.181,49 × 13% = 4.443,59 kr. Faktisk (12%): 34.181,49 × 12% = 4.101,78 kr.",
+    suggestion: "Kontakt HR hos Securitas A/S og henvis til vagtassistentoverenskomsten §8, stk. 1. Pensionssatsen steg fra samlet 12% til 13% pr. 1. maj 2025. Arbejdsgiverbidraget skal være 11%, ikke 10%. PensionDanmark bør også orienteres om det for lave indbetalingsgrundlag. Difference: 341,81 kr/md.",
+  }],
+  summary: { totalDifference: -341.81, issuesCount: 1, warningsCount: 0 },
+  validatedAt: "2026-03-01T08:00:04Z",
+};
+
+// FEJL 3: Manglende stigning i særlig opsparing (9% i stedet for 10%)
+const SEF_MAR_ERROR3: PayslipData = {
+  ...SEF_JAN_CORRECT,
+  id: "ps-sef-2026-03-err3",
+  period: { month: "Marts", year: 2026, startDate: "2026-03-01", endDate: "2026-03-31" },
+};
+
+const SEF_VAL_ERROR3: PayslipValidationResult = {
+  id: "val-sef-err3",
+  payslipId: "ps-sef-2026-03-err3",
+  status: "errors",
+  discrepancies: [{
+    id: "err-sef-3",
+    category: "deduction",
+    field: "saerlig_opsparing",
+    severity: "error",
+    expected: 3428.05,
+    actual: 3085.24,
+    difference: -342.81,
+    description: "Særlig opsparing er stadig beregnet med 9,0% — men den korrekte sats fra 1. marts 2026 er 10,0%. Der opspares ca. 343 kr/md for lidt.",
+    calculation: "Regel: Brancheoverenskomst for vagtassistenter §14. Særlig opsparing pr. 01.03.2026: 10,0% af ferieberettiget løn (var 9,0%). Ferieberettiget løn: 34.280,49 kr. Forventet: 34.280,49 × 10% = 3.428,05 kr. Faktisk (9%): 34.280,49 × 9% = 3.085,24 kr.",
+    suggestion: "Kontakt lønadministrationen hos Securitas A/S og henvis til vagtassistentoverenskomsten §14. Særlig opsparing steg fra 9,0% til 10,0% pr. 1. marts 2026. Den løbende udbetaling (over 4%-pointene) er for lav. Difference: 342,81 kr/md.",
+  }],
+  summary: { totalDifference: -342.81, issuesCount: 1, warningsCount: 0 },
+  validatedAt: "2026-04-01T08:00:04Z",
+};
+
+// Korrekt validering (ingen fejl)
+const SEF_VAL_OK: PayslipValidationResult = {
+  id: "val-sef-ok",
+  payslipId: "ps-sef-2026-01-ok",
+  status: "ok",
+  discrepancies: [],
+  summary: { totalDifference: 0, issuesCount: 0, warningsCount: 0 },
+  validatedAt: "2026-02-01T08:00:04Z",
+};
+
+export const SEF_CONFIG: UnionDemoConfig = {
+  id: "sef",
+  name: "Serviceforbundet",
+  fullName: "Serviceforbundet / VSL",
+  primaryColor: "#005F73",
+  secondaryColor: "#003D4D",
+  bgColor: "#F0F6F7",
+  logo: sefLogo,
+
+  demoProfile: "agreement" as DemoProfile,
+
+  welcomeHeadline: "Får du det rigtige weekendtillæg?",
+  welcomeSub: "Serviceforbundet og PayTjek tjekker det for dig",
+  welcomeDescription:
+    "Vagtassistenter har skiftende vagter med weekend- og helligdagstillæg der ofte beregnes med forkert sats. PayTjek finder de fejl lønsystemet laver.",
+  ctaQuestion: "Er dine genetillæg beregnet korrekt?",
+  authFeatures: [
+    "Automatisk tjek af weekend- og helligdagstillæg",
+    "Synkroniser vagtplan og find skjulte satsfejl",
+    "AI-rådgivning baseret på vagtassistentoverenskomsten",
+  ],
+
+  pitchTagline: "Fra lønseddel til svar på 30 sekunder",
+  pitchSub:
+    "Upload din lønseddel — PayTjek tjekker den mod vagtassistentoverenskomsten og finder de satsfejl der koster mest over tid.",
+
+  persona: {
+    firstName: "Mikkel",
+    name: "Mikkel Brandt",
+    jobTitle: "Vagtassistent",
+    employer: "Securitas A/S",
+    cvr: "17565844",
+  },
+
+  collectiveAgreement: "Brancheoverenskomst for vagtassistenter (DI nr. 854609)",
+
+  demoIcsUrl: "/demo/sef-vagter-jan-2026.ics",
+  demoIcsDisplayUrl: "https://securitas.planday.dk/ics/export/mikkel-brandt.ics",
+
+  googleFontsImport:
+    "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+  theme: {
+    "--primary": "190 100% 23%",
+    "--primary-foreground": "0 0% 100%",
+    "--secondary": "190 100% 15%",
+    "--secondary-foreground": "0 0% 100%",
+    "--accent": "190 40% 95%",
+    "--accent-foreground": "190 100% 20%",
+    "--background": "0 0% 100%",
+    "--foreground": "0 0% 10%",
+    "--card": "190 20% 97%",
+    "--card-foreground": "0 0% 10%",
+    "--muted": "190 10% 95%",
+    "--muted-foreground": "0 0% 40%",
+    "--border": "190 10% 90%",
+    "--ring": "190 100% 23%",
+    "--font-heading": "'Inter', sans-serif",
+    "--font-body": "'Inter', sans-serif",
+  },
+
+  payslip: SEF_JAN_ERROR1,
+  validation: SEF_VAL_ERROR1,
+
+  demoPayslips: {
+    "jan": { payslip: SEF_JAN_ERROR1, validation: SEF_VAL_ERROR1 },
+    "feb": { payslip: SEF_FEB_ERROR2, validation: SEF_VAL_ERROR2 },
+    "mar": { payslip: SEF_MAR_ERROR3, validation: SEF_VAL_ERROR3 },
+    "korrekt": { payslip: SEF_JAN_CORRECT, validation: SEF_VAL_OK },
+  },
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
@@ -1198,6 +1416,7 @@ export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
   "3f": THREEF_CONFIG,
   djoef: DJOEF_CONFIG,
   lederne: LEDERNE_CONFIG,
+  sef: SEF_CONFIG,
 };
 
 export function getUnionConfig(id: string): UnionDemoConfig {
