@@ -15,6 +15,7 @@ interface AnalysisScreenProps {
   analysisSteps: AnalysisStep[];
   isComplete: boolean;
   onViewReport: () => void;
+  reportLabel?: string;
 }
 
 export function AnalysisScreen({
@@ -22,6 +23,7 @@ export function AnalysisScreen({
   analysisSteps,
   isComplete,
   onViewReport,
+  reportLabel = "Se Resultat",
 }: AnalysisScreenProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background animate-fade-in">
@@ -122,7 +124,7 @@ export function AnalysisScreen({
           onClick={onViewReport}
         >
           <Sparkles className="w-5 h-5 mr-2" />
-          Se Resultat
+          {reportLabel}
         </Button>
       </div>
     </div>

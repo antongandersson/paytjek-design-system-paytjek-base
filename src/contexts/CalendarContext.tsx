@@ -11,7 +11,16 @@ const STORAGE_KEYS = {
   SHIFTS: 'paytjek_calendar_shifts',
   OVERTIME_LOG: 'paytjek_overtime_log',
   SNOOZED_CHECKS: 'paytjek_snoozed_checks',
+  ACTIVE_UNION: 'paytjek_calendar_union',
 } as const;
+
+const KNOWN_UNIONS = ['hk', 'foa', 'djoef', '3f', 'lederne', 'sef'];
+
+/** Udtrækker /:unionId fra URL uden React-kontekst */
+function getUnionIdFromUrl(): string | null {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts[0] && KNOWN_UNIONS.includes(parts[0]) ? parts[0] : null;
+}
 
 // ============================================
 // TYPES
@@ -90,32 +99,34 @@ interface CalendarContextType {
 }
 
 // ============================================
-// LOCALSTORAGE HELPERS
+// SESSIONSTORAGE HELPERS
+// Kalender-data gemmes kun for den aktive session (fane/vindue).
+// Lukkes fanen starter næste besøg rent — ønsket adfærd for demo-flow.
 // ============================================
 
 function loadFromStorage<T>(key: string): T | null {
   try {
-    const data = localStorage.getItem(key);
+    const data = sessionStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (e) {
-    console.warn(`Fejl ved læsning af ${key} fra localStorage:`, e);
+    console.warn(`Fejl ved læsning af ${key} fra sessionStorage:`, e);
     return null;
   }
 }
 
 function saveToStorage<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
-    console.warn(`Fejl ved gemning af ${key} til localStorage:`, e);
+    console.warn(`Fejl ved gemning af ${key} til sessionStorage:`, e);
   }
 }
 
 function removeFromStorage(key: string): void {
   try {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
   } catch (e) {
-    console.warn(`Fejl ved sletning af ${key} fra localStorage:`, e);
+    console.warn(`Fejl ved sletning af ${key} fra sessionStorage:`, e);
   }
 }
 
@@ -144,6 +155,19 @@ export function CalendarProvider({ children }: { children: ReactNode }) {
   // ============================================
   
   useEffect(() => {
+    const currentUnion = getUnionIdFromUrl();
+    const savedUnion = loadFromStorage<string>(STORAGE_KEYS.ACTIVE_UNION);
+
+    // Ryd alle kalenderdata hvis brugeren skifter til en anden fagforening
+    if (currentUnion && savedUnion && currentUnion !== savedUnion) {
+      Object.values(STORAGE_KEYS).forEach(key => sessionStorage.removeItem(key));
+      if (currentUnion) saveToStorage(STORAGE_KEYS.ACTIVE_UNION, currentUnion);
+      return; // Start rent — ingen data at gendanne
+    }
+
+    // Gem den aktive union så vi kan opdage skift næste gang
+    if (currentUnion) saveToStorage(STORAGE_KEYS.ACTIVE_UNION, currentUnion);
+
     const savedConnection = loadFromStorage<CalendarConnection>(STORAGE_KEYS.CONNECTION);
     const savedShifts = loadFromStorage<Shift[]>(STORAGE_KEYS.SHIFTS);
     const savedOvertime = loadFromStorage<OvertimeEntry[]>(STORAGE_KEYS.OVERTIME_LOG);
@@ -347,7 +371,7 @@ export function CalendarProvider({ children }: { children: ReactNode }) {
     setIsConnecting(false);
     setOvertimeLog([]);
     setSnoozedChecks([]);
-    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    Object.values(STORAGE_KEYS).forEach(key => sessionStorage.removeItem(key));
   }, []);
 
   const resync = useCallback(async () => {

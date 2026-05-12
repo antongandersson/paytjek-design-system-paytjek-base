@@ -12,6 +12,7 @@ import type { AggregatedStats } from "@/contexts/PayslipContext";
 import type { ContractDetails } from "@/lib/demoContract";
 import type { Shift } from "@/contexts/CalendarContext";
 import type { DemoProfile, DemoContractComparison, DemoContractAnalysis } from "@/lib/demoUnionConfigs";
+import { runArbejdsmiljoCheck, countArbejdsmiljoIssues } from "@/lib/utils/arbejdsmiljoCheck";
 
 // ─────────────────────────────────────────────
 // 1. STATUS HERO — stor bold card (reference style)
@@ -235,9 +236,17 @@ export function DashboardContextRow({
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <CalendarDays className="h-3 w-3" /> Vagtplan
               </p>
-              {hasCalendar && (
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              )}
+              {hasCalendar && (() => {
+                const results = runArbejdsmiljoCheck(shifts.map(s => ({ date: s.date, time: s.time, type: s.type })));
+                const issues = countArbejdsmiljoIssues(results);
+                return issues > 0
+                  ? (
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full leading-none">
+                      {issues} advarsel{issues > 1 ? "er" : ""}
+                    </span>
+                  )
+                  : <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />;
+              })()}
             </div>
             {hasCalendar && nextShift ? (
               <>

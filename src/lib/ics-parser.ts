@@ -128,7 +128,15 @@ function determineShiftType(event: ICSEvent): Shift["type"] {
   const summary = (event.summary || "").toLowerCase();
   
   // Check for special keywords first
-  if (summary.includes("fri") || summary.includes("ferie") || summary.includes("off") || summary.includes("holiday")) {
+  if (
+    summary.includes("fri") ||
+    summary.includes("ferie") ||
+    summary.includes("off") ||
+    summary.includes("holiday") ||
+    summary.includes("sh-dag") ||
+    summary.includes("helligdag") ||
+    summary.includes("søgnehelligdag")
+  ) {
     return "day-off";
   }
   if (summary.includes("syg") || summary.includes("sick")) {

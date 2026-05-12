@@ -2,9 +2,12 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Unlink, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CalendarGrid, Shift } from "./CalendarGrid";
+import { ArbejdsmiljoCheck } from "./ArbejdsmiljoCheck";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useDemo } from "@/contexts/DemoContext";
+import { useCalendar } from "@/contexts/CalendarContext";
 
 interface CalendarViewProps {
   shifts?: Shift[] | null;
@@ -71,6 +74,10 @@ export function CalendarView({
   onAddSchedule,
   onDisconnect 
 }: CalendarViewProps) {
+  const { demoConfig } = useDemo();
+  const { isConnected } = useCalendar();
+  const showArbejdsmiljo = demoConfig.demoProfile === "agreement" && isConnected;
+
   // Start with current date
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"weekly" | "monthly">("monthly");
@@ -296,6 +303,17 @@ export function CalendarView({
               <span className="text-xs text-muted-foreground">Fridag</span>
             </div>
           </div>
+
+          {/* Arbejdsmiljøtjek — kun for overenskomst-profiler med skiftehold */}
+          {showArbejdsmiljo && (
+            <ArbejdsmiljoCheck
+              shifts={effectiveShifts.map((s) => ({
+                date: s.date,
+                time: s.time,
+                type: s.type,
+              }))}
+            />
+          )}
         </>
       )}
     </div>
