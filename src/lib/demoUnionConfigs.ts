@@ -29,7 +29,7 @@ export interface UnionTheme {
 
 // ─── Demo profile ─────────────────────────────────────────────────────────────
 
-export type DemoProfile = "agreement" | "contract";
+export type DemoProfile = "agreement" | "contract" | "contract-only";
 
 export interface DemoContractComparison {
   agreedMonthly: number;
@@ -41,7 +41,7 @@ export interface DemoContractComparison {
 
 export interface DemoContractClause {
   clause: string;
-  status: "compliant" | "deviation";
+  status: "compliant" | "deviation" | "missing";
   detail: string;
 }
 
@@ -50,6 +50,19 @@ export interface DemoContractAnalysis {
   compliant: number;
   deviations: number;
   clauses: DemoContractClause[];
+}
+
+// ─── Dine Rettigheder ────────────────────────────────────────────────────────
+
+export interface RightsItem {
+  text: string;
+  reference?: string;
+}
+
+export interface RightsSection {
+  title: string;
+  icon: "money" | "health" | "vacation" | "education" | "protection" | "conditions";
+  items: RightsItem[];
 }
 
 // ─── Contract Intelligence (Djøf/Lederne) ────────────────────────────────────
@@ -124,11 +137,12 @@ export interface ContractIntelligence {
   careerSteps: CareerStep[];
   negotiationPoints: NegotiationPoint[];
   termination?: TerminationIntelligence;
+  rights?: RightsSection[];
 }
 
 // ─── Config interface ─────────────────────────────────────────────────────────
 
-export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne" | "sef";
+export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne" | "sef" | "sef-kontrakt";
 
 export interface UnionDemoConfig {
   id: UnionId;
@@ -138,6 +152,7 @@ export interface UnionDemoConfig {
   secondaryColor: string;
   bgColor: string;
   logo: string;
+  supportPhone?: string;
 
   // Demo-profil: "agreement" = vagtplan-fokus, "contract" = kontraktpakke-fokus
   demoProfile: DemoProfile;
@@ -954,82 +969,212 @@ export const DJOEF_CONFIG: UnionDemoConfig = {
 };
 
 // ─── Lederne ──────────────────────────────────────────────────────────────────
+// Persona: Thomas Vestergaard, Produktionschef, NordicSteel A/S
+// Lederaftalen (DA + Ledernes Hovedorganisation), 3. udgave, 1. feb 2007
+// Funktionærkontrakt for ledere/betroede medarbejdere (Lederne-skabelon)
+// Fejlene:
+//   K-1: Pension uden AG/eget-split og uden PFA Lederpension (transparensfejl, 0 kr)
+//   K-3: Ferietillæg 1% af grundløn i stedet for 2% af ferieberettiget løn (tab 9.792 kr/år)
+//   K-7: Konkurrenceklausul uden kompensation (ugyldig, potentielt 326.400 kr)
+// Lønsedler marts–maj 2025:
+//   Marts: Bonus-måned (A-indkomst 159.660) + pension-split mangler
+//   April: Normal måned (A-indkomst 78.060) + pension-split mangler
+//   Maj:   Ferietillæg forkert (8.160 vs. 17.952) + pension-split mangler
+// Ferieberettiget løn = grundløn + bonus = 897.600 kr/år (personalegoder indgår IKKE)
 
-const LEDERNE_PAYSLIP: PayslipData = {
-  id: "ps-lederne-2025-10",
+const LEDERNE_EMPLOYER = { name: "NordicSteel A/S", cvr: "31456789", department: "Produktion" };
+const LEDERNE_ABSENCE = { sygdom: { dage: 0, timer: 0 }, ferie: { dage: 0, timer: 0 }, afspadsering: { dage: 0, timer: 0 }, barnsSygdom: { dage: 0, timer: 0 } };
+const LEDERNE_ZERO_SUPP = { timer: 0, sats: 0, beloeb: 0 };
+
+// ── Marts 2025 (bonus-måned, A-indkomst 159.660 kr) ──
+const LEDERNE_MARTS: PayslipData = {
+  id: "ps-lederne-2025-03",
   userId: "demo-lederne",
-  period: {
-    month: "Oktober",
-    year: 2025,
-    startDate: "2025-10-01",
-    endDate: "2025-10-31",
-  },
-  employer: {
-    name: "Novo Nordisk A/S",
-    cvr: "24256790",
-    department: "Supply Chain",
-  },
+  period: { month: "Marts", year: 2025, startDate: "2025-03-01", endDate: "2025-03-31" },
+  employer: LEDERNE_EMPLOYER,
   salary: {
-    grundlon: 52000.00,
-    timelon: 325.00,
+    grundlon: 68000.00,
+    timelon: 425.00,
     normalTimer: 160.00,
-    beregnetTimelon: {
-      udenTillaeg: 325.00,
-      medTillaeg: 364.00,
-      afvigelse: 0.00,
-      status: "ok",
-    },
+    beregnetTimelon: { udenTillaeg: 425.00, medTillaeg: 997.88, afvigelse: 0, status: "ok" as const },
   },
   supplements: {
-    aftentillaeg: { timer: 0, sats: 0, beloeb: 0 },
-    nattillaeg: { timer: 0, sats: 0, beloeb: 0 },
-    soenHelligdag: { timer: 0, sats: 0, beloeb: 0 },
+    aftentillaeg: LEDERNE_ZERO_SUPP,
+    nattillaeg: LEDERNE_ZERO_SUPP,
+    soenHelligdag: LEDERNE_ZERO_SUPP,
   },
   deductions: {
-    pension: { beloeb: 2920.00, procent: 5, grundlag: 58400.00 },
-    skat: { beloeb: 19830.00, procent: 52 },
+    pension: { beloeb: 3400.00, procent: 5, grundlag: 68000.00 },
+    skat: { beloeb: 55797.00, procent: 38 },
     atp: { beloeb: 99.00 },
-    amBidrag: { beloeb: 4672.00, procent: 8 },
+    amBidrag: { beloeb: 12772.80, procent: 8 },
   },
-  absence: {
-    sygdom: { dage: 0, timer: 0 },
-    ferie: { dage: 0, timer: 0 },
-    afspadsering: { dage: 0, timer: 0 },
-    barnsSygdom: { dage: 0, timer: 0 },
-  },
+  absence: LEDERNE_ABSENCE,
   totals: {
-    bruttolon: 64840.00, // grundlon 52000 + ledertillæg 4200 + funktionstillæg 2200 + bonus 6240 (forkert)
-    nettolon: 22518.00,
-    totalFradrag: 27521.00,
-    totalTillaeg: 12600.00,
+    bruttolon: 159660.00, // A-indkomst: kontant løn 149.600 + personalegoder 10.060
+    nettolon: 77531.20, // Kontant løn 149.600 - fradrag 72.068,80
+    totalFradrag: 72068.80, // AM 12.772,80 + skat 55.797 + pension 3.400 + ATP 99
+    totalTillaeg: 81600.00, // bonus 81.600
   },
-  uploadedAt: "2025-11-01T09:00:00Z",
-  analyzedAt: "2025-11-01T09:00:04Z",
+  personalegoder: [
+    { label: "Fri bil (BMW 330e)", beloeb: 9760.00 },
+    { label: "Fri telefon", beloeb: 300.00 },
+  ],
+  kontantLon: 149600.00, // grundløn 68.000 + bonus 81.600
+  uploadedAt: "2025-04-01T08:00:00Z",
+  analyzedAt: "2025-04-01T08:00:04Z",
 };
 
-const LEDERNE_VALIDATION: PayslipValidationResult = {
-  id: "val-lederne-2025-10",
-  payslipId: "ps-lederne-2025-10",
+const LEDERNE_VAL_MARTS: PayslipValidationResult = {
+  id: "val-lederne-2025-03",
+  payslipId: "ps-lederne-2025-03",
+  status: "warnings",
+  discrepancies: [{
+    id: "err-lederne-mar-1",
+    category: "deduction",
+    field: "pension",
+    severity: "warning",
+    expected: 3400.00,
+    actual: 3400.00,
+    difference: 0,
+    description: "Pension vist som ét samlet beløb \"15%\" — kontrakten mangler AG/eget-fordeling (10%/5%) og pensionskasse (PFA Lederpension). Lederaftalen §5 stk. 1, §7 stk. 5 og stk. 7.",
+    calculation: "Regel: Lederaftalen §5 stk. 1 (aftalen skal tage stilling til pensionsordning) + §7 stk. 5 (skal fremgå af aftalen) + §7 stk. 7 (PFA Lederpension som default). Korrekt: AG 10% = 6.800 kr. + eget 5% = 3.400 kr. = samlet 10.200 kr. til PFA Lederpension. Faktisk vist: 'Pension 15% = 10.200 kr.' uden specifikation.",
+    suggestion: "Kontakt lønadministrationen hos NordicSteel A/S og bed om at lønsedlen viser pension-split (10% AG / 5% eget) samt angiver PFA Lederpension som modtager. Beløbet er korrekt — det er transparensen der mangler.",
+  }],
+  summary: { totalDifference: 0, issuesCount: 0, warningsCount: 1 },
+  validatedAt: "2025-04-01T08:00:04Z",
+};
+
+// ── April 2025 (normal måned, A-indkomst 78.060 kr) ──
+const LEDERNE_APRIL: PayslipData = {
+  id: "ps-lederne-2025-04",
+  userId: "demo-lederne",
+  period: { month: "April", year: 2025, startDate: "2025-04-01", endDate: "2025-04-30" },
+  employer: LEDERNE_EMPLOYER,
+  salary: {
+    grundlon: 68000.00,
+    timelon: 425.00,
+    normalTimer: 160.00,
+    beregnetTimelon: { udenTillaeg: 425.00, medTillaeg: 487.88, afvigelse: 0, status: "ok" as const },
+  },
+  supplements: {
+    aftentillaeg: LEDERNE_ZERO_SUPP,
+    nattillaeg: LEDERNE_ZERO_SUPP,
+    soenHelligdag: LEDERNE_ZERO_SUPP,
+  },
+  deductions: {
+    pension: { beloeb: 3400.00, procent: 5, grundlag: 68000.00 },
+    skat: { beloeb: 22190.00, procent: 38 },
+    atp: { beloeb: 99.00 },
+    amBidrag: { beloeb: 6244.80, procent: 8 },
+  },
+  absence: LEDERNE_ABSENCE,
+  totals: {
+    bruttolon: 78060.00, // A-indkomst: kontant løn 68.000 + personalegoder 10.060
+    nettolon: 36066.20, // Kontant løn 68.000 - fradrag 31.933,80
+    totalFradrag: 31933.80, // AM 6.244,80 + skat 22.190 + pension 3.400 + ATP 99
+    totalTillaeg: 0, // ingen kontante tillæg i april
+  },
+  personalegoder: [
+    { label: "Fri bil (BMW 330e)", beloeb: 9760.00 },
+    { label: "Fri telefon", beloeb: 300.00 },
+  ],
+  kontantLon: 68000.00, // kun grundløn
+  uploadedAt: "2025-05-01T08:00:00Z",
+  analyzedAt: "2025-05-01T08:00:04Z",
+};
+
+const LEDERNE_VAL_APRIL: PayslipValidationResult = {
+  id: "val-lederne-2025-04",
+  payslipId: "ps-lederne-2025-04",
+  status: "warnings",
+  discrepancies: [{
+    id: "err-lederne-apr-1",
+    category: "deduction",
+    field: "pension",
+    severity: "warning",
+    expected: 3400.00,
+    actual: 3400.00,
+    difference: 0,
+    description: "Pension vist som ét samlet beløb \"15%\" — kontrakten mangler AG/eget-fordeling (10%/5%) og pensionskasse (PFA Lederpension). Lederaftalen §5 stk. 1, §7 stk. 5 og stk. 7.",
+    calculation: "Regel: Lederaftalen §5 stk. 1 (aftalen skal tage stilling til pensionsordning) + §7 stk. 5 (skal fremgå af aftalen) + §7 stk. 7 (PFA Lederpension som default). Korrekt: AG 10% = 6.800 kr. + eget 5% = 3.400 kr. = samlet 10.200 kr. til PFA Lederpension.",
+    suggestion: "Kontakt lønadministrationen hos NordicSteel A/S og bed om at lønsedlen viser pension-split (10% AG / 5% eget) samt angiver PFA Lederpension som modtager.",
+  }],
+  summary: { totalDifference: 0, issuesCount: 0, warningsCount: 1 },
+  validatedAt: "2025-05-01T08:00:04Z",
+};
+
+// ── Maj 2025 (ferietillæg-måned — ERROR: 1% af grundløn i stedet for 2% af ferieberettiget) ──
+const LEDERNE_MAJ: PayslipData = {
+  id: "ps-lederne-2025-05",
+  userId: "demo-lederne",
+  period: { month: "Maj", year: 2025, startDate: "2025-05-01", endDate: "2025-05-31" },
+  employer: LEDERNE_EMPLOYER,
+  salary: {
+    grundlon: 68000.00,
+    timelon: 425.00,
+    normalTimer: 160.00,
+    beregnetTimelon: { udenTillaeg: 425.00, medTillaeg: 538.88, afvigelse: 0, status: "ok" as const },
+  },
+  supplements: {
+    aftentillaeg: LEDERNE_ZERO_SUPP,
+    nattillaeg: LEDERNE_ZERO_SUPP,
+    soenHelligdag: LEDERNE_ZERO_SUPP,
+  },
+  deductions: {
+    pension: { beloeb: 3400.00, procent: 5, grundlag: 68000.00 },
+    skat: { beloeb: 22063.40, procent: 38 },
+    atp: { beloeb: 99.00 },
+    amBidrag: { beloeb: 6897.60, procent: 8 },
+  },
+  absence: LEDERNE_ABSENCE,
+  totals: {
+    bruttolon: 86220.00, // A-indkomst: kontant løn 76.160 + personalegoder 10.060
+    nettolon: 43700.00, // Kontant løn 76.160 - fradrag 32.460
+    totalFradrag: 32460.00, // AM 6.897,60 + skat 22.063,40 + pension 3.400 + ATP 99
+    totalTillaeg: 8160.00, // ferietillæg 8.160 (FORKERT — skulle være 17.952)
+  },
+  personalegoder: [
+    { label: "Fri bil (BMW 330e)", beloeb: 9760.00 },
+    { label: "Fri telefon", beloeb: 300.00 },
+  ],
+  kontantLon: 76160.00, // grundløn 68.000 + ferietillæg 8.160
+  uploadedAt: "2025-06-01T08:00:00Z",
+  analyzedAt: "2025-06-01T08:00:04Z",
+};
+
+const LEDERNE_VAL_MAJ: PayslipValidationResult = {
+  id: "val-lederne-2025-05",
+  payslipId: "ps-lederne-2025-05",
   status: "errors",
   discrepancies: [
     {
-      id: "err-lederne-1",
-      category: "salary",
-      field: "grundlon",
+      id: "err-lederne-maj-1",
+      category: "deduction",
+      field: "pension",
+      severity: "warning",
+      expected: 3400.00,
+      actual: 3400.00,
+      difference: 0,
+      description: "Pension vist som ét samlet beløb \"15%\" — kontrakten mangler AG/eget-fordeling (10%/5%) og pensionskasse (PFA Lederpension). Lederaftalen §5 stk. 1, §7 stk. 5 og stk. 7.",
+      calculation: "Korrekt: AG 10% = 6.800 kr. + eget 5% = 3.400 kr. = samlet 10.200 kr. til PFA Lederpension.",
+      suggestion: "Bed lønadministrationen om at vise pension-split og angive PFA Lederpension som modtager.",
+    },
+    {
+      id: "err-lederne-maj-2",
+      category: "supplement",
+      field: "ferietillaeg",
       severity: "error",
-      expected: 7008.00,  // 12% af totalløn 58.400
-      actual: 6240.00,    // 12% af grundløn 52.000
-      difference: -768.00,
-      description:
-        "Månedlig bonus beregnet på grundløn (52.000 kr.) i stedet for totalløn inkl. faste tillæg (58.400 kr.). Bonusgrundlaget er forkert.",
-      calculation:
-        "Regel: Lederkontrakt §4.2 — Bonus beregnes på baggrund af samlet fast løn inkl. faste tillæg. Forventet: 12% × 58.400 kr = 7.008 kr. Faktisk: 12% × 52.000 kr = 6.240 kr. Difference: -768 kr/md = -9.216 kr/år",
-      suggestion:
-        "Kontakt HR hos Novo Nordisk og henvis til lederkontrakt §4.2. Bonusgrundlaget skal inkludere ledertillæg (4.200 kr.) og funktionstillæg (2.200 kr.) = totalløn 58.400 kr. Du mangler 768 kr/md svarende til 9.216 kr/år.",
+      expected: 17952.00,
+      actual: 8160.00,
+      difference: -9792.00,
+      description: "Ferietillæg — udbetalingsfejl. Kontrakten lover 2% af ferieberettiget løn (17.952 kr./år). Lønsedlen udbetaler kun 1% af grundløn (8.160 kr.). Difference: 9.792 kr.",
+      calculation: "Reference: Kontraktens pkt. 7.1. Ferieberettiget løn: grundløn 816.000 + realiseret bonus 81.600 = 897.600 kr./år. Korrekt: 2% × 897.600 = 17.952 kr. Faktisk udbetalt: 1% × 816.000 = 8.160 kr. Ferieloven §16 + §18 stk. 2.",
+      suggestion: "Kontakt lønadministrationen hos NordicSteel A/S og henvis til kontraktens pkt. 7.1. Ferietillægget skal beregnes som 2% af den ferieberettigede løn (grundløn + bonus). Du mangler 9.792 kr. i efterbetaling.",
     },
   ],
-  summary: { totalDifference: -768.00, issuesCount: 1, warningsCount: 0 },
-  validatedAt: "2025-11-01T09:00:04Z",
+  summary: { totalDifference: -9792.00, issuesCount: 1, warningsCount: 1 },
+  validatedAt: "2025-06-01T08:00:04Z",
 };
 
 export const LEDERNE_CONFIG: UnionDemoConfig = {
@@ -1040,68 +1185,69 @@ export const LEDERNE_CONFIG: UnionDemoConfig = {
   secondaryColor: "#2E7D62",
   bgColor: "#F0F7F4",
   logo: lederneLogo,
+  supportPhone: "32 83 32 83",
 
   demoProfile: "contract" as DemoProfile,
   demoContractComparison: {
-    agreedMonthly: 64840,
-    paidMonthly: 64072,
-    difference: -768,
-    matchedTerms: 4,
-    deviations: 1,
+    agreedMonthly: 78060,
+    paidMonthly: 78060,
+    difference: 0,
+    matchedTerms: 8,
+    deviations: 2,
   },
   demoContractAnalysis: {
-    totalClauses: 8,
-    compliant: 7,
-    deviations: 1,
+    totalClauses: 10,
+    compliant: 8,
+    deviations: 2,
     clauses: [
-      { clause: "Grundløn", status: "compliant", detail: "52.000 kr. — korrekt udbetalt" },
-      { clause: "Ledertillæg", status: "compliant", detail: "4.200 kr. — korrekt udbetalt" },
-      { clause: "Funktionstillæg", status: "compliant", detail: "2.200 kr. — korrekt udbetalt" },
-      { clause: "Bonus (12% af samlet fast løn)", status: "deviation", detail: "Beregnet på grundløn 52.000 i stedet for totalløn 58.400 — mangler 768 kr/md" },
-      { clause: "Pension (15% af totalløn)", status: "compliant", detail: "8.760 kr. — korrekt indbetalt" },
-      { clause: "Firmabil (beskatningsværdi)", status: "compliant", detail: "Indberettet korrekt" },
-      { clause: "Opsigelsesvarsel (12 mdr.)", status: "compliant", detail: "Registreret korrekt" },
-      { clause: "Konkurrenceklausul (kompensation)", status: "compliant", detail: "Vilkår opfyldt iht. funktionærloven" },
+      { clause: "Grundløn 68.000 kr./md", status: "compliant", detail: "Korrekt udbetalt" },
+      { clause: "Bonus (op til 15% af grundløn)", status: "compliant", detail: "10% realiseret = 81.600 kr./år — korrekt udbetalt i marts" },
+      { clause: "Pension (15% samlet)", status: "deviation", detail: "Beløb korrekt, men kontrakten angiver ikke AG/eget-fordeling (10%/5%) og nævner ikke PFA Lederpension — jf. Lederaftalen §5 stk. 1, §7 stk. 5 og stk. 7" },
+      { clause: "Personalegoder (fri bil + telefon)", status: "compliant", detail: "BMW 330e + fri telefon — beskatningsværdi korrekt indberettet" },
+      { clause: "Arbejdstid (37 timer/uge)", status: "compliant", detail: "Korrekt iht. kontrakten" },
+      { clause: "Ferie (5 uger med løn)", status: "compliant", detail: "Korrekt iht. ferieloven" },
+      { clause: "Ferietillæg", status: "compliant", detail: "2% af ferieberettiget løn jf. kontraktens pkt. 7.1 — kontraktsvilkår overholder ferielovens §18 stk. 2 (min. 1%)" },
+      { clause: "Opsigelse (funktionærloven + 3 mdr.)", status: "compliant", detail: "9 mdr. fra AG (6 mdr. funktionærloven + 3 mdr. forlænget) — korrekt" },
+      { clause: "Konkurrenceklausul (12 mdr.)", status: "deviation", detail: "Ingen kompensationsbestemmelse — klausulen er ugyldig uden min. 40% kompensation jf. lov om ansættelsesklausuler §8 stk. 1" },
+      { clause: "Barsel (fuld løn)", status: "compliant", detail: "4 uger før + 14 uger barsel + 12 uger forældreorlov — korrekt" },
     ],
   },
 
   contractIntelligence: {
     salaryComponents: [
-      { label: "Grundløn", amount: 52000 },
-      { label: "Ledertillæg", amount: 4200 },
-      { label: "Funktionstillæg", amount: 2200, sublabel: "Supply Chain" },
-      { label: "Bonus (12%)", amount: 7008, sublabel: "Af samlet fast løn" },
+      { label: "Grundløn", amount: 68000 },
+      { label: "Fri bil (skatteværdi)", amount: 9760, sublabel: "BMW 330e, nyvogn 550.000 kr." },
+      { label: "Fri telefon (skatteværdi)", amount: 300, sublabel: "Multimediabeskatning" },
+      { label: "Bonus (10% realiseret)", amount: 6800, sublabel: "Op til 15% af grundløn, udbetalt i marts" },
     ],
-    totalPackage: 65408,
+    totalPackage: 84860,
     pension: {
       totalPercent: 15.0,
-      minimumPercent: 12.0,
-      fritvalgPercent: 3.0,
-      fritvalgMonthly: 1752,
-      provider: "PFA Pension",
+      minimumPercent: 10.0,
+      fritvalgPercent: 0,
+      fritvalgMonthly: 0,
+      provider: "PFA Lederpension",
       components: [
-        { label: "Pension af totalløn", percent: 15.0, monthly: 8760 },
+        { label: "Arbejdsgiverbidrag", percent: 10.0, monthly: 6800 },
+        { label: "Egetbidrag", percent: 5.0, monthly: 3400 },
       ],
     },
     careerSteps: [
-      { date: "Jan 2020", label: "Teamleder", detail: "Ansat i Supply Chain" },
-      { date: "Mar 2022", label: "Afdelingsleder", detail: "Forfremmet, ledertillæg tilføjet" },
-      { date: "Jan 2024", label: "Funktionstillæg", detail: "Ansvar for Nordics-logistik", isCurrent: true },
-      { date: "Næste revision", label: "Lønforhandling 2026", detail: "Benchmark: +5–8% for tilsvarende roller", isFuture: true },
+      { date: "Mar 2012", label: "Produktionschef", detail: "Ansat hos NordicSteel A/S (kilde: ansættelseskontrakt)", isCurrent: true },
+      { date: "2012", label: "Lederne-medlem", detail: "Aftaledækning: Lederaftalen (DA + Lederne)" },
+      { date: "1. jan 2026", label: "Næste lønregulering", detail: "Jf. Lederaftalen §6 stk. 3 og kontraktens pkt. 3.2", isFuture: true },
     ],
     negotiationPoints: [
-      { label: "Bonusgrundlag", status: "active", detail: "Skal beregnes af samlet fast løn (58.400 kr), ikke kun grundløn", benchmark: "Difference: 768 kr/md" },
-      { label: "Pensionssats", status: "potential", detail: "15% er standard — ledere i tilsvarende roller har typisk 17–20%", benchmark: "17–20%" },
-      { label: "Firmabil-beskatning", status: "active", detail: "Nuværende ordning korrekt indberettet" },
-      { label: "Resultatbonus", status: "potential", detail: "Kan forhandles oven i fast bonus ved næste revisionsrunde", benchmark: "5–15% af årsløn" },
+      { label: "Pensionssats", status: "potential", detail: "Din nuværende sats er 15% (10% AG + 5% eget). Ledere på dit niveau har typisk 17–20%. Næste forhandling: 1. januar 2026", benchmark: "Kilde: Lederne lønstatistik 2024" },
+      { label: "Fratrædelsesgodtgørelse (Lederaftalen §12)", status: "potential", detail: "Når du fylder 50 år (juli 2032), aktiveres ret til 3 mdrs. ekstra godtgørelse ved opsigelse — du har allerede de krævede 10 års anciennitet", benchmark: "Aktiveres jul 2032" },
     ],
     termination: {
       isFunktionaer: true,
-      anciennityStartDate: "2020-01-06",
-      employerNoticePeriodMonths: 12,
+      anciennityStartDate: "2012-03-01",
+      employerNoticePeriodMonths: 9,
       employeeNoticePeriodMonths: 1,
       severanceEligibleAfterYears: 12,
-      severanceEligibleDate: "2032-01-06",
+      severanceEligibleDate: "2024-03-01",
       scenarios: [
         {
           title: "Hvis du opsiger",
@@ -1109,62 +1255,65 @@ export const LEDERNE_CONFIG: UnionDemoConfig = {
           legalBasis: "Funktionærloven §2, stk. 6",
           details: [
             { label: "Opsigelsesvarsel", value: "1 måned til udgangen af en måned", status: "info" },
-            { label: "Konkurrenceklausul", value: "Træder i kraft ved din opsigelse — kompensation iht. funktionærloven §18a", status: "warning" },
+            { label: "Konkurrenceklausul", value: "Klausulen er ugyldig uden kompensation (§7 i lov om ansættelsesklausuler) — du er IKKE bundet", status: "positive" },
             { label: "Firmabil", value: "Skal afleveres ved fratræden — beskatning stopper", status: "info" },
-            { label: "Bonus", value: "Forholdsmæssig andel af årlig bonus udbetales", status: "info" },
-            { label: "Fratrædelsesgodtgørelse", value: "Ingen — kun ved arbejdsgivers opsigelse", status: "warning" },
+            { label: "Bonus", value: "Forholdsmæssig andel af årlig bonus udbetales ved fratræden", status: "info" },
+            { label: "Pension", value: "PFA Lederpension-indbetaling stopper ved fratræden", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Ingen ved egen opsigelse", status: "warning" },
           ],
         },
         {
           title: "Hvis du bliver opsagt",
-          noticePeriod: "12 måneder",
-          legalBasis: "Lederkontrakt §9 (udvidet varsel)",
+          noticePeriod: "9 måneder (6 mdr. funktionærloven + 3 mdr. forlænget)",
+          legalBasis: "Funktionærloven §2, stk. 2 + kontrakt §9.1 (forlænget 3 mdr.)",
           details: [
-            { label: "Opsigelsesvarsel", value: "12 måneder (individuelt aftalt i lederkontrakt)", status: "info" },
-            { label: "Fritstilling", value: "Arbejdsgiver kan fritstille dig — fuld løn inkl. tillæg i hele perioden", status: "positive" },
-            { label: "Firmabil", value: "Kan beholdes i opsigelsesperioden (beskatning fortsætter)", status: "info" },
-            { label: "Bonus i opsigelsesperioden", value: "Fuld bonus i opsigelsesperioden — forholdsmæssig andel ved fratræden", status: "positive" },
-            { label: "Konkurrenceklausul", value: "Gælder også ved arbejdsgivers opsigelse — 50% kompensation i klausulperioden", status: "info" },
-            { label: "Fratrædelsesgodtgørelse", value: "Kræver 12 års ansættelse (funktionærloven §2a) — du opnår ret i januar 2032", status: "future" },
-            { label: "Pension", value: "PFA-indbetaling fortsætter i hele opsigelsesperioden", status: "positive" },
+            { label: "Opsigelsesvarsel", value: "9 måneder (funktionærlovens 6 mdr. + kontraktens 3 mdr. forlængelse)", status: "info" },
+            { label: "Fritstilling", value: "Ret til fritstilling ved AG-opsigelse (kontrakt §9.2) — fuld løn inkl. personalegoder", status: "positive" },
+            { label: "Firmabil", value: "Beholdes i opsigelsesperioden (beskatning fortsætter)", status: "info" },
+            { label: "Bonus i opsigelsesperioden", value: "Fuld bonus beregnes for hele opsigelsesperioden", status: "positive" },
+            { label: "Konkurrenceklausul", value: "Ugyldig uden kompensation — binder dig IKKE uanset opsigelsesform", status: "positive" },
+            { label: "Fratrædelsesgodtgørelse (funktionærloven §2a)", value: "Du har 13+ års anciennitet — ret til 3 mdrs. løn ved opsigelse", status: "positive" },
+            { label: "Fratrædelsesgodtgørelse (Lederaftalen §12)", value: "Kræver 50+ år OG 10+ års anciennitet — du opfylder anciennitet men er 43 år. Ret opnås ved 50 år (2032)", status: "future" },
+            { label: "Pension", value: "PFA Lederpension-indbetaling fortsætter i hele opsigelsesperioden", status: "positive" },
           ],
           timeline: [
-            { label: "Opsigelse modtaget", detail: "Skriftlig opsigelse fra arbejdsgiver", icon: "calendar" },
-            { label: "Opsigelsesperiode (12 mdr.)", detail: "Fuld løn, bonus, pension og firmabil fortsætter", icon: "clock" },
-            { label: "Evt. fritstilling", detail: "Modregning i ny løn efter 3 mdr.", icon: "briefcase" },
-            { label: "Konkurrenceklausul aktiveres", detail: "Kompensation 50% af løn i klausulperioden", icon: "alert" },
-            { label: "Fratræden", detail: "Sidste arbejdsdag", icon: "shield" },
-            { label: "Slutafregning", detail: "Bonus, ferie, pension opgøres", icon: "banknote" },
+            { label: "Opsigelse modtaget", detail: "Skriftlig opsigelse fra NordicSteel A/S", icon: "calendar" },
+            { label: "Opsigelsesperiode (9 mdr.)", detail: "Fuld løn, pension, firmabil og personalegoder fortsætter", icon: "clock" },
+            { label: "Evt. fritstilling", detail: "Ret til fritstilling jf. kontrakt §9.2 — modregning i ny løn efter 3 mdr.", icon: "briefcase" },
+            { label: "Fratrædelsesgodtgørelse", detail: "3 mdrs. løn (funktionærloven §2a, 12+ års anciennitet)", icon: "banknote" },
+            { label: "Fratræden", detail: "Sidste arbejdsdag — firmabil afleveres", icon: "shield" },
+            { label: "Slutafregning", detail: "Bonus, feriepenge, ferietillæg og pension opgøres", icon: "banknote" },
           ],
         },
       ],
+      relatedFinding: "Konkurrenceklausul (K-7)",
     },
   },
 
   welcomeHeadline: "Leverer din arbejdsgiver det aftalte?",
-  welcomeSub: "PayTjek er din personlige lønrevisor",
+  welcomeSub: "PayTjek tjekker din lederkontrakt",
   welcomeDescription:
-    "Ledere har komplekse lønpakker med bonus, pension og tillæg. Hvem tjekker at arbejdsgiveren leverer det der blev aftalt?",
-  ctaQuestion: "Er din bonus beregnet korrekt?",
+    "Ledere har komplekse lønpakker med bonus, personalegoder og pension. Hvem tjekker at kontrakten er korrekt — og at arbejdsgiveren leverer det der blev aftalt?",
+  ctaQuestion: "Er din kontrakt og løn korrekt?",
   authFeatures: [
-    "Verificér at din forhandlede kontrakt overholdes",
-    "Tjek bonusgrundlag, pensionssatser og tillæg",
-    "AI-rådgivning baseret på din individuelle lederkontrakt",
+    "Verificér at din lederkontrakt overholder Lederaftalen",
+    "Tjek ferietillæg, pensionssplit og personalegoder",
+    "AI-rådgivning baseret på din individuelle kontrakt",
   ],
 
   pitchTagline: "Din kontrakt er aftalt — PayTjek tjekker den",
   pitchSub:
-    "Upload lønsedlen — Ernest matcher hvert vilkår i din lederkontrakt mod den faktiske udbetaling og finder det der mangler.",
+    "Upload lønsedlen — Ernest matcher hvert vilkår i din lederkontrakt mod den faktiske udbetaling og finder det der koster dig penge.",
 
   persona: {
     firstName: "Thomas",
-    name: "Thomas Berg",
-    jobTitle: "Afdelingsleder, Supply Chain",
-    employer: "Novo Nordisk A/S",
-    cvr: "24256790",
+    name: "Thomas Vestergaard",
+    jobTitle: "Produktionschef",
+    employer: "NordicSteel A/S",
+    cvr: "31456789",
   },
 
-  collectiveAgreement: "Individuel lederkontrakt (Lederaftalen)",
+  collectiveAgreement: "Lederaftalen (DA + Ledernes Hovedorganisation)",
 
   googleFontsImport:
     "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap",
@@ -1187,8 +1336,14 @@ export const LEDERNE_CONFIG: UnionDemoConfig = {
     "--font-body": "'Outfit', sans-serif",
   },
 
-  payslip: LEDERNE_PAYSLIP,
-  validation: LEDERNE_VALIDATION,
+  payslip: LEDERNE_MAJ,
+  validation: LEDERNE_VAL_MAJ,
+
+  demoPayslips: {
+    "marts":  { payslip: LEDERNE_MARTS, validation: LEDERNE_VAL_MARTS },
+    "april":  { payslip: LEDERNE_APRIL, validation: LEDERNE_VAL_APRIL },
+    "maj":    { payslip: LEDERNE_MAJ, validation: LEDERNE_VAL_MAJ },
+  },
 };
 
 // ─── Serviceforbundet / VSL ───────────────────────────────────────────────────
@@ -1408,6 +1563,238 @@ export const SEF_CONFIG: UnionDemoConfig = {
   },
 };
 
+// ─── SEF Kontrakttjek (contract-only demo) ────────────────────────────────────
+// Separat demo til Serviceforbundet der KUN viser kontrakttjek.
+// Rører ikke SEF_CONFIG — den forbliver intakt med fuld løntjek-demo.
+
+export const SEF_KONTRAKT_CONFIG: UnionDemoConfig = {
+  id: "sef-kontrakt",
+  name: "SEF Kontrakttjek",
+  fullName: "Serviceforbundet / VSL — Kontrakttjek",
+  primaryColor: "#0d6e56",
+  secondaryColor: "#094d3c",
+  bgColor: "#F0F7F4",
+  logo: sefLogo,
+
+  demoProfile: "contract-only" as DemoProfile,
+  demoContractComparison: {
+    agreedMonthly: 34280,
+    paidMonthly: 34280,
+    difference: 0,
+    matchedTerms: 8,
+    deviations: 2,
+  },
+  demoContractAnalysis: {
+    totalClauses: 10,
+    compliant: 8,
+    deviations: 2,
+    clauses: [
+      { clause: "Løngruppe (Gruppe 3)", status: "compliant", detail: "32.195,13 kr/md — korrekt iht. anciennitet (47 mdr. → over 36 mdr.)" },
+      { clause: "Pension (13%)", status: "compliant", detail: "Samlet 13% (AG 11% + MA 2%) via PensionDanmark — korrekt pr. 01.05.2025 (§8, stk. 1)" },
+      { clause: "Funktionærstatus", status: "compliant", detail: "Omfattet af funktionærloven (§22)" },
+      { clause: "Opsigelsesvarsel (4 mdr.)", status: "compliant", detail: "Korrekt iht. funktionærloven §2, stk. 4 (3 år 11 mdr. anciennitet)" },
+      { clause: "Prøveperiode (3 mdr.)", status: "compliant", detail: "Korrekt iht. §2, stk. 4 — max 3 mdr. tilladt" },
+      { clause: "Arbejdstid (154,12 t/md)", status: "compliant", detail: "Korrekt fuldtidsnorm (§3, stk. 1) — gns. over 6 mdr., kompenseret for skæve helligdage" },
+      { clause: "Overenskomsthenvisning", status: "compliant", detail: "Brancheoverenskomst for vagtassistenter (DI 854609) — korrekt angivet (Protokollat 12)" },
+      { clause: "Godkendelse vagtvirksomhedsloven", status: "compliant", detail: "§7 i Lov om Vagtvirksomhed nævnt — godkendelseskrav fremgår" },
+      { clause: "Sundhedsordning", status: "missing", detail: "Ikke nævnt i kontrakten — du har ret til sundhedsordning via PensionDanmark (§9). Max 0,15% af normalløn." },
+      { clause: "Uniform", status: "missing", detail: "Ikke nævnt — hvis din arbejdsgiver kræver uniform, skal de betale (§23)" },
+    ],
+  },
+
+  contractIntelligence: {
+    salaryComponents: [
+      { label: "Grundløn Gruppe 3", amount: 32195, sublabel: "Over 36 mdr. anciennitet (§6, stk. 1)" },
+      { label: "Anciennitetstillæg", amount: 364, sublabel: "364,39 kr/md — Gruppe 3" },
+      { label: "Branchetillæg", amount: 763, sublabel: "4,95 kr/t × 154,12 t/md" },
+      { label: "Genetillæg (gennemsnit)", amount: 958, sublabel: "Lør-/søn-/helligdagstillæg (§7)" },
+    ],
+    totalPackage: 34280,
+    pension: {
+      totalPercent: 13.0,
+      minimumPercent: 13.0,
+      fritvalgPercent: 0,
+      fritvalgMonthly: 0,
+      provider: "PensionDanmark",
+      components: [
+        { label: "Arbejdsgiverbidrag", percent: 11.0, monthly: 3771 },
+        { label: "Egetbidrag", percent: 2.0, monthly: 686 },
+      ],
+    },
+    careerSteps: [
+      { date: "Jun 2022", label: "Ansat", detail: "Vagtassistent (kontrolcentral), Gruppe 1" },
+      { date: "Jun 2023", label: "Gruppe 2", detail: "12 mdr. anciennitet" },
+      { date: "Jun 2025", label: "Gruppe 3", detail: "36 mdr. anciennitet", isCurrent: true },
+    ],
+    negotiationPoints: [
+      { label: "Sundhedsordning", status: "active", detail: "Mangler i kontrakten — du har ret til sundhedsordning via PensionDanmark (§9)", benchmark: "Bed om nyt ansættelsesbevis" },
+      { label: "Uniform", status: "active", detail: "Mangler i kontrakten — arbejdsgiver betaler hvis de kræver uniform (§23)", benchmark: "Bed om tilføjelse" },
+      { label: "Varskotillæg", status: "potential", detail: "522,93 kr pr. varslet ekstravagt — tjek om det udbetales konsekvent" },
+    ],
+    termination: {
+      isFunktionaer: true,
+      anciennityStartDate: "2022-06-01",
+      employerNoticePeriodMonths: 4,
+      employeeNoticePeriodMonths: 1,
+      severanceEligibleAfterYears: 12,
+      severanceEligibleDate: "2034-06-01",
+      scenarios: [
+        {
+          title: "Hvis du opsiger",
+          noticePeriod: "1 måned til udgangen af en måned",
+          legalBasis: "Funktionærloven §2, stk. 6",
+          details: [
+            { label: "Dit varsel", value: "1 måned til udgangen af en måned", status: "info" },
+            { label: "Optjent ferie", value: "Udbetales ved fratræden", status: "info" },
+            { label: "Særlig opsparing", value: "Saldo udbetales ved fratræden", status: "info" },
+            { label: "Ikke-afholdte feriefridage", value: "Udbetales ved fratræden (§13)", status: "info" },
+            { label: "Fratrædelsesgodtgørelse", value: "Ingen — kun ved arbejdsgivers opsigelse", status: "warning" },
+          ],
+        },
+        {
+          title: "Hvis du bliver opsagt",
+          noticePeriod: "4 måneder",
+          legalBasis: "Funktionærloven §2, stk. 2 — næste trin: 5 mdr. ved 5 år 8 mdr. (feb 2028)",
+          details: [
+            { label: "Opsigelsesvarsel", value: "4 måneder (3 år 11 mdr. anciennitet)", status: "info" },
+            { label: "Opsigelse", value: "SKAL være skriftlig (§2, stk. 5)", status: "info" },
+            { label: "A-kasse / VSL", value: "2 timers fri med løn til a-kasse hurtigst muligt (§2, stk. 7)", status: "positive" },
+            { label: "Uddannelse i opsigelsesperioden", value: "Ret til 2 ugers kursus — AG betaler deltagerbetaling max 1.500 kr (§18, stk. 10)", status: "positive" },
+            { label: "Fuld løn i opsigelsesperioden", value: "Fuld løn inkl. alle tillæg — AG tilstræber ingen overarbejde (§2, stk. 6)", status: "positive" },
+            { label: "Feriefridage", value: "Kan IKKE varsles i opsigelsesperiode (§13, stk. 4)", status: "positive" },
+            { label: "Fratrædelsesgodtgørelse", value: "Kræver 12 års ansættelse (funktionærloven §2a) — du opnår ret i juni 2034", status: "future" },
+          ],
+          timeline: [
+            { label: "Opsigelse modtaget", detail: "Skriftlig opsigelse fra arbejdsgiver (§2, stk. 5)", icon: "calendar" },
+            { label: "2 timers fri til a-kasse/VSL", detail: "Hurtigst muligt — med fuld løn (§2, stk. 7)", icon: "briefcase" },
+            { label: "Ret til 2 ugers kursus", detail: "AG betaler deltagerbetaling max 1.500 kr (§18, stk. 10)", icon: "briefcase" },
+            { label: "Opsigelsesperiode (4 mdr.)", detail: "Fuld løn, genetillæg og pension — ingen overarbejde tilstræbes", icon: "clock" },
+            { label: "Fratræden", detail: "Sidste arbejdsdag — 30. september 2026 ved opsigelse i dag", icon: "shield" },
+            { label: "Slutafregning", detail: "Ferieafregning + særlig opsparing udbetales", icon: "banknote" },
+          ],
+        },
+      ],
+    },
+    rights: [
+      {
+        title: "Løn & tillæg",
+        icon: "money",
+        items: [
+          { text: "Grundløn Gruppe 3: 32.195,13 kr/md", reference: "§6, stk. 1" },
+          { text: "Anciennitetstillæg: 364,39 kr/md", reference: "Gruppe 3" },
+          { text: "Branchetillæg: 4,95 kr/time" },
+          { text: "Genetillæg lørdag: 34,16 kr/t", reference: "§7" },
+          { text: "Genetillæg søn-/helligdag: 51,44 kr/t", reference: "§7" },
+          { text: "Overarbejde: timeløn + 50%", reference: "§11" },
+        ],
+      },
+      {
+        title: "Fravær med løn",
+        icon: "health",
+        items: [
+          { text: "Sygdom: fuld løn", reference: "Funktionærloven via §22" },
+          { text: "Barns 1. sygedag: fri med fuld løn", reference: "§17" },
+          { text: "+ 2 ekstra dage fra særlig opsparing" },
+          { text: "Barns hospitalsindlæggelse: max 1 uge/år", reference: "§17" },
+          { text: "2 børneomsorgsdage/år", reference: "§17, stk. 4" },
+          { text: "2 børnebørns-omsorgsdage/år", reference: "§17, stk. 5" },
+          { text: "Ledsagelse af nærtstående: 2 dage/år + 5 ekstra ved kritisk sygdom", reference: "§17, stk. 6" },
+        ],
+      },
+      {
+        title: "Ferie & fridage",
+        icon: "vacation",
+        items: [
+          { text: "25 feriedage", reference: "Ferieloven" },
+          { text: "5 feriefridage pr. ferieår", reference: "§13" },
+          { text: "Særlig opsparing: 10% af ferieberettiget løn (stiger fra 9% pr. 01.03.2026)", reference: "§14" },
+        ],
+      },
+      {
+        title: "Uddannelse",
+        icon: "education",
+        items: [
+          { text: "2 ugers frihed/år til uddannelse", reference: "§18, stk. 4" },
+          { text: "Kompetenceudviklingsfonden betaler" },
+          { text: "4 timer fri til FVU/ordblinde-screening", reference: "§18, stk. 4" },
+          { text: "Ved afskedigelse: ret til 2 ugers kursus", reference: "§18, stk. 10" },
+        ],
+      },
+      {
+        title: "Beskyttelse",
+        icon: "protection",
+        items: [
+          { text: "Funktionærstatus", reference: "§22" },
+          { text: "4 mdr. opsigelsesvarsel (din anciennitet)" },
+          { text: "Skriftlig opsigelse påkrævet", reference: "§2, stk. 5" },
+          { text: "Ret til 2 timers fri til a-kasse ved afskedigelse", reference: "§2, stk. 7" },
+          { text: "AG tilstræber ingen overarbejde i opsigelsesperioden", reference: "§2, stk. 6" },
+          { text: "Feriefridage kan IKKE varsles i opsigelsesperiode", reference: "§13, stk. 4" },
+        ],
+      },
+      {
+        title: "Arbejdsvilkår",
+        icon: "conditions",
+        items: [
+          { text: "Uniform betalt af arbejdsgiver", reference: "§23" },
+          { text: "Sundhedsordning via PensionDanmark", reference: "§9" },
+          { text: "Spisetid ½ time indregnet i tjenestetiden", reference: "§10" },
+          { text: "Pension 13% via PensionDanmark", reference: "§8" },
+        ],
+      },
+    ],
+  },
+
+  welcomeHeadline: "Er din kontrakt i orden?",
+  welcomeSub: "Serviceforbundet og PayTjek tjekker det for dig",
+  welcomeDescription:
+    "Upload din ansættelseskontrakt — vi tjekker om løn, tillæg og vilkår matcher den gældende overenskomst. Automatisk, hurtigt og præcist.",
+  ctaQuestion: "Matcher din kontrakt overenskomsten?",
+  authFeatures: [
+    "Automatisk tjek af løngruppe og anciennitet",
+    "Verificér pension, tillæg og opsigelsesvilkår",
+    "Sammenlign med vagtassistentoverenskomsten (DI nr. 854609)",
+  ],
+
+  pitchTagline: "Din kontrakt tjekket på 30 sekunder",
+  pitchSub:
+    "Upload din kontrakt — PayTjek sammenligner hvert vilkår med vagtassistentoverenskomsten og finder de afvigelser der koster dig penge.",
+
+  persona: {
+    firstName: "Mikkel",
+    name: "Mikkel Brandt",
+    jobTitle: "Vagtassistent (kontrolcentral)",
+    employer: "Securitas A/S",
+    cvr: "17565844",
+  },
+
+  collectiveAgreement: "Brancheoverenskomst for vagtassistenter (DI 854609)",
+
+  googleFontsImport:
+    "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+  theme: {
+    "--primary": "160 79% 24%",
+    "--primary-foreground": "0 0% 100%",
+    "--secondary": "160 79% 17%",
+    "--secondary-foreground": "0 0% 100%",
+    "--accent": "155 30% 95%",
+    "--accent-foreground": "160 79% 20%",
+    "--background": "0 0% 100%",
+    "--foreground": "0 0% 10%",
+    "--card": "155 20% 97%",
+    "--card-foreground": "0 0% 10%",
+    "--muted": "155 10% 95%",
+    "--muted-foreground": "0 0% 40%",
+    "--border": "155 10% 90%",
+    "--ring": "160 79% 24%",
+    "--font-heading": "'Inter', sans-serif",
+    "--font-body": "'Inter', sans-serif",
+  },
+
+  payslip: SEF_JAN_CORRECT,
+  validation: SEF_VAL_OK,
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
@@ -1417,6 +1804,7 @@ export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
   djoef: DJOEF_CONFIG,
   lederne: LEDERNE_CONFIG,
   sef: SEF_CONFIG,
+  "sef-kontrakt": SEF_KONTRAKT_CONFIG,
 };
 
 export function getUnionConfig(id: string): UnionDemoConfig {

@@ -5,17 +5,17 @@ import {
   Upload,
   FileText,
   CheckCircle2,
-  Briefcase,
   Clock,
   Coins,
   Moon,
   Sun,
   CalendarDays,
   Shield,
-  Building2,
   BadgeCheck,
   Loader2,
-  AlertTriangle,
+  ShieldCheck,
+  ChevronRight,
+  AlertCircle,
   Scale,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,10 +25,6 @@ import { useDemo } from "@/contexts/DemoContext";
 import { CONTRACT_ANALYSIS_STEPS } from "@/lib/demoContract";
 import type { ContractDetails } from "@/lib/demoContract";
 import { cn } from "@/lib/utils";
-import {
-  ContractChecklist,
-  TerminationCard,
-} from "@/components/home/ContractDashboard";
 
 type ViewState = "upload" | "analyzing" | "overview";
 
@@ -49,7 +45,8 @@ export default function MobileContract() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileUpdatedRef = useRef(false);
 
-  const isContractProfile = demoConfig.demoProfile === "contract";
+  const isContractProfile = demoConfig.demoProfile === "contract" || demoConfig.demoProfile === "contract-only";
+  const isContractOnly = demoConfig.demoProfile === "contract-only";
 
   const [view, setView] = useState<ViewState>(() => {
     if (hasDetails) return "overview";
@@ -57,13 +54,11 @@ export default function MobileContract() {
     return "upload";
   });
 
-  // React to analysis state changes
   useEffect(() => {
     if (analysisState === "analyzing") setView("analyzing");
     if (analysisState === "done" && contractDetails) setView("overview");
   }, [analysisState, contractDetails]);
 
-  // Auto-populate user profile when contract details arrive
   useEffect(() => {
     if (contractDetails && !profileUpdatedRef.current) {
       profileUpdatedRef.current = true;
@@ -124,13 +119,20 @@ export default function MobileContract() {
         <AnalyzingView progress={analysisProgress} isContractProfile={isContractProfile} />
       )}
       {view === "overview" && contractDetails && (
-        <OverviewView
-          details={contractDetails}
-          filename={contract?.filename}
-          onGoHome={() => navigate(`${basePath}/home`)}
-          demoContractAnalysis={isContractProfile ? demoConfig.demoContractAnalysis : undefined}
-          contractIntelligence={isContractProfile ? demoConfig.contractIntelligence : undefined}
-        />
+        isContractOnly ? (
+          <OverviewHub
+            details={contractDetails}
+            filename={contract?.filename}
+            basePath={basePath}
+          />
+        ) : (
+          <OverviewView
+            details={contractDetails}
+            filename={contract?.filename}
+            demoContractAnalysis={isContractProfile ? demoConfig.demoContractAnalysis : undefined}
+            contractIntelligence={isContractProfile ? demoConfig.contractIntelligence : undefined}
+          />
+        )
       )}
     </main>
   );
@@ -188,7 +190,6 @@ function AnalyzingView({ progress, isContractProfile }: { progress: number; isCo
 
   return (
     <div className="flex flex-col items-center px-6 pt-16 pb-10">
-      {/* Progress ring */}
       <div className="relative w-32 h-32 mb-8">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" strokeWidth="6" className="stroke-muted" />
@@ -244,26 +245,28 @@ function AnalyzingView({ progress, isContractProfile }: { progress: number; isCo
 }
 
 // ──────────────────────────────────────────────
-// OVERVIEW VIEW
+// OVERVIEW HUB — contract-only profiles (SEF Kontrakttjek)
 // ──────────────────────────────────────────────
 
-function OverviewView({
+function OverviewHub({
   details,
   filename,
-  onGoHome,
-  demoContractAnalysis,
-  contractIntelligence,
+  basePath,
 }: {
   details: ContractDetails;
   filename?: string;
-  onGoHome: () => void;
-  demoContractAnalysis?: import("@/lib/demoUnionConfigs").DemoContractAnalysis;
-  contractIntelligence?: import("@/lib/demoUnionConfigs").ContractIntelligence;
+  basePath: string;
 }) {
+  const navigate = useNavigate();
+  const { demoConfig } = useDemo();
+  const analysis = demoConfig.demoContractAnalysis;
+
   const formatDate = (iso: string) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" });
+    return d.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" });
   };
+
+  const monthlyNorm = (details.employment.weeklyHours * (52 / 12)).toFixed(2).replace(".", ",");
 
   return (
     <div className="px-4 pb-24 pt-2 space-y-4 animate-fade-in">
@@ -290,14 +293,128 @@ function OverviewView({
         </div>
       </div>
 
-      {/* Overenskomst */}
+      {/* 4 stat boxes */}
+      <div className="grid grid-cols-2 gap-3">
+        <StatBox label="Løngruppe" value={details.salary.trinLabel} />
+        <StatBox label="Timer/md" value={monthlyNorm} />
+        <StatBox label="Ansat siden" value={formatDate(details.employment.startDate)} />
+        <StatBox label="Opsigelse" value={`${details.employment.noticePeriodMonths} mdr.`} />
+      </div>
+
+      {/* 3 navigation links */}
+      <div className="bg-card rounded-2xl border border-border overflow-hidden">
+        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 pt-4 pb-2">
+          Gå til
+        </h3>
+
+        <NavRow
+          icon={<ShieldCheck className="h-4 w-4 text-primary" />}
+          label="Vilkårstjek"
+          badge={analysis ? (
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
+                {analysis.compliant} OK
+              </span>
+              {analysis.deviations > 0 && (
+                <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                  {analysis.deviations} mangler
+                </span>
+              )}
+            </div>
+          ) : undefined}
+          onClick={() => navigate(`${basePath}/contract/check`)}
+        />
+
+        <NavRow
+          icon={<Scale className="h-4 w-4 text-primary" />}
+          label="Dine rettigheder"
+          onClick={() => navigate(`${basePath}/contract/rights`)}
+        />
+
+        <NavRow
+          icon={<AlertCircle className="h-4 w-4 text-primary" />}
+          label="Opsigelse & varsel"
+          onClick={() => navigate(`${basePath}/contract/termination`)}
+          isLast
+        />
+      </div>
+
+      {/* Footer */}
+      <p className="text-center text-[10px] text-muted-foreground pt-1">
+        Overenskomst: {details.collectiveAgreement.name}
+        <br />
+        {details.collectiveAgreement.unionFullName} × {details.collectiveAgreement.employerOrg}
+      </p>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────
+// OVERVIEW VIEW — stamdata inline + navigerbare sektioner
+// ──────────────────────────────────────────────
+
+function OverviewView({
+  details,
+  filename,
+  demoContractAnalysis,
+  contractIntelligence,
+}: {
+  details: ContractDetails;
+  filename?: string;
+  demoContractAnalysis?: import("@/lib/demoUnionConfigs").DemoContractAnalysis;
+  contractIntelligence?: import("@/lib/demoUnionConfigs").ContractIntelligence;
+}) {
+  const navigate = useNavigate();
+  const { basePath } = useDemo();
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" });
+  };
+
+  const monthlyNorm = (details.employment.weeklyHours * (52 / 12)).toFixed(2).replace(".", ",");
+
+  return (
+    <div className="px-4 pb-24 pt-2 space-y-4 animate-fade-in">
+      {/* Hero */}
+      <div className="bg-primary rounded-[2rem] p-6 text-primary-foreground shadow-xl shadow-primary/20 relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1">
+            <BadgeCheck className="w-5 h-5 text-primary-foreground/70" />
+            <span className="text-xs font-semibold text-primary-foreground/70 uppercase tracking-wider">
+              Kontrakt verificeret
+            </span>
+          </div>
+          <h2 className="text-2xl font-bold mb-1">{details.employee.name}</h2>
+          <p className="text-primary-foreground/70 text-sm">
+            {details.employment.title} — {details.employer.name}
+          </p>
+          {filename && (
+            <div className="mt-4 flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2 text-xs">
+              <FileText className="w-3.5 h-3.5" />
+              {filename}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Stamdata grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <InfoCell label="Ansat siden" value={formatDate(details.employment.startDate)} />
+        <InfoCell label="Opsigelse" value={`${details.employment.noticePeriodMonths} mdr.`} />
+        <InfoCell label="Timer/md" value={monthlyNorm} />
+        <InfoCell label="Løntrin" value={details.salary.trinLabel} />
+      </div>
+
+      {/* Aftaleramme */}
       <div className="bg-card rounded-2xl border border-border p-4">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Shield className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Overenskomst</p>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Aftaleramme</p>
             <p className="font-bold text-foreground text-sm">{details.collectiveAgreement.name}</p>
           </div>
         </div>
@@ -311,34 +428,76 @@ function OverviewView({
         </div>
       </div>
 
-      {/* Ansættelsesvilkår */}
-      <div className="bg-card rounded-2xl border border-border p-4">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-          <Briefcase className="w-3.5 h-3.5" />
-          Ansættelse
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          <InfoCell label="Stilling" value={details.employment.title} />
-          <InfoCell label="Ansættelsestype" value={details.employment.type === "permanent" ? "Fast" : "Midlertidig"} />
-          <InfoCell label="Ansat siden" value={formatDate(details.employment.startDate)} />
-          <InfoCell label="Ugentlige timer" value={`${details.employment.weeklyHours} timer`} />
-          <InfoCell label="Prøveperiode" value={`${details.employment.probationMonths} mdr.`} />
-          <InfoCell label="Opsigelse" value={`${details.employment.noticePeriodMonths} mdr.`} />
-        </div>
-      </div>
+      {/* Navigerbare sektioner */}
+      {(demoContractAnalysis || contractIntelligence?.termination) && (
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 pt-4 pb-2">
+            Gå til
+          </h3>
 
-      {/* Lønsatser */}
+          {demoContractAnalysis && (
+            <NavRow
+              icon={<ShieldCheck className="h-4 w-4 text-primary" />}
+              label="Vilkårstjek"
+              badge={
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
+                    {demoContractAnalysis.compliant} OK
+                  </span>
+                  {demoContractAnalysis.deviations > 0 && (
+                    <span className="text-[10px] font-semibold bg-red-100 text-red-800 px-1.5 py-0.5 rounded">
+                      {demoContractAnalysis.deviations} fejl
+                    </span>
+                  )}
+                </div>
+              }
+              onClick={() => navigate(`${basePath}/contract/check`)}
+            />
+          )}
+
+          {contractIntelligence?.termination && (
+            <NavRow
+              icon={<AlertCircle className="h-4 w-4 text-primary" />}
+              label="Opsigelse & varsel"
+              badge={
+                <span className="text-[10px] font-medium text-muted-foreground">
+                  {contractIntelligence.termination.employerNoticePeriodMonths} mdr.
+                </span>
+              }
+              onClick={() => navigate(`${basePath}/contract/termination`)}
+              isLast={!contractIntelligence.negotiationPoints?.length}
+            />
+          )}
+
+          {contractIntelligence && contractIntelligence.negotiationPoints.length > 0 && (
+            <NavRow
+              icon={<Scale className="h-4 w-4 text-primary" />}
+              label="Karriere & forhandling"
+              onClick={() => navigate(`${basePath}/package`)}
+              isLast
+            />
+          )}
+        </div>
+      )}
+
+      {/* Løn & tillæg — compact for agreement profiles without contractIntelligence */}
       <div className="bg-card rounded-2xl border border-border p-4">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
           <Coins className="w-3.5 h-3.5" />
-          Lønsatser
+          Løn & personalegoder
         </h3>
 
-        {/* Grundløn hero */}
         <div className="bg-primary/5 rounded-xl p-4 mb-3 flex items-center justify-between border border-primary/10">
           <div>
-            <p className="text-xs text-muted-foreground">Grundtimeløn</p>
-            <p className="text-2xl font-bold text-foreground">{details.salary.hourlyRate.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">kr/t</span></p>
+            <p className="text-xs text-muted-foreground">
+              {details.salary.monthlyRate ? "Grundløn" : "Grundtimeløn"}
+            </p>
+            <p className="text-2xl font-bold text-foreground">
+              {details.salary.monthlyRate
+                ? <>{details.salary.monthlyRate.toLocaleString("da-DK")} <span className="text-sm font-normal text-muted-foreground">kr/md</span></>
+                : <>{details.salary.hourlyRate.toFixed(2)} <span className="text-sm font-normal text-muted-foreground">kr/t</span></>
+              }
+            </p>
           </div>
           <span className="px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold">
             {details.salary.trinLabel}
@@ -355,7 +514,6 @@ function OverviewView({
           </div>
         )}
 
-        {/* Tillæg */}
         <div className="space-y-2">
           {details.supplements.type === 'fixed' ? (
             <>
@@ -379,51 +537,12 @@ function OverviewView({
           )}
         </div>
 
-        {/* Bruttoløn total — only for contract profiles with intel data */}
         {contractIntelligence && (
           <div className="flex items-center justify-between py-3 px-1 mt-2 border-t border-border/40">
-            <p className="text-sm font-bold text-foreground">Bruttoløn i alt</p>
+            <p className="text-sm font-bold text-foreground">Samlet lønpakke</p>
             <span className="text-sm font-bold text-primary">
               {contractIntelligence.totalPackage.toLocaleString("da-DK")} kr/md
             </span>
-          </div>
-        )}
-      </div>
-
-      {/* Pension */}
-      <div className="bg-card rounded-2xl border border-border p-4">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-          <Building2 className="w-3.5 h-3.5" />
-          Pension
-        </h3>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-muted/30 rounded-xl p-3">
-            <p className="text-lg font-bold text-foreground">{details.pension.employeePercent}%</p>
-            <p className="text-[10px] text-muted-foreground uppercase">Egetbidrag</p>
-          </div>
-          <div className="bg-muted/30 rounded-xl p-3">
-            <p className="text-lg font-bold text-foreground">{details.pension.employerPercent}%</p>
-            <p className="text-[10px] text-muted-foreground uppercase">Arbejdsgiver</p>
-          </div>
-          <div className="bg-muted/30 rounded-xl p-3">
-            <p className="text-lg font-bold text-foreground">{details.pension.employeePercent + details.pension.employerPercent}%</p>
-            <p className="text-[10px] text-muted-foreground uppercase">I alt</p>
-          </div>
-        </div>
-        <p className="text-xs text-muted-foreground mt-2 text-center">{details.pension.provider}</p>
-
-        {/* Fritvalg nudge */}
-        {contractIntelligence && contractIntelligence.pension.fritvalgPercent > 0 && (
-          <div className="mt-3 rounded-xl bg-primary/5 border border-primary/10 p-3 flex items-start gap-2">
-            <Coins className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-foreground">
-                Fritvalg: ~{contractIntelligence.pension.fritvalgMonthly.toLocaleString("da-DK")} kr/md
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {contractIntelligence.pension.fritvalgPercent}%-point over minimumsgrænsen ({contractIntelligence.pension.minimumPercent}%) kan udbetales som løn
-              </p>
-            </div>
           </div>
         )}
       </div>
@@ -443,28 +562,6 @@ function OverviewView({
       <div className="text-center text-xs text-muted-foreground pt-2">
         Kontrakt underskrevet {formatDate(details.signedDate)}
       </div>
-
-      {/* Vilkårstjek — contract profiles get the enhanced checklist */}
-      {demoContractAnalysis && (
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <ContractChecklist analysis={demoContractAnalysis} />
-        </div>
-      )}
-
-      {/* Opsigelse & rettigheder */}
-      {contractIntelligence?.termination && (
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <TerminationCard termination={contractIntelligence.termination} />
-        </div>
-      )}
-
-      {/* CTA */}
-      <Button
-        className="w-full h-14 text-base font-bold rounded-2xl"
-        onClick={onGoHome}
-      >
-        Gå til dashboard
-      </Button>
     </div>
   );
 }
@@ -472,6 +569,46 @@ function OverviewView({
 // ──────────────────────────────────────────────
 // Small helpers
 // ──────────────────────────────────────────────
+
+function StatBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-card rounded-xl border border-border px-3 py-2.5">
+      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</p>
+      <p className="text-sm font-semibold text-foreground mt-0.5">{value}</p>
+    </div>
+  );
+}
+
+function NavRow({
+  icon,
+  label,
+  badge,
+  onClick,
+  isLast = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  badge?: React.ReactNode;
+  onClick: () => void;
+  isLast?: boolean;
+}) {
+  return (
+    <button
+      className={cn(
+        "w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors",
+        !isLast && "border-b border-border/30"
+      )}
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-2.5">
+        {icon}
+        <span className="text-[13px] font-medium text-foreground">{label}</span>
+        {badge}
+      </div>
+      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+    </button>
+  );
+}
 
 function InfoCell({ label, value }: { label: string; value: string }) {
   return (
@@ -506,5 +643,3 @@ function SupplementRow({
     </div>
   );
 }
-
-

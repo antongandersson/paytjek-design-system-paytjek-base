@@ -38,6 +38,7 @@ export interface ContractDetails {
   // Løn
   salary: {
     hourlyRate: number;
+    monthlyRate?: number;
     trin: number;
     trinLabel: string;
     seniorityYears: number;

@@ -8,6 +8,9 @@ export { default as MobileSettings } from "./Settings";
 export { default as MobileHelp } from "./Help";
 export { default as MobileMembership } from "./Membership";
 export { default as MobileContract } from "./Contract";
+export { default as MobileContractCheck } from "./ContractCheck";
+export { default as MobileContractRights } from "./ContractRights";
+export { default as MobileContractTermination } from "./ContractTermination";
 export { default as MobilePackage } from "./Package";
 export { default as MobileBooking } from "./Booking";
 

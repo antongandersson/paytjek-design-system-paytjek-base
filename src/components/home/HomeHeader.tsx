@@ -17,7 +17,11 @@ export function HomeHeader({
   name,
   isLoading = false,
   hasPayslipData = false,
+  hasContract = false,
 }: HomeHeaderProps) {
+  const { demoConfig } = useDemo();
+  const isContractOnly = demoConfig.demoProfile === "contract-only";
+
   const now = new Date();
   const hour = now.getHours();
   const greeting = hour < 10 ? "God morgen" : hour < 17 ? "Hej" : "God aften";
@@ -31,15 +35,17 @@ export function HomeHeader({
     );
   }
 
+  const subtitle = isContractOnly
+    ? "Din kontrakt skal være korrekt"
+    : (hasPayslipData ? "Her er dit lønoverblik" : "Din løn skal være korrekt");
+
   return (
     <div className="pt-2 pb-1">
       <h1 className="text-2xl font-bold text-foreground tracking-tight">
         {greeting}, {name || "der"} 👋
       </h1>
       <p className="text-sm text-muted-foreground mt-0.5">
-        {hasPayslipData
-          ? "Her er dit lønoverblik"
-          : "Din løn skal være korrekt"}
+        {subtitle}
       </p>
     </div>
   );

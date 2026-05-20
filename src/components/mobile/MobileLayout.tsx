@@ -14,7 +14,8 @@ import { usePayslip } from "@/contexts/PayslipContext";
 export function MobileLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { basePath } = useDemo();
+  const { basePath, demoConfig } = useDemo();
+  const isContractOnly = demoConfig.demoProfile === "contract-only";
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const { pendingOvertimeCheck, confirmShift, snoozeOvertimeCheck, isConnected: hasCalendar } = useCalendar();
   const { hasContract } = useContract();
@@ -77,7 +78,9 @@ export function MobileLayout() {
   };
 
   const handleCenterClick = () => {
-    setUploadDrawerOpen(true);
+    if (!isContractOnly) {
+      setUploadDrawerOpen(true);
+    }
   };
 
   const handleUploadOption = (option: string) => {

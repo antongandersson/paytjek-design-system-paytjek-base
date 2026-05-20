@@ -268,6 +268,9 @@ interface ContractChecklistProps {
 }
 
 export function ContractChecklist({ analysis }: ContractChecklistProps) {
+  const missingCount = analysis.clauses.filter(c => c.status === "missing").length;
+  const deviationCount = analysis.clauses.filter(c => c.status === "deviation").length;
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -279,9 +282,14 @@ export function ContractChecklist({ analysis }: ContractChecklistProps) {
           <span className="flex items-center gap-1 text-green-600 font-semibold">
             <CheckCircle2 className="h-3.5 w-3.5" /> {analysis.compliant} OK
           </span>
-          {analysis.deviations > 0 && (
+          {deviationCount > 0 && (
+            <span className="flex items-center gap-1 text-red-600 font-semibold">
+              <AlertCircle className="h-3.5 w-3.5" /> {deviationCount} fejl
+            </span>
+          )}
+          {missingCount > 0 && (
             <span className="flex items-center gap-1 text-amber-600 font-semibold">
-              <AlertTriangle className="h-3.5 w-3.5" /> {analysis.deviations} afvig.
+              <AlertTriangle className="h-3.5 w-3.5" /> {missingCount} mangler
             </span>
           )}
         </div>
@@ -292,17 +300,27 @@ export function ContractChecklist({ analysis }: ContractChecklistProps) {
           <div
             key={clause.clause}
             className={`flex items-start gap-2.5 p-3 rounded-xl ${
-              clause.status === "deviation" ? "bg-amber-50" : "bg-green-50/50"
+              clause.status === "deviation"
+                ? "bg-red-50"
+                : clause.status === "missing"
+                  ? "bg-amber-50"
+                  : "bg-green-50/50"
             }`}
           >
             {clause.status === "compliant" ? (
               <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+            ) : clause.status === "deviation" ? (
+              <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
             ) : (
               <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
             )}
             <div className="min-w-0">
               <p className={`text-sm leading-snug ${
-                clause.status === "deviation" ? "font-semibold text-amber-700" : "text-foreground"
+                clause.status === "deviation"
+                  ? "font-semibold text-red-700"
+                  : clause.status === "missing"
+                    ? "font-semibold text-amber-700"
+                    : "text-foreground"
               }`}>
                 {clause.clause}
               </p>

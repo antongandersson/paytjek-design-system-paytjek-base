@@ -37,6 +37,9 @@ import {
   MobileHelp,
   MobileMembership,
   MobileContract,
+  MobileContractCheck,
+  MobileContractRights,
+  MobileContractTermination,
   MobilePackage,
   MobileBooking,
 } from "./pages/mobile";
@@ -111,6 +114,9 @@ const App = () => (
                             <Route path="help" element={<MobileHelp />} />
                             <Route path="membership" element={<MobileMembership />} />
                             <Route path="contract" element={<MobileContract />} />
+                            <Route path="contract/check" element={<MobileContractCheck />} />
+                            <Route path="contract/rights" element={<MobileContractRights />} />
+                            <Route path="contract/termination" element={<MobileContractTermination />} />
                             <Route path="package" element={<MobilePackage />} />
                             <Route path="booking" element={<MobileBooking />} />
                           </Route>

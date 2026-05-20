@@ -108,6 +108,132 @@ export function StatusHero({ stats }: StatusHeroProps) {
 }
 
 // ─────────────────────────────────────────────
+// 1a. CONTRACT STATUS HERO — for contract-only profiles
+// ─────────────────────────────────────────────
+
+interface ContractStatusHeroProps {
+  analysis: DemoContractAnalysis;
+  hasContract: boolean;
+  contractDetails: ContractDetails | null;
+  onUploadContract: () => void;
+}
+
+export function ContractStatusHero({
+  analysis,
+  hasContract,
+  contractDetails,
+  onUploadContract,
+}: ContractStatusHeroProps) {
+  const navigate = useNavigate();
+  const { basePath } = useDemo();
+
+  // Ingen kontrakt endnu — stor inviterende CTA
+  if (!hasContract) {
+    return (
+      <div
+        className="rounded-3xl border-2 border-dashed border-primary/20 bg-primary/5 px-6 pt-8 pb-7 cursor-pointer active:scale-[0.99] transition-all hover:border-primary/40 hover:bg-primary/8"
+        onClick={onUploadContract}
+      >
+        <div className="flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+            <FileText className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="text-lg font-bold text-foreground mb-2">
+            Upload din ansættelseskontrakt
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
+            Vi tjekker automatisk om dine vilkår er korrekte og finder eventuelle afvigelser
+          </p>
+          <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-semibold text-sm">
+            <FileText className="w-4 h-4" />
+            Vælg fil
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">PDF, Word eller billede</p>
+        </div>
+      </div>
+    );
+  }
+
+  const employer = contractDetails?.employer.name ?? "";
+  const trinLabel = contractDetails?.salary.trinLabel ?? "";
+  const weeklyHours = contractDetails?.employment.weeklyHours;
+  const hasDeviation = analysis.deviations > 0;
+  const missingCount = analysis.clauses.filter(c => c.status === "missing").length;
+  const deviationCount = analysis.clauses.filter(c => c.status === "deviation").length;
+
+  return (
+    <div className="space-y-3">
+      {/* Kontraktkort */}
+      <div
+        className="rounded-2xl bg-card border border-border p-4 cursor-pointer active:scale-[0.99] transition-transform"
+        onClick={() => navigate(`${basePath}/contract`)}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <FileText className="h-3 w-3" /> Kontrakt
+          </p>
+          {hasDeviation ? (
+            <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+          ) : (
+            <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+          )}
+        </div>
+        <p className="text-base font-bold text-foreground">{employer}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {trinLabel} · Fuldtid · {weeklyHours ? `${(weeklyHours * 4.33).toFixed(2).replace(".", ",")} t/md` : "154,12 t/md"}
+        </p>
+        <div className="flex items-center gap-3 mt-2 text-xs">
+          <span className="flex items-center gap-1 text-green-600 font-semibold">
+            <CheckCircle2 className="h-3 w-3" /> {analysis.compliant}/{analysis.totalClauses} OK
+          </span>
+          {deviationCount > 0 && (
+            <span className="text-red-600 font-semibold">{deviationCount} fejl</span>
+          )}
+          {missingCount > 0 && (
+            <span className="text-amber-600 font-semibold">{missingCount} mangler</span>
+          )}
+        </div>
+        <div className="mt-3 flex items-center gap-1 text-xs text-primary font-semibold">
+          Se detaljer <ChevronRight className="h-3.5 w-3.5" />
+        </div>
+      </div>
+
+      {/* Dine Rettigheder highlights */}
+      <div
+        className="rounded-2xl bg-card border border-border p-4 cursor-pointer active:scale-[0.99] transition-transform"
+        onClick={() => navigate(`${basePath}/contract`)}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <ShieldCheck className="h-3 w-3" /> Dine rettigheder
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <RightsHighlightRow emoji="💰" text={`Grundløn ${trinLabel}: ${contractDetails?.salary.hourlyRate ? (contractDetails.salary.hourlyRate * (weeklyHours ? weeklyHours * 4.33 : 154.12) / (weeklyHours ? weeklyHours * 4.33 : 154.12)).toFixed(2).replace(".", ",") : "200,80"} kr/t`} />
+          <RightsHighlightRow emoji="🏥" text="Fuld løn under sygdom" />
+          <RightsHighlightRow emoji="🔒" text={`${contractDetails?.employment.noticePeriodMonths ?? 4} mdr. opsigelsesvarsel`} />
+          <RightsHighlightRow emoji="📚" text="2 ugers uddannelsesret/år" />
+        </div>
+
+        <div className="mt-3 flex items-center gap-1 text-xs text-primary font-semibold">
+          Se alle rettigheder <ChevronRight className="h-3.5 w-3.5" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RightsHighlightRow({ emoji, text }: { emoji: string; text: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="text-sm">{emoji}</span>
+      <span className="text-sm text-foreground">{text}</span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // 1b. DASHBOARD CONTEXT ROW — kontrakt + vagtplan
 // ─────────────────────────────────────────────
 
@@ -148,7 +274,58 @@ export function DashboardContextRow({
   const formatKr = (n: number) =>
     n.toLocaleString("da-DK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
+  const hasContractAnalysis = (demoProfile === "contract" || demoProfile === "contract-only") && !!demoContractAnalysis;
   const careerUnlocked = demoProfile === "contract" && !!contractDetails && hasPayslipData;
+
+  if (demoProfile === "contract-only") {
+    return (
+      <div className="grid grid-cols-1 gap-3">
+        <Card
+          className="border-border/60 cursor-pointer hover:border-primary/30 transition-colors"
+          onClick={() => navigate(`${basePath}/contract`)}
+        >
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="h-3 w-3" /> Kontrakt
+              </p>
+              {contractDetails && (
+                demoContractAnalysis && demoContractAnalysis.deviations > 0
+                  ? <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                  : <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+              )}
+            </div>
+            {contractDetails ? (
+              <>
+                <p className="text-sm font-bold text-foreground leading-snug">
+                  {contractDetails.employer.name}
+                </p>
+                {demoContractAnalysis ? (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    {demoContractAnalysis.deviations > 0 ? (
+                      <span className="text-amber-600 font-semibold">
+                        {demoContractAnalysis.deviations} afvigelse fundet
+                      </span>
+                    ) : (
+                      <span>Alle vilkår OK</span>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {contractDetails.salary.hourlyRate.toFixed(0)} kr/t
+                    {" · "}
+                    {contractDetails.employment.weeklyHours}t/uge
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground mt-1">Upload din kontrakt for at komme i gang</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -163,7 +340,7 @@ export function DashboardContextRow({
               <FileText className="h-3 w-3" /> Kontrakt
             </p>
             {contractDetails && (
-              demoProfile === "contract" && demoContractAnalysis && demoContractAnalysis.deviations > 0
+              hasContractAnalysis && demoContractAnalysis && demoContractAnalysis.deviations > 0
                 ? <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
                 : <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
             )}
@@ -173,7 +350,7 @@ export function DashboardContextRow({
               <p className="text-sm font-bold text-foreground leading-snug">
                 {contractDetails.employer.name}
               </p>
-              {demoProfile === "contract" && demoContractAnalysis ? (
+              {hasContractAnalysis && demoContractAnalysis ? (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   {demoContractAnalysis.deviations > 0 ? (
                     <span className="text-amber-600 font-semibold">

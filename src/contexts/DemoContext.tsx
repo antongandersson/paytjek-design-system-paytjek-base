@@ -57,6 +57,7 @@ const AVAILABLE_UNIONS: { id: UnionId; name: string; fullName: string }[] = [
   { id: "3f", name: "3F", fullName: "3F – Fagligt Fælles Forbund" },
   { id: "lederne", name: "Lederne", fullName: "Lederne" },
   { id: "sef", name: "Serviceforbundet", fullName: "Serviceforbundet / VSL" },
+  { id: "sef-kontrakt", name: "SEF Kontrakttjek", fullName: "Serviceforbundet / VSL — Kontrakttjek" },
 ];
 
 export function DemoProvider({ children }: { children: ReactNode }) {

@@ -175,11 +175,17 @@ export interface PayslipData {
   
   // Totaler
   totals: {
-    bruttolon: number;      // Bruttoløn (før skat)
-    nettolon: number;       // Nettoløn (udbetalt)
-    totalFradrag: number;   // Samlede fradrag
-    totalTillaeg: number;   // Samlede tillæg
+    bruttolon: number;      // A-indkomst (skattegrundlag inkl. personalegoder)
+    nettolon: number;       // Til udbetaling (kontant løn − fradrag)
+    totalFradrag: number;   // Samlede fradrag (AM + skat + pension + ATP)
+    totalTillaeg: number;   // Samlede tillæg (kontante)
   };
+
+  // Personalegoder (beskattes men udbetales ikke)
+  personalegoder?: Array<{ label: string; beloeb: number }>;
+
+  // Kontant løn i alt (grundløn + kontante tillæg, ekskl. personalegoder)
+  kontantLon?: number;
   
   // Metadata
   uploadedAt: string;       // ISO datetime
@@ -343,6 +349,8 @@ export type PayslipField =
   | "soenHelligdag"
   | "raadighestillaeg"
   | "overtid"
+  | "ferietillaeg"
+  | "saerlig_opsparing"
   // Fradrag  
   | "pension" 
   | "pensionRaadighed"

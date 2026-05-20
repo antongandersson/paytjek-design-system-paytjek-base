@@ -17,17 +17,27 @@ interface BottomNavigationProps {
 
 export function BottomNavigation({ activeTab, onTabChange, onCenterClick }: BottomNavigationProps) {
   const { demoConfig } = useDemo();
-  const isContractProfile = demoConfig.demoProfile === "contract";
+  const profile = demoConfig.demoProfile;
+  const isContractProfile = profile === "contract";
+  const isContractOnly = profile === "contract-only";
 
-  const navItems: NavItem[] = [
-    { icon: Home, label: "Hjem", id: "hjem" },
-    isContractProfile
-      ? { icon: FileText, label: "Kontrakt", id: "kontrakt" }
-      : { icon: Calendar, label: "Kalender", id: "kalender" },
-    { icon: FileCheck, label: "Løntjek", id: "lontjek", isCenter: true },
-    { icon: History, label: "Historie", id: "historie" },
-    { icon: MoreHorizontal, label: "Mere", id: "mere" },
-  ];
+  const navItems: NavItem[] = isContractOnly
+    ? [
+        { icon: Home, label: "Hjem", id: "hjem" },
+        { icon: FileText, label: "Kontrakt", id: "kontrakt" },
+        { icon: FileCheck, label: "Løntjek", id: "lontjek", isCenter: true },
+        { icon: History, label: "Historie", id: "historie" },
+        { icon: MoreHorizontal, label: "Mere", id: "mere" },
+      ]
+    : [
+        { icon: Home, label: "Hjem", id: "hjem" },
+        isContractProfile
+          ? { icon: FileText, label: "Kontrakt", id: "kontrakt" }
+          : { icon: Calendar, label: "Kalender", id: "kalender" },
+        { icon: FileCheck, label: "Løntjek", id: "lontjek", isCenter: true },
+        { icon: History, label: "Historie", id: "historie" },
+        { icon: MoreHorizontal, label: "Mere", id: "mere" },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-area-bottom">
@@ -37,28 +47,35 @@ export function BottomNavigation({ activeTab, onTabChange, onCenterClick }: Bott
           const Icon = item.icon;
 
           if (item.isCenter) {
+            const isDisabled = isContractOnly;
             return (
               <button
                 key={item.id}
                 onClick={() => {
+                  if (isDisabled) return;
                   onCenterClick?.();
                   onTabChange(item.id);
                 }}
-                className="flex flex-col items-center justify-center -mt-4"
+                className={cn(
+                  "flex flex-col items-center justify-center -mt-4",
+                  isDisabled && "opacity-40 cursor-default"
+                )}
               >
                 <div className={cn(
                   "flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-200 shadow-lg",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-primary text-primary-foreground hover:scale-105"
+                  isDisabled
+                    ? "bg-muted text-muted-foreground shadow-none"
+                    : isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-primary text-primary-foreground hover:scale-105"
                 )}>
                   <Icon className="h-6 w-6" />
                 </div>
                 <span className={cn(
                   "text-xs font-medium mt-1 transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isDisabled ? "text-muted-foreground" : isActive ? "text-primary" : "text-muted-foreground"
                 )}>
-                  {item.label}
+                  {isDisabled ? "Kommer snart" : item.label}
                 </span>
               </button>
             );

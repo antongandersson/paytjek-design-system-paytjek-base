@@ -9,6 +9,7 @@ interface QuickActionsProps {
   onUploadContract?: () => void;
   careerUnlocked?: boolean;
   demoProfile?: DemoProfile;
+  hasContract?: boolean;
 }
 
 export { QuickActions as ActionCards };
@@ -20,7 +21,23 @@ export function QuickActions({
   onUploadContract,
   careerUnlocked = false,
   demoProfile = "agreement",
+  hasContract = false,
 }: QuickActionsProps) {
+  if (demoProfile === "contract-only") {
+    return (
+      <div className="grid grid-cols-1 gap-3">
+        <Button
+          variant={hasContract ? "secondary" : "default"}
+          className="h-14 rounded-2xl gap-2 font-semibold text-base"
+          onClick={onUploadContract}
+        >
+          <Upload className="h-5 w-5" />
+          {hasContract ? "Upload ny kontrakt" : "Tjek din kontrakt"}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 gap-3">
       <Button

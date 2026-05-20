@@ -55,7 +55,128 @@ const ContractContext = createContext<ContractContextType | null>(null);
 function buildDemoContract(config: UnionDemoConfig): ContractDetails {
   if (config.id === "foa") return buildFoaContract(config);
   if (config.id === "djoef") return buildDjoefContract(config);
+  if (config.id === "sef-kontrakt") return buildSefKontraktContract(config);
+  if (config.id === "lederne") return buildLederneContract(config);
   return buildGenericContract(config);
+}
+
+function buildLederneContract(config: UnionDemoConfig): ContractDetails {
+  const startDate = "2012-03-01";
+  return {
+    employee: {
+      name: config.persona.name,
+      cpr: "180782-••••",
+      address: "Skovvangen 14, 8600 Silkeborg",
+    },
+    employer: {
+      name: config.persona.employer,
+      cvr: config.persona.cvr,
+      address: "Industrivej 42, 8600 Silkeborg",
+      department: "Produktion",
+    },
+    employment: {
+      title: config.persona.jobTitle,
+      startDate,
+      type: "permanent",
+      weeklyHours: 37,
+      probationMonths: 0,
+      noticePeriodMonths: 9,
+    },
+    collectiveAgreement: {
+      name: config.collectiveAgreement,
+      id: "lederne-lederaftalen",
+      union: "Lederne",
+      unionFullName: "Lederne",
+      employerOrg: "DA (Dansk Arbejdsgiverforening)",
+    },
+    salary: {
+      hourlyRate: 425.00,
+      monthlyRate: 68000,
+      trin: 0,
+      trinLabel: "Individuel aftale",
+      seniorityYears: 13,
+      seniorityFrom: startDate,
+      fritvalgPercent: 0,
+    },
+    supplements: {
+      type: "agreement",
+      description: "Individuel lederkontrakt — personalegoder og bonus",
+      rules: [
+        { label: "Fri bil (BMW 330e)", rule: "9.760 kr/md skatteværdi" },
+        { label: "Fri telefon", rule: "300 kr/md skatteværdi" },
+        { label: "Bonus (op til 15% af grundløn)", rule: "Udbetales i marts" },
+        { label: "Ferietillæg (kontraktens pkt. 7.1)", rule: "2% af ferieberettiget løn" },
+      ],
+    },
+    pension: {
+      employeePercent: 5,
+      employerPercent: 10,
+      provider: "PFA Lederpension",
+    },
+    vacation: {
+      daysPerYear: 25,
+      type: "Ferie med løn + ferietillæg 2% + 5 feriefridage + ekstra fridage (juleaften, nytårsaften, grundlovsdag)",
+    },
+    signedDate: startDate,
+    documentId: "ANS-2012-03-01-TV",
+  };
+}
+
+function buildSefKontraktContract(config: UnionDemoConfig): ContractDetails {
+  const startDate = "2022-06-01";
+  return {
+    employee: {
+      name: config.persona.name,
+      cpr: "120993-••••",
+      address: "Frederiksborgvej 88, 2. th., 2400 København NV",
+    },
+    employer: {
+      name: config.persona.employer,
+      cvr: config.persona.cvr,
+      address: "Sydmarken 32, 2860 Søborg",
+      department: "Kontrolcentral, Ballerup",
+    },
+    employment: {
+      title: config.persona.jobTitle,
+      startDate,
+      type: "permanent",
+      weeklyHours: 37,
+      probationMonths: 3,
+      noticePeriodMonths: 4,
+    },
+    collectiveAgreement: {
+      name: config.collectiveAgreement,
+      id: "DI-854609",
+      union: "Serviceforbundet/VSL",
+      unionFullName: "Serviceforbundet / VSL – Vagt- og Sikkerhedsfunktionærernes Fagforening",
+      employerOrg: "DI Overenskomst II",
+    },
+    salary: {
+      hourlyRate: 200.80,
+      trin: 3,
+      trinLabel: "Gruppe 3 (over 36 mdr.)",
+      seniorityYears: 3,
+      seniorityFrom: startDate,
+      fritvalgPercent: 0,
+    },
+    supplements: {
+      type: "fixed",
+      evening: { rate: 0, label: "Genetillæg aften/nat", hours: "Inkl. i grundløn (§6)" },
+      saturday: { rate: 34.16, label: "Lørdagstillæg (lør 14–man 06)", hours: "§7, stk. 1" },
+      sunday: { rate: 51.44, label: "Søn-/helligdagstillæg", hours: "§7, stk. 1" },
+    },
+    pension: {
+      employeePercent: 2,
+      employerPercent: 11,
+      provider: "PensionDanmark",
+    },
+    vacation: {
+      daysPerYear: 25,
+      type: "Feriegodtgørelse iht. ferieloven + 5 feriefridage (§13) + særlig opsparing 10% (§14)",
+    },
+    signedDate: startDate,
+    documentId: "ANS-2022-06-01-MB",
+  };
 }
 
 function buildFoaContract(config: UnionDemoConfig): ContractDetails {

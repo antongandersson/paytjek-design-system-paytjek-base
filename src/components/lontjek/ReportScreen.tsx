@@ -75,6 +75,8 @@ function getFieldLabel(field: PayslipField): string {
     soenHelligdag: "Manglende søn/helligdagstillæg",
     raadighestillaeg: "Rådighedstillæg",
     overtid: "Overtid",
+    ferietillaeg: "Ferietillæg",
+    saerlig_opsparing: "Særlig opsparing",
     pension: "Pension",
     pensionRaadighed: "Pension af råd.tillæg",
     skat: "Skat",
@@ -341,12 +343,11 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
   const { salary, supplements, deductions, absence, totals } = payslipData;
   const { discrepancies } = validationResult;
 
-  // Tjek for issues
-  const hasIssues = discrepancies.some(d => d.severity === "error" || d.severity === "warning");
-  const issuesCount = discrepancies.filter(d => d.severity === "error" || d.severity === "warning").length;
-  const hasErrors = discrepancies.some(d => d.severity === "error");
+  const hasPersonalegoder = payslipData.personalegoder && payslipData.personalegoder.length > 0;
+  const kontantLon = payslipData.kontantLon ?? totals.bruttolon;
+  const personalegoderTotal = payslipData.personalegoder?.reduce((s, p) => s + p.beloeb, 0) ?? 0;
 
-  // Tillæg med issues
+  // Tillæg med issues (for non-personalegoder payslips like FOA/HK)
   const supplementsWithIssues = [
     ...(supplements.raadighestillaeg ? [{ field: "raadighestillaeg" as PayslipField, label: "Rådighedstillæg", icon: Briefcase, ...supplements.raadighestillaeg }] : []),
     { field: "aftentillaeg" as PayslipField, label: "Aftentillæg", icon: Moon, ...supplements.aftentillaeg },
@@ -355,12 +356,18 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
     { field: "soenHelligdag" as PayslipField, label: "Weekend/helligdag", icon: Sun, ...supplements.soenHelligdag },
   ].filter(s => s.beloeb > 0 || getFieldStatus(s.field, discrepancies) !== "ok");
 
+  // Ferietillæg discrepancy
+  const ferietillaegStatus = getFieldStatus("ferietillaeg", discrepancies);
+  const ferietillaegDiscrepancy = discrepancies.find(d => d.field === "ferietillaeg");
+
+  // Pension discrepancy (for info section)
+  const pensionDiscrepancy = discrepancies.find(d => d.field === "pension");
+
   return (
     <div className="px-4 pb-6 space-y-4 animate-fade-in">
 
       {/* 1. Salary Receipt Card */}
       <div className="bg-card rounded-3xl border border-border shadow-sm relative overflow-hidden">
-        {/* Decorative top perforation */}
         <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-muted/30 to-transparent border-b border-dashed border-border/50" />
         
         <div className="p-5 pt-6">
@@ -374,108 +381,192 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
             </span>
           </div>
 
-          {/* Indtægter */}
           <div className="space-y-3 text-sm">
-            {/* Grundløn */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Grundløn</span>
-                <span className="text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded font-mono">
-                  {salary.normalTimer}t
-                </span>
-              </div>
-              <span className="font-semibold">{formatKr(salary.grundlon)}</span>
-            </div>
-            
-            {/* Tillæg Group */}
-            {supplementsWithIssues.length > 0 && (
-              <div className="pl-3 border-l-2 border-accent/40 space-y-2 py-2 my-2">
-                {supplementsWithIssues.map((supp) => {
-                  const status = getFieldStatus(supp.field, discrepancies);
-                  const hasIssue = status === "error" || status === "warning";
-                  const Icon = supp.icon;
-                  
-                  return (
-                    <div key={supp.field} className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Icon className={cn(
-                          "w-3.5 h-3.5",
-                          hasIssue ? (status === "error" ? "text-red-500" : "text-amber-500") : "text-muted-foreground"
-                        )} />
-                        <span className={cn(
-                          "text-xs",
-                          hasIssue ? (status === "error" ? "text-red-600" : "text-amber-600") : "text-muted-foreground"
-                        )}>
-                          {supp.label}
-                          {supp.timer > 0 && <span className="ml-1">({supp.timer}t)</span>}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={cn(
-                          "text-xs font-medium",
-                          hasIssue 
-                            ? (status === "error" ? "text-red-600 line-through" : "text-amber-600 line-through")
-                            : "text-accent"
-                        )}>
-                          +{formatKr(supp.beloeb)}
-                        </span>
-                        {hasIssue && (
-                          <button 
-                            onClick={onSeeErrors}
-                            className={cn(
-                              "text-[10px] px-1.5 py-0.5 rounded font-bold",
-                              status === "error" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
-                            )}
-                          >
-                            FEJL
-                          </button>
-                        )}
-                      </div>
+
+            {/* ── KONTANT LØN ── */}
+            {hasPersonalegoder ? (
+              <>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Kontant løn</p>
+
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-foreground">Grundløn</span>
+                  <span className="font-semibold">{formatKr(salary.grundlon)}</span>
+                </div>
+
+                {/* Kontante tillæg (bonus, ferietillæg, etc.) */}
+                {totals.totalTillaeg > 0 && ferietillaegDiscrepancy && (
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+                      <span className="font-medium text-red-700">
+                        Ferietillæg (1% af grundløn)
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-red-600">
+                        {formatKr(totals.totalTillaeg)}
+                      </span>
+                      <button
+                        onClick={onSeeErrors}
+                        className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-700"
+                      >
+                        ⚠️
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {totals.totalTillaeg > 0 && !ferietillaegDiscrepancy && (
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-foreground">Bonus</span>
+                    <span className="font-semibold">{formatKr(totals.totalTillaeg)}</span>
+                  </div>
+                )}
+
+                {/* Kontant løn subtotal */}
+                <div className="flex justify-between items-center pt-2 border-t border-dashed border-border/60">
+                  <span className="font-semibold text-foreground text-xs">Kontant løn i alt</span>
+                  <span className="font-bold text-foreground">{formatKr(kontantLon)}</span>
+                </div>
+
+                {/* ── SKATTEPLIGTIGE PERSONALEGODER ── */}
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                    Skattepligtige personalegoder
+                  </p>
+                  <p className="text-[10px] text-muted-foreground -mt-1 mb-2">(beskattes men udbetales ikke)</p>
+                  <div className="pl-3 border-l-2 border-muted-foreground/20 space-y-1.5">
+                    {payslipData.personalegoder!.map((p, i) => (
+                      <div key={i} className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">{p.label}</span>
+                        <span className="text-muted-foreground font-medium">{formatKr(p.beloeb)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-xs mt-2 pt-1.5 border-t border-dashed border-border/40">
+                    <span className="text-muted-foreground">Personalegoder i alt</span>
+                    <span className="font-medium text-muted-foreground">{formatKr(personalegoderTotal)}</span>
+                  </div>
+                </div>
+
+                {/* ── A-INDKOMST ── */}
+                <div className="flex justify-between items-center pt-3 border-t border-dashed border-border">
+                  <span className="font-bold text-foreground flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-accent" />
+                    A-indkomst
+                  </span>
+                  <span className="font-bold text-lg text-foreground">{formatKr(totals.bruttolon)}</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground -mt-1">(skattegrundlag)</p>
+              </>
+            ) : (
+              <>
+                {/* Fallback: gammelt format for FOA/HK/3F etc. */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">Grundløn</span>
+                    <span className="text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded font-mono">
+                      {salary.normalTimer}t
+                    </span>
+                  </div>
+                  <span className="font-semibold">{formatKr(salary.grundlon)}</span>
+                </div>
+
+                {supplementsWithIssues.length > 0 && (
+                  <div className="pl-3 border-l-2 border-accent/40 space-y-2 py-2 my-2">
+                    {supplementsWithIssues.map((supp) => {
+                      const status = getFieldStatus(supp.field, discrepancies);
+                      const hasIssue = status === "error" || status === "warning";
+                      const Icon = supp.icon;
+                      const disc = discrepancies.find(d => d.field === supp.field);
+                      const showStrike = hasIssue && disc && disc.difference !== 0;
+                      
+                      return (
+                        <div key={supp.field} className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <Icon className={cn(
+                              "w-3.5 h-3.5",
+                              hasIssue ? (status === "error" ? "text-red-500" : "text-amber-500") : "text-muted-foreground"
+                            )} />
+                            <span className={cn(
+                              "text-xs",
+                              hasIssue ? (status === "error" ? "text-red-600" : "text-amber-600") : "text-muted-foreground"
+                            )}>
+                              {supp.label}
+                              {supp.timer > 0 && <span className="ml-1">({supp.timer}t)</span>}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "text-xs font-medium",
+                              showStrike
+                                ? (status === "error" ? "text-red-600 line-through" : "text-amber-600 line-through")
+                                : hasIssue
+                                  ? (status === "error" ? "text-red-600" : "text-amber-600")
+                                  : "text-accent"
+                            )}>
+                              +{formatKr(supp.beloeb)}
+                            </span>
+                            {hasIssue && (
+                              <button 
+                                onClick={onSeeErrors}
+                                className={cn(
+                                  "text-[10px] px-1.5 py-0.5 rounded font-bold",
+                                  status === "error" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+                                )}
+                              >
+                                FEJL
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center pt-3 border-t border-dashed border-border">
+                  <span className="font-bold text-foreground flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-accent" />
+                    Bruttoløn
+                  </span>
+                  <span className="font-bold text-lg text-foreground">{formatKr(totals.bruttolon)}</span>
+                </div>
+              </>
             )}
 
-            {/* Brutto divider */}
-            <div className="flex justify-between items-center pt-3 border-t border-dashed border-border">
-              <span className="font-bold text-foreground flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-accent" />
-                Bruttoløn
-              </span>
-              <span className="font-bold text-lg text-foreground">{formatKr(totals.bruttolon)}</span>
-            </div>
-
-            {/* Fradrag Group - med fejl-detection */}
+            {/* ── FRADRAG ── */}
             <div className="pl-3 border-l-2 border-border/40 space-y-2 py-2 mt-3">
               {[
-                { field: "skat" as PayslipField, label: `Skat (${deductions.skat.procent}%)`, beloeb: deductions.skat.beloeb },
-                { field: "pension" as PayslipField, label: `Pension (${deductions.pension.procent}%)`, beloeb: deductions.pension.beloeb },
+                ...(deductions.amBidrag ? [{ field: "skat" as PayslipField, label: `AM-bidrag (${deductions.amBidrag.procent}%)`, beloeb: deductions.amBidrag.beloeb, isAm: true }] : []),
+                { field: "skat" as PayslipField, label: "A-skat", beloeb: deductions.skat.beloeb, isAm: false },
+                { field: "pension" as PayslipField, label: `Egetbidrag pension (${deductions.pension.procent}%)`, beloeb: deductions.pension.beloeb, isAm: false },
                 ...(getFieldStatus("pensionRaadighed", discrepancies) !== "ok"
-                  ? [{ field: "pensionRaadighed" as PayslipField, label: "Pension af råd.tillæg", beloeb: 0 }]
+                  ? [{ field: "pensionRaadighed" as PayslipField, label: "Pension af råd.tillæg", beloeb: 0, isAm: false }]
                   : []),
-                { field: "atp" as PayslipField, label: "ATP", beloeb: deductions.atp.beloeb },
+                { field: "atp" as PayslipField, label: "ATP egetbidrag", beloeb: deductions.atp.beloeb, isAm: false },
               ].map((item) => {
                 const status = getFieldStatus(item.field, discrepancies);
-                const hasIssue = status === "error" || status === "warning";
+                const disc = discrepancies.find(d => d.field === item.field);
+                const showStrike = (status === "error" || status === "warning") && disc && disc.difference !== 0;
                 
                 return (
-                  <div key={item.field} className="flex justify-between text-xs">
+                  <div key={item.isAm ? "am-bidrag" : item.field} className="flex justify-between text-xs">
                     <span className={cn(
-                      hasIssue ? (status === "error" ? "text-red-600" : "text-amber-600") : "text-muted-foreground"
+                      showStrike ? (status === "error" ? "text-red-600" : "text-amber-600") : "text-muted-foreground"
                     )}>
                       {item.label}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className={cn(
                         "font-medium",
-                        hasIssue 
+                        showStrike
                           ? (status === "error" ? "text-red-600 line-through" : "text-amber-600 line-through")
                           : "text-muted-foreground"
                       )}>
                         -{formatKr(item.beloeb)}
                       </span>
-                      {hasIssue && (
+                      {showStrike && (
                         <button 
                           onClick={onSeeErrors}
                           className={cn(
@@ -496,18 +587,25 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
             <div className="flex justify-between items-center pt-2 border-t border-dashed border-border">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
                 <TrendingDown className="w-4 h-4 text-muted-foreground" />
-                Total fratræk
+                Total fradrag
               </span>
               <span className="font-semibold text-muted-foreground">-{formatKr(totals.totalFradrag)}</span>
             </div>
           </div>
 
-          {/* Netto Result - The Bottom Line */}
+          {/* Netto Result - Til Udbetaling */}
           <div className="mt-4 pt-4 border-t-2 border-accent/30 bg-accent/5 -mx-5 -mb-5 px-5 py-4 rounded-b-3xl">
             <div className="flex justify-between items-center">
               <div>
                 <span className="block text-xs text-accent uppercase font-bold tracking-wider">Til Udbetaling</span>
-                <span className="text-[10px] text-muted-foreground">Disponibel ultimo {payslipData.period.month.slice(0,3).toLowerCase()}</span>
+                {hasPersonalegoder && (
+                  <span className="text-[10px] text-muted-foreground">
+                    kontant løn {formatKr(kontantLon).replace(" kr", "")} − fradrag {formatKr(totals.totalFradrag).replace(" kr", "")}
+                  </span>
+                )}
+                {!hasPersonalegoder && (
+                  <span className="text-[10px] text-muted-foreground">Disponibel ultimo {payslipData.period.month.slice(0,3).toLowerCase()}</span>
+                )}
               </div>
               <span className="text-2xl font-bold text-foreground">{formatKr(totals.nettolon)}</span>
             </div>
@@ -515,7 +613,37 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
         </div>
       </div>
 
-      {/* 2. Fravær Grid */}
+      {/* 2. Pension-info (vises når pension har warning/fejl) */}
+      {pensionDiscrepancy && (
+        <div className="bg-card rounded-2xl border border-amber-200 p-4">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+            Pension
+          </h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Indbetales til</span>
+              <span className="font-medium text-amber-700 flex items-center gap-1">
+                Ikke specificeret <AlertTriangle className="w-3 h-3" />
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Pension (15%)</span>
+              <span className="font-medium text-foreground">
+                {formatKr(deductions.pension.beloeb + (deductions.pension.grundlag ? deductions.pension.grundlag * 0.10 : 0))}
+              </span>
+            </div>
+            <div className="mt-2 px-3 py-2 bg-amber-50 rounded-lg border border-amber-100">
+              <p className="text-[11px] text-amber-800 flex items-start gap-1.5">
+                <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+                <span>Kontrakten angiver ikke AG/eget-fordeling — lønsedlen viser kun samlet beløb</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Fravær Grid */}
       <div className="bg-card rounded-2xl border border-border p-4">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
           <CalendarOff className="w-3.5 h-3.5" />
@@ -540,30 +668,8 @@ function OverviewContent({ payslipData, validationResult, onSeeErrors }: Overvie
         </div>
       </div>
       
-      {/* 3. Sikkerhedsbarometer */}
+      {/* 4. Sikkerhedsbarometer */}
       <AnalysisConfidenceMeter />
-
-      {/* 4. Ernest Tip - TEMPORARILY DISABLED */}
-      {/* <div className={cn(
-        "rounded-2xl p-4 flex gap-3 border",
-        hasIssues 
-          ? (hasErrors ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200")
-          : "bg-accent/10 border-accent/20"
-      )}>
-        <Sparkles className={cn(
-          "w-5 h-5 shrink-0 mt-0.5",
-          hasIssues ? (hasErrors ? "text-red-600" : "text-amber-600") : "text-accent"
-        )} />
-        <div>
-          <p className="font-bold text-sm text-foreground mb-1">Ernest Tip</p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {hasIssues 
-              ? `Vi har fundet ${issuesCount} uoverensstemmelse${issuesCount > 1 ? "r" : ""} i dine tillæg. Skift til "Advarsler" fanen for detaljer.`
-              : "Din lønseddel ser ud til at være korrekt. Godt gået! 🎉"
-            }
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 }
