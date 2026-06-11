@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { usePayslip } from "@/contexts/PayslipContext";
 import { useUser } from "@/contexts/UserContext";
 import { useRequests } from "@/contexts/RequestContext";
+import { useDemo } from "@/contexts/DemoContext";
 import { cn } from "@/lib/utils";
 
 interface SendCaseScreenProps {
@@ -54,6 +55,21 @@ function getAgreementReference(field: string): { ok: string; kontraktRef: string
   return references[field] || { ok: "HK/DI Butiksoverenskomsten", kontraktRef: "Ansættelseskontrakt" };
 }
 
+// Skift perspektiv fra app-tiltale (2. person) til medarbejderens egen stemme (1. person),
+// så teksten passer i en mail FRA medarbejderen TIL arbejdsgiveren.
+function toFirstPerson(text: string): string {
+  return text
+    .replace(/\bDine\b/g, "Mine")
+    .replace(/\bdine\b/g, "mine")
+    .replace(/\bDin\b/g, "Min")
+    .replace(/\bdin\b/g, "min")
+    .replace(/\bDit\b/g, "Mit")
+    .replace(/\bdit\b/g, "mit")
+    .replace(/\bdig\b/g, "mig")
+    .replace(/\bDu\b/g, "Jeg")
+    .replace(/\bdu\b/g, "jeg");
+}
+
 // Map felt til dansk label
 function getFieldLabel(field: string): string {
   const labels: Record<string, string> = {
@@ -79,20 +95,30 @@ export function SendCaseScreen({ onBack, onSuccess }: SendCaseScreenProps) {
   const { currentPayslip, currentValidation } = usePayslip();
   const { user } = useUser();
   const { addRequest } = useRequests();
+  const { demoConfig } = useDemo();
 
-  // Brug mock data hvis ingen context data
-  const period = currentPayslip?.period.month || "Oktober";
-  const year = currentPayslip?.period.year || 2025;
-  const employer = currentPayslip?.employer.name || "Nordic Retail A/S";
-  const department = currentPayslip?.employer.department || "Lager & Logistik";
-  const timelon = currentPayslip?.salary.timelon || 125.00;
-  const bruttolon = currentPayslip?.totals.bruttolon || 19682.50;
-  const normalTimer = currentPayslip?.salary.normalTimer || 156.46;
+  // Fald tilbage til demo-konfigurationens lønseddel/validering (samme kæde som ReportScreen)
+  // så betingede demo-sager (fx Metal) viser den rigtige kontekst — ikke generisk mock.
+  const payslip = currentPayslip ?? demoConfig.payslip;
+  const validation = currentValidation ?? demoConfig.validation;
+
+  // Brug mock data hvis ingen data overhovedet
+  const period = payslip?.period.month || "Oktober";
+  const year = payslip?.period.year || 2025;
+  const employer = payslip?.employer.name || "Nordic Retail A/S";
+  const department = payslip?.employer.department || "Lager & Logistik";
+  const timelon = payslip?.salary.timelon || 125.00;
+  const bruttolon = payslip?.totals.bruttolon || 19682.50;
+  const normalTimer = payslip?.salary.normalTimer || 156.46;
   
-  const discrepancies = currentValidation?.discrepancies.filter(
+  const discrepancies = validation?.discrepancies.filter(
     d => d.severity === "error" || d.severity === "warning"
   ) || [];
-  const totalDifference = currentValidation?.summary.totalDifference || -62.50;
+  const totalDifference = validation?.summary.totalDifference || -62.50;
+
+  // Betinget sag (fx ansættelsesform-konflikt) = spørgsmål til afklaring, ikke et fast krav
+  const isConditional = discrepancies.some(d => d.conditional);
+  const conditionalIssue = discrepancies.find(d => d.conditional && d.conflictCard);
   
   const userName = user ? `${user.firstName} ${user.lastName}` : "Sara Nielsen";
   const firstName = user?.firstName || "Sara";
@@ -101,6 +127,32 @@ export function SendCaseScreen({ onBack, onSuccess }: SendCaseScreenProps) {
 
   // Generer brugervenlig email-tekst
   const defaultMessage = useMemo(() => {
+    // Betinget sag → formuler som spørgsmål til afklaring (ikke et fast krav)
+    if (isConditional) {
+      const cc = conditionalIssue?.conflictCard;
+      const context = cc?.problem ? `${toFirstPerson(cc.problem)}\n\n` : "";
+      // Træk selve spørgsmålet ud af action ('Spørg din arbejdsgiver: "..."') og formuler det i 1. person
+      const quoted = cc?.action?.match(/["“”]([^"“”]+)["“”]/)?.[1];
+      const question = quoted
+        ? `Mit spørgsmål er derfor: ${quoted}\n\n`
+        : cc?.action
+          ? `${toFirstPerson(cc.action)}\n\n`
+          : "";
+      const stakes =
+        totalDifference !== 0
+          ? `Afhængigt af svaret kan op til ${formatKr(Math.abs(totalDifference))} i ${period} alene være berørt.\n\n`
+          : "";
+
+      return `Hej,
+
+Jeg vil gerne have afklaret et forhold på min lønseddel for ${period} ${year}.
+
+${context}${question}${stakes}Jeg har vedhæftet den fulde rapport med beregninger og overenskomstreferencer.
+
+Med venlig hilsen,
+${firstName}`;
+    }
+
     const issuesList = discrepancies.map(d => 
       `• ${getFieldLabel(d.field)}: ${formatKr(d.difference)}`
     ).join('\n');
@@ -116,7 +168,7 @@ Jeg har vedhæftet den fulde rapport med beregninger og overenskomstreferencer.
 
 Med venlig hilsen,
 ${firstName}`;
-  }, [period, year, totalDifference, discrepancies, firstName]);
+  }, [period, year, totalDifference, discrepancies, firstName, isConditional, conditionalIssue]);
 
   const [message, setMessage] = useState(defaultMessage);
 
@@ -196,7 +248,9 @@ ${firstName}`;
               <div>
                 <p className="text-xs text-muted-foreground">Emne</p>
                 <p className="font-medium text-foreground">
-                  Lønafvigelse - {period} {year} ({formatKr(totalDifference)})
+                  {isConditional
+                    ? `Spørgsmål om ansættelsesform - ${period} ${year}`
+                    : `Lønafvigelse - ${period} ${year} (${formatKr(totalDifference)})`}
                 </p>
               </div>
             </div>
@@ -239,8 +293,12 @@ ${firstName}`;
               </div>
               
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Samlet difference</span>
-                <span className="font-bold text-red-600">{formatKr(totalDifference)}</span>
+                <span className="text-muted-foreground">
+                  {isConditional ? "Op til (afhænger af afklaring)" : "Samlet difference"}
+                </span>
+                <span className={cn("font-bold", isConditional ? "text-amber-600" : "text-red-600")}>
+                  {isConditional ? formatKr(-Math.abs(totalDifference)) : formatKr(totalDifference)}
+                </span>
               </div>
 
               {/* Issues Summary */}
@@ -286,14 +344,19 @@ ${firstName}`;
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-semibold text-foreground">
-                    {discrepancies.filter(d => d.severity === "warning").length} til verifikation
+                    {discrepancies.filter(d => d.severity === "warning").length}{" "}
+                    {isConditional ? "spørgsmål til afklaring" : "til verifikation"}
                   </span>
-                  <span className="text-[10px] text-muted-foreground ml-1.5">— mulig lokalaftale</span>
+                  <span className="text-[10px] text-muted-foreground ml-1.5">
+                    {isConditional ? "— afhænger af ansættelsesform" : "— mulig lokalaftale"}
+                  </span>
                 </div>
               </div>
             )}
             <p className="text-[10px] text-muted-foreground leading-relaxed border-t border-border/50 pt-2">
-              Beregningen er baseret på standardoverenskomsten, kontrakt og vagtplan. Der er ikke registreret en lokalaftale for denne arbejdsplads.
+              {isConditional
+                ? "Forholdet kan ikke afgøres alene ud fra lønseddel og kontrakt — det afhænger af din ansættelsesform. Denne henvendelse beder arbejdsgiveren om at bekræfte forholdet."
+                : "Beregningen er baseret på standardoverenskomsten, kontrakt og vagtplan. Der er ikke registreret en lokalaftale for denne arbejdsplads."}
             </p>
           </div>
         </div>

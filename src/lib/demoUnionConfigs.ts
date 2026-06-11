@@ -1,10 +1,11 @@
-import type { PayslipData, PayslipValidationResult } from "@/lib/api/types";
+import type { PayslipData, PayslipValidationResult, SupplementsData } from "@/lib/api/types";
 import foaLogo from "@/assets/foa-logo.png";
 import hkLogo from "@/assets/hk-logo.png";
 import threeFLogo from "@/assets/3f-logo.png";
 import djoefLogo from "@/assets/djoef-logo.png";
 import lederneLogo from "@/assets/lederne-logo.png";
 import sefLogo from "@/assets/sef-logo.png";
+import metalLogo from "@/assets/metal-icon.png";
 
 // ─── Theme interface ──────────────────────────────────────────────────────────
 
@@ -142,7 +143,7 @@ export interface ContractIntelligence {
 
 // ─── Config interface ─────────────────────────────────────────────────────────
 
-export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne" | "sef" | "sef-kontrakt";
+export type UnionId = "hk" | "foa" | "djoef" | "3f" | "lederne" | "sef" | "sef-kontrakt" | "metal";
 
 export interface UnionDemoConfig {
   id: UnionId;
@@ -1795,6 +1796,292 @@ export const SEF_KONTRAKT_CONFIG: UnionDemoConfig = {
   validation: SEF_VAL_OK,
 };
 
+// ─── Dansk Metal (REA Automatdrejning – klassifikationskonflikt) ───────────────
+// Konkret case: Lars Pedersen, industritekniker hos REA Automatdrejning ApS.
+// Kontrakten siger månedsløn, men lønsedlerne kører arbejder-model (SH-opsparing).
+// Hovedhistorien er en ANSÆTTELSESFORM-KONFLIKT, ikke en simpel "X kr mangler"-fejl.
+// Tre lønsedler: februar + marts = verificeret, april = kan ikke garanteres.
+
+const METAL_EMPLOYER = {
+  name: "REA Automatdrejning ApS",
+  cvr: "49161328",
+  department: "Industrivej 2, 5450 Otterup",
+};
+
+const METAL_ABSENCE_NONE = {
+  sygdom: { dage: 0, timer: 0 },
+  ferie: { dage: 0, timer: 0 },
+  afspadsering: { dage: 0, timer: 0 },
+  barnsSygdom: { dage: 0, timer: 0 },
+};
+
+const METAL_SUPPLEMENTS_NONE: SupplementsData = {
+  aftentillaeg: { timer: 0, sats: 0, beloeb: 0 },
+  nattillaeg: { timer: 0, sats: 0, beloeb: 0 },
+  soenHelligdag: { timer: 0, sats: 0, beloeb: 0 },
+};
+
+// Februar 2026 — VERIFICERET
+const METAL_FEB: PayslipData = {
+  id: "ps-metal-2026-02",
+  userId: "demo-metal",
+  period: { month: "Februar", year: 2026, startDate: "2026-02-01", endDate: "2026-02-28" },
+  employer: METAL_EMPLOYER,
+  salary: {
+    grundlon: 33000.0,
+    timelon: 203.6,
+    normalTimer: 162.08,
+    beregnetTimelon: { udenTillaeg: 203.6, medTillaeg: 207.49, afvigelse: 0, status: "ok" },
+  },
+  supplements: METAL_SUPPLEMENTS_NONE,
+  deductions: {
+    pension: { beloeb: 844.73, procent: 2.0, grundlag: 33630.85 },
+    skat: { beloeb: 5900.0, procent: 40 },
+    atp: { beloeb: 99.0 },
+    amBidrag: { beloeb: 2624.0, procent: 8 },
+  },
+  absence: METAL_ABSENCE_NONE,
+  totals: {
+    bruttolon: 33630.85,
+    nettolon: 23964.12,
+    totalFradrag: 9666.73,
+    totalTillaeg: 630.85, // overtid 441,93 (1,75t × 252,53) + store bededag 188,92
+  },
+  uploadedAt: "2026-03-01T08:00:00Z",
+  analyzedAt: "2026-03-01T08:00:04Z",
+};
+
+// Marts 2026 — VERIFICERET (fritvalg steget pr. 1.3.2026)
+const METAL_MAR: PayslipData = {
+  id: "ps-metal-2026-03",
+  userId: "demo-metal",
+  period: { month: "Marts", year: 2026, startDate: "2026-03-01", endDate: "2026-03-31" },
+  employer: METAL_EMPLOYER,
+  salary: {
+    grundlon: 33000.0,
+    timelon: 205.83,
+    normalTimer: 160.33,
+    beregnetTimelon: { udenTillaeg: 205.83, medTillaeg: 207.01, afvigelse: 0, status: "ok" },
+  },
+  supplements: METAL_SUPPLEMENTS_NONE,
+  deductions: {
+    pension: { beloeb: 840.35, procent: 2.0, grundlag: 33190.05 },
+    skat: { beloeb: 5740.0, procent: 40 },
+    atp: { beloeb: 99.0 },
+    amBidrag: { beloeb: 2590.0, procent: 8 },
+  },
+  absence: {
+    ...METAL_ABSENCE_NONE,
+    ferie: { dage: 2, timer: 14.8 }, // feriefridage afholdt (fuld løn bevaret)
+  },
+  totals: {
+    bruttolon: 33190.05,
+    nettolon: 23721.7,
+    totalFradrag: 9468.35,
+    totalTillaeg: 190.05, // store bededagstillæg
+  },
+  uploadedAt: "2026-04-01T08:00:00Z",
+  analyzedAt: "2026-04-01T08:00:04Z",
+};
+
+// April 2026 — KAN IKKE GARANTERES (hovedhistorien)
+const METAL_APR: PayslipData = {
+  id: "ps-metal-2026-04",
+  userId: "demo-metal",
+  period: { month: "April", year: 2026, startDate: "2026-04-01", endDate: "2026-04-30" },
+  employer: METAL_EMPLOYER,
+  salary: {
+    grundlon: 28471.84, // reduceret pga. 3 påskehelligdage finansieret af SH-opsparing
+    timelon: 205.83,
+    normalTimer: 160.33,
+    beregnetTimelon: { udenTillaeg: 177.6, medTillaeg: 206.85, afvigelse: -28.23, status: "warning" },
+  },
+  supplements: METAL_SUPPLEMENTS_NONE,
+  deductions: {
+    pension: { beloeb: 725.13, procent: 2.0, grundlag: 33164.98 },
+    skat: { beloeb: 5776.0, procent: 40 },
+    atp: { beloeb: 99.0 },
+    amBidrag: { beloeb: 2597.0, procent: 8 },
+  },
+  absence: METAL_ABSENCE_NONE,
+  totals: {
+    bruttolon: 33164.98,
+    nettolon: 23767.85,
+    totalFradrag: 9397.13,
+    totalTillaeg: 4692.14, // fritvalgs-betaling 4.528,16 + store bededag 163,98
+  },
+  uploadedAt: "2026-05-01T08:00:00Z",
+  analyzedAt: "2026-05-01T08:00:04Z",
+};
+
+const METAL_VAL_OK_FEB: PayslipValidationResult = {
+  id: "val-metal-feb",
+  payslipId: "ps-metal-2026-02",
+  status: "ok",
+  discrepancies: [],
+  summary: { totalDifference: 0, issuesCount: 0, warningsCount: 0 },
+  validatedAt: "2026-03-01T08:00:04Z",
+};
+
+const METAL_VAL_OK_MAR: PayslipValidationResult = {
+  id: "val-metal-mar",
+  payslipId: "ps-metal-2026-03",
+  status: "ok",
+  discrepancies: [],
+  summary: { totalDifference: 0, issuesCount: 0, warningsCount: 0 },
+  validatedAt: "2026-04-01T08:00:04Z",
+};
+
+// April-validering: 2 substantielle findings + 1 forward-looking observation.
+// Alle markeret conditional → vises som "afhænger af afklaring", ikke "du mangler".
+const METAL_VAL_APR: PayslipValidationResult = {
+  id: "val-metal-apr",
+  payslipId: "ps-metal-2026-04",
+  status: "warnings",
+  discrepancies: [
+    {
+      id: "F-002",
+      category: "salary",
+      field: "grundlon",
+      severity: "warning",
+      conditional: true,
+      title: "Ansættelsesform-konflikt",
+      expected: 33000.0,
+      actual: 28471.84,
+      // Cascade i april alene: grundløn 4.528,16 + fritvalg basis 452,82 + pension 588,66 ≈ 5.570 kr.
+      // SH-opsparing (4%) og 12,5% feriegodtgørelse bortfalder under månedsløns-scenariet og indgår derfor ikke.
+      difference: -5570.0,
+      description:
+        "Din kontrakt siger 'månedsløn'. Dine lønsedler henlægger 4% SH-opsparing — som iht. Industriens OK §25 stk. 3 kun gælder medarbejdere der IKKE får løn på søgnehelligdage. Lønsedlerne behandler dig altså som ikke-månedslønnet. I april trak 3 påskehelligdage (Skærtorsdag, Langfredag, 2. Påskedag) 4.528 kr fra din grundløn — finansieret af din egen fritvalgs-saldo i stedet for af arbejdsgiver.",
+      calculation:
+        "Scenarie A (reelt timelønnet): April-lønsedlen er korrekt, helligdage finansieret af SH-opsparing iht. §25 stk. 3, ingen efterbetaling — men din kontrakt skal opdateres til arbejder-model.\nScenarie B (reelt månedslønnet): Følgende skal rettes: tilbageført grundløn +4.528,16 kr, fritvalg basis (10% af 4.528) +452,82 kr (§25 stk. 1), pension (13% af 4.528) +588,66 kr (§34 stk. 2) = cascade ~5.570 kr i april alene. SH-opsparing (4%) og 12,5% feriegodtgørelse bortfalder under månedsløn (ferie med løn). Samme korrektion kan gælde hver helligdag i 2026.",
+      suggestion:
+        "Kun ét spørgsmål afgør det: 'Får jeg fuld løn på søgnehelligdage?' Send spørgsmålet skriftligt til REA Automatdrejning og bed om bekræftelse på din ansættelsesform. Få sparring med Dansk Metal. Reference: Industriens Overenskomst §25 stk. 3.",
+      conflictCard: {
+        subtitle: "Kontrakt og lønseddel modsiger hinanden",
+        problem:
+          "Din kontrakt siger månedsløn. Dine lønsedler henlægger 4% SH-opsparing — som iht. Industriens OK §25 stk. 3 kun gælder medarbejdere der IKKE får løn på søgnehelligdage. Lønsedlerne behandler dig altså som ikke-månedslønnet.",
+        whatHappened:
+          "3 påskehelligdage trak 4.528 kr fra din grundløn i april. Det blev finansieret af din egen fritvalgs-saldo — ikke af din arbejdsgiver.",
+        options: [
+          { label: "Du er reelt timelønnet → alt er korrekt", positive: true },
+          { label: "Du er reelt månedslønnet → du mangler 5.570 kr i april", positive: false },
+        ],
+        breakdown: [
+          { label: "Tilbageført grundløn", amount: "+4.528,16 kr" },
+          { label: "Fritvalg basis (10% af 4.528) · §25 stk. 1", amount: "+452,82 kr" },
+          { label: "Pension (13% af 4.528) · §34 stk. 2", amount: "+588,66 kr" },
+        ],
+        breakdownTotal: "~5.570,00 kr cascade i april alene",
+        breakdownNote:
+          "Under månedsløns-scenariet bortfalder både SH-opsparing (4%) og 12,5% feriegodtgørelse — derfor indgår de ikke i cascaden. Samme korrektion kan gælde hver helligdag i 2026.",
+        action: 'Spørg din arbejdsgiver: "Får jeg fuld løn på søgnehelligdage?"',
+        ctas: [
+          { label: "Send spørgsmål", action: "sendCase" },
+          { label: "Få sparring med Dansk Metal", action: "booking" },
+        ],
+        footnote: "Industriens OK §25 stk. 3 · §25 stk. 1 litra a · §34 stk. 2",
+      },
+    },
+    {
+      id: "F-001",
+      category: "salary",
+      field: "grundlon",
+      severity: "warning",
+      conditional: true,
+      title: "Kontrakten er sandsynligvis forældet",
+      expected: 0,
+      actual: 0,
+      difference: 0,
+      description:
+        "Den uploadede kontrakt er fra 07.09.2015 med månedsløn 32.000 kr. Dine lønsedler viser ansættelse fra 01.03.2019 med ferieberettiget løn 33.000 kr. Du mangler sandsynligvis din nyeste ansættelsesaftale.",
+      suggestion:
+        "Find din nyeste kontrakt fra 2019, eller bed REA Automatdrejning om en kopi. Den gældende aftale afgør hvilken ansættelsesform der er aftalt.",
+      conflictCard: {
+        subtitle: "Fra 2015 — du blev ansat i 2019",
+        problem:
+          "Din kontrakt er fra 07.09.2015 med månedsløn 32.000 kr. Dine lønsedler viser ansættelse fra 01.03.2019 med ferieberettiget løn 33.000 kr.",
+        action:
+          "Find din nyeste kontrakt fra 2019, eller bed REA Automatdrejning om en kopi.",
+        ctas: [{ label: "Bed REA om kopi", action: "sendCase" }],
+        footnote: "Datasammenligning mellem 📄 kontrakt og 📊 lønseddel",
+      },
+    },
+  ],
+  summary: { totalDifference: -5570.0, issuesCount: 2, warningsCount: 2 },
+  validatedAt: "2026-05-01T08:00:04Z",
+};
+
+export const METAL_CONFIG: UnionDemoConfig = {
+  id: "metal",
+  name: "Dansk Metal",
+  fullName: "Dansk Metal",
+  primaryColor: "#00AFD7",
+  secondaryColor: "#007A99",
+  bgColor: "#E6F7FB",
+  logo: metalLogo,
+
+  demoProfile: "agreement" as DemoProfile,
+
+  welcomeHeadline: "Får du den rigtige løn for dit arbejde?",
+  welcomeSub: "Dansk Metal og PayTjek tjekker det for dig",
+  welcomeDescription:
+    "Industriens Overenskomst har komplekse regler om månedsløn vs arbejder-model, SH-opsparing og fritvalgskonto. PayTjek finder uoverensstemmelser mellem din kontrakt og dine lønsedler — også dem du ikke selv kunne opdage.",
+  ctaQuestion: "Stemmer din kontrakt og dine lønsedler overens?",
+  authFeatures: [
+    "Tjek af kontrakt mod lønsedler — fanger uoverensstemmelser",
+    "Synkroniser vagtplan og verificér arbejdstid",
+    "AI-rådgivning baseret på Industriens Overenskomst",
+  ],
+
+  pitchTagline: "Fra lønseddel til svar på 30 sekunder",
+  pitchSub:
+    "Upload dine lønsedler og din kontrakt — PayTjek finder uoverensstemmelser der kan koste dig tusindvis af kroner.",
+
+  persona: {
+    firstName: "Lars",
+    name: "Lars Pedersen",
+    jobTitle: "Industritekniker",
+    employer: "REA Automatdrejning ApS",
+    cvr: "49161328",
+  },
+
+  collectiveAgreement: "Industriens Overenskomst 2025-2028 (Dansk Metal/DI)",
+
+  demoIcsUrl: "/demo/metal-vagter-feb-jun-2026.ics",
+  demoIcsDisplayUrl: "https://planday.dk/ics/export/lars-pedersen.ics",
+
+  googleFontsImport:
+    "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+  theme: {
+    "--primary": "191 100% 42%",
+    "--primary-foreground": "0 0% 100%",
+    "--secondary": "191 100% 30%",
+    "--secondary-foreground": "0 0% 100%",
+    "--accent": "191 60% 92%",
+    "--accent-foreground": "191 100% 25%",
+    "--background": "0 0% 100%",
+    "--foreground": "0 0% 10%",
+    "--card": "191 40% 97%",
+    "--card-foreground": "0 0% 10%",
+    "--muted": "191 20% 95%",
+    "--muted-foreground": "0 0% 40%",
+    "--border": "191 25% 88%",
+    "--ring": "191 100% 42%",
+    "--font-heading": "'Inter', sans-serif",
+    "--font-body": "'Inter', sans-serif",
+  },
+
+  payslip: METAL_APR,
+  validation: METAL_VAL_APR,
+
+  demoPayslips: {
+    feb: { payslip: METAL_FEB, validation: METAL_VAL_OK_FEB },
+    marts: { payslip: METAL_MAR, validation: METAL_VAL_OK_MAR },
+    april: { payslip: METAL_APR, validation: METAL_VAL_APR },
+  },
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
@@ -1805,6 +2092,7 @@ export const UNION_CONFIGS: Record<UnionId, UnionDemoConfig> = {
   lederne: LEDERNE_CONFIG,
   sef: SEF_CONFIG,
   "sef-kontrakt": SEF_KONTRAKT_CONFIG,
+  metal: METAL_CONFIG,
 };
 
 export function getUnionConfig(id: string): UnionDemoConfig {

@@ -122,7 +122,7 @@ export default function MobileBooking() {
             className="w-full max-w-sm px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold active:scale-[0.98] transition-transform mt-4"
             onClick={() => navigate(-1)}
           >
-            Tilbage til karriere
+            Færdig
           </button>
         </div>
       </main>

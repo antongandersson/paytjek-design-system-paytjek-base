@@ -27,7 +27,8 @@ export function StatusHero({ stats }: StatusHeroProps) {
   const { basePath } = useDemo();
   if (stats.payslipsChecked === 0) return null;
 
-  const hasIssues = stats.payslipsWithErrors > 0;
+  const isConditional = stats.hasConditional;
+  const hasIssues = stats.payslipsWithErrors > 0 || isConditional;
   const amountStr = Math.abs(stats.totalDifferenceOwed)
     .toLocaleString("da-DK", { maximumFractionDigits: 0 });
 
@@ -48,13 +49,18 @@ export function StatusHero({ stats }: StatusHeroProps) {
         </div>
 
         {/* Hero number */}
+        {isConditional && (
+          <p className="text-sm font-semibold text-primary-foreground/60 mb-1">Op til</p>
+        )}
         <p className="text-6xl font-black text-primary-foreground leading-none tracking-tight tabular-nums">
-          −{amountStr}
+          {isConditional ? "" : "−"}{amountStr}
         </p>
         <p className="text-2xl font-bold text-primary-foreground/60 mt-1">kr</p>
 
         <p className="text-primary-foreground/70 text-sm mt-3 leading-snug">
-          mangler i efterbetaling — klik for at se hvad du kan gøre
+          {isConditional
+            ? "afhænger af din ansættelsesform — klik for at se hvad du kan gøre"
+            : "mangler i efterbetaling — klik for at se hvad du kan gøre"}
         </p>
 
         {/* Divider + action row */}
@@ -62,7 +68,9 @@ export function StatusHero({ stats }: StatusHeroProps) {
           <div className="flex items-center gap-2">
             <AlertCircle className="h-3.5 w-3.5 text-primary-foreground/40" />
             <span className="text-xs text-primary-foreground/50">
-              {stats.payslipsWithErrors} fejl fundet
+              {isConditional
+                ? `${stats.conflictsCount} konflikt${stats.conflictsCount === 1 ? "" : "er"} fundet`
+                : `${stats.payslipsWithErrors} fejl fundet`}
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs text-primary-foreground font-semibold">
@@ -312,7 +320,7 @@ export function DashboardContextRow({
                   </div>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    {contractDetails.salary.hourlyRate.toFixed(0)} kr/t
+                    {contractDetails.salary.hourlyRate.toFixed(2).replace(".", ",")} kr/t
                     {" · "}
                     {contractDetails.employment.weeklyHours}t/uge
                   </p>
@@ -362,7 +370,7 @@ export function DashboardContextRow({
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  {contractDetails.salary.hourlyRate.toFixed(0)} kr/t
+                  {contractDetails.salary.hourlyRate.toFixed(2).replace(".", ",")} kr/t
                   {" · "}
                   {contractDetails.employment.weeklyHours}t/uge
                 </p>

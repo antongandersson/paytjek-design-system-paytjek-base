@@ -58,6 +58,7 @@ const AVAILABLE_UNIONS: { id: UnionId; name: string; fullName: string }[] = [
   { id: "lederne", name: "Lederne", fullName: "Lederne" },
   { id: "sef", name: "Serviceforbundet", fullName: "Serviceforbundet / VSL" },
   { id: "sef-kontrakt", name: "SEF Kontrakttjek", fullName: "Serviceforbundet / VSL — Kontrakttjek" },
+  { id: "metal", name: "Dansk Metal", fullName: "Dansk Metal" },
 ];
 
 export function DemoProvider({ children }: { children: ReactNode }) {

@@ -335,6 +335,29 @@ export interface PayslipDiscrepancy {
   description: string;        // Menneskevenlig beskrivelse
   calculation?: string;       // Regel og formel brugt til beregning (fra Rule Engine)
   suggestion?: string;        // Forslag til handling
+
+  // Valgfri overrides til findings der ikke er klassiske "X kr mangler"-fejl
+  // (fx klassifikationskonflikt/kontrakt-staleness). Sættes kun af enkelte demoer.
+  title?: string;             // Egen titel i stedet for felt-label
+  conditional?: boolean;      // True = beløb er betinget ("afhænger af afklaring"), ikke et fast krav
+  forwardLooking?: boolean;   // True = fremtidig observation (badge "Kommende hændelse", blå), ikke en fejl
+
+  // Struktureret kort-layout (progressive disclosure) til betingede findings.
+  // Når sat, renderes finding som sektioner i stedet for én tekstblok.
+  conflictCard?: PayslipConflictCard;
+}
+
+export interface PayslipConflictCard {
+  subtitle?: string;                                    // Kort undertitel i kort-headeren
+  problem?: string;                                     // "Hvad er problemet?"
+  whatHappened?: string;                                // "Hvad skete der?"
+  options?: { label: string; positive?: boolean }[];   // "To mulige svar"
+  breakdown?: { label: string; amount: string }[];     // Skjult bag "Se beregning"
+  breakdownTotal?: string;                              // Sum-linje i beregningen
+  breakdownNote?: string;                               // Note under beregningen
+  action?: string;                                      // "Hvad skal du gøre?"
+  ctas?: { label: string; action?: "sendCase" | "booking" }[]; // Knapper (primær først)
+  footnote?: string;                                    // Lille paragraf-/kildehenvisning
 }
 
 export type PayslipField = 

@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Upload,
   FileText,
+  Check,
   CheckCircle2,
   Clock,
   Coins,
@@ -17,11 +18,14 @@ import {
   ChevronRight,
   AlertCircle,
   Scale,
+  Info,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContract } from "@/contexts/ContractContext";
 import { useUser } from "@/contexts/UserContext";
 import { useDemo } from "@/contexts/DemoContext";
+import { usePayslip } from "@/contexts/PayslipContext";
 import { CONTRACT_ANALYSIS_STEPS } from "@/lib/demoContract";
 import type { ContractDetails } from "@/lib/demoContract";
 import { cn } from "@/lib/utils";
@@ -366,6 +370,29 @@ function OverviewView({
 }) {
   const navigate = useNavigate();
   const { basePath } = useDemo();
+  const { currentValidation, hasActiveAnalysis, payslipHistory } = usePayslip();
+
+  // FLOW-RÆKKEFØLGE: Før en lønseddel er uploadet kender vi KUN kontrakten + vagtplanen.
+  // Alle sammenligninger mod lønsedlen (2019-dato, "afhænger af ansættelsesform", forbehold,
+  // 33.000-uoverensstemmelse) må derfor først vises efter mindst én lønseddel-upload.
+  const hasPayslip = hasActiveAnalysis || payslipHistory.length > 0;
+  const overlay = hasPayslip ? details.postPayslip : undefined;
+
+  // Aktiv konflikt (ansættelsesform med beløb) — kræver april-lønsedlen.
+  const conflictCount = currentValidation?.discrepancies.filter(d => d.conditional && !d.forwardLooking && d.difference !== 0).length ?? 0;
+  const hasConflict = conflictCount > 0;
+
+  // Forbehold (kontrakt-staleness) vises først efter lønseddel-upload via overlayet.
+  const hasReservation = !!overlay?.reservation;
+
+  // Effektive (overlay-bevidste) visningsværdier
+  const effStartDate = overlay?.startDate ?? details.employment.startDate;
+  const effStartNote = overlay?.startDateNote;
+  const effNoticeLabel = overlay?.noticeLabel ?? details.employment.noticeLabel;
+  const effSalaryNote = overlay?.salaryNote;
+  const effVacationHeadline = overlay?.vacationHeadline ?? details.vacation.headline;
+  const effVacationType = overlay?.vacationType ?? details.vacation.type;
+  const structuralNote = overlay?.structuralNote;
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -381,10 +408,28 @@ function OverviewView({
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
-            <BadgeCheck className="w-5 h-5 text-primary-foreground/70" />
-            <span className="text-xs font-semibold text-primary-foreground/70 uppercase tracking-wider">
-              Kontrakt verificeret
-            </span>
+            {hasConflict ? (
+              <>
+                <AlertCircle className="w-5 h-5 text-amber-300" />
+                <span className="text-xs font-semibold text-amber-200 uppercase tracking-wider">
+                  Kontrakt kræver afklaring
+                </span>
+              </>
+            ) : hasReservation ? (
+              <>
+                <AlertCircle className="w-5 h-5 text-amber-300" />
+                <span className="text-xs font-semibold text-amber-200 uppercase tracking-wider">
+                  Kontrakt verificeret — med forbehold
+                </span>
+              </>
+            ) : (
+              <>
+                <BadgeCheck className="w-5 h-5 text-primary-foreground/70" />
+                <span className="text-xs font-semibold text-primary-foreground/70 uppercase tracking-wider">
+                  Kontrakt verificeret
+                </span>
+              </>
+            )}
           </div>
           <h2 className="text-2xl font-bold mb-1">{details.employee.name}</h2>
           <p className="text-primary-foreground/70 text-sm">
@@ -399,12 +444,28 @@ function OverviewView({
         </div>
       </div>
 
+      {/* Konflikt-banner — kun efter lønseddel-upload */}
+      {hasConflict && (
+        <button
+          onClick={() => navigate(`${basePath}/lontjek`)}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-left hover:bg-amber-100/70 transition-colors"
+        >
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="text-sm font-medium text-amber-800">
+              {conflictCount} uoverensstemmelse{conflictCount > 1 ? "r" : ""} fundet — se Løntjek
+            </span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-amber-600 shrink-0" />
+        </button>
+      )}
+
       {/* Stamdata grid */}
       <div className="grid grid-cols-2 gap-3">
-        <InfoCell label="Ansat siden" value={formatDate(details.employment.startDate)} />
-        <InfoCell label="Opsigelse" value={`${details.employment.noticePeriodMonths} mdr.`} />
+        <InfoCell label="Ansat siden" value={formatDate(effStartDate)} note={effStartNote} />
+        <InfoCell label="Opsigelse" value={effNoticeLabel ?? `${details.employment.noticePeriodMonths} mdr.`} />
         <InfoCell label="Timer/md" value={monthlyNorm} />
-        <InfoCell label="Løntrin" value={details.salary.trinLabel} />
+        <InfoCell label={details.salary.trinHeading ?? "Løntrin"} value={details.salary.trinLabel} />
       </div>
 
       {/* Aftaleramme */}
@@ -504,13 +565,44 @@ function OverviewView({
           </span>
         </div>
 
+        {/* Uoverensstemmelse vises FØRST efter lønseddel-upload (sammenligning er umulig før) */}
+        {effSalaryNote && (
+          <div className="flex items-start gap-2 mb-3 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertCircle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-800 leading-relaxed">{effSalaryNote}</p>
+          </div>
+        )}
+
         {details.salary.fritvalgPercent > 0 && !contractIntelligence && (
           <div className="flex items-center justify-between py-2 px-1 mb-2">
             <div className="flex items-center gap-2.5">
               <Coins className="w-4 h-4 text-muted-foreground" />
               <p className="text-sm font-medium text-foreground">Fritvalgs Lønkonto</p>
             </div>
-            <span className="text-sm font-bold text-foreground">{details.salary.fritvalgPercent}%</span>
+            <span className="text-sm font-bold text-foreground">
+              {details.salary.fritvalgPercent}%
+              {details.salary.fritvalgNote && (
+                <span className="ml-1 text-xs font-normal text-muted-foreground">({details.salary.fritvalgNote})</span>
+              )}
+            </span>
+          </div>
+        )}
+
+        {details.pension.employerPercent > 0 && !contractIntelligence && (
+          <div className="flex items-center justify-between py-2 px-1 mb-2 border-t border-border/40 pt-3">
+            <div className="flex items-center gap-2.5">
+              <Heart className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium text-foreground">Pension</p>
+                <p className="text-[11px] text-muted-foreground">
+                  AG {details.pension.employerPercent}% · Medarb. {details.pension.employeePercent}%
+                  {details.pension.note && ` ${details.pension.note}`}
+                </p>
+              </div>
+            </div>
+            <span className="text-sm font-bold text-foreground">
+              {details.pension.employerPercent + details.pension.employeePercent}%
+            </span>
           </div>
         )}
 
@@ -547,21 +639,80 @@ function OverviewView({
         )}
       </div>
 
+      {/* Rettigheder iht. overenskomst */}
+      {details.rights && details.rights.length > 0 && (
+        <div className="bg-card rounded-2xl border border-border p-4">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Dine rettigheder iht. {details.collectiveAgreement.unionFullName === "Dansk Metal" ? "Industriens Overenskomst" : "overenskomsten"}
+          </h3>
+          <div className="space-y-3">
+            {details.rights.map((r, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="text-lg leading-none mt-0.5 shrink-0 w-6 text-center">{r.emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">
+                    {r.label} <span className="font-normal text-muted-foreground">— {r.value}</span>
+                  </p>
+                  {r.sub && <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{r.sub}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Ferie */}
-      <div className="bg-card rounded-2xl border border-border p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-          <Clock className="w-6 h-6 text-accent" />
-        </div>
-        <div>
-          <p className="font-bold text-foreground">{details.vacation.daysPerYear} feriedage / år</p>
-          <p className="text-xs text-muted-foreground">{details.vacation.type}</p>
-        </div>
+      <div className="bg-card rounded-2xl border border-border p-4">
+        {details.vacation.bullets && details.vacation.bullets.length > 0 ? (
+          <>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                <Clock className="w-5 h-5 text-accent" />
+              </div>
+              <p className="font-bold text-foreground">
+                {details.vacation.headline ?? "Ferie og søgnehelligdage"}
+              </p>
+            </div>
+            <ul className="space-y-1.5">
+              {details.vacation.bullets.map((b, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <Check className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+              <Clock className="w-6 h-6 text-accent" />
+            </div>
+            <div>
+              <p className="font-bold text-foreground">
+                {effVacationHeadline ?? `${details.vacation.daysPerYear} feriedage / år`}
+              </p>
+              <p className="text-xs text-muted-foreground">{effVacationType}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Underskrift dato */}
       <div className="text-center text-xs text-muted-foreground pt-2">
         Kontrakt underskrevet {formatDate(details.signedDate)}
       </div>
+
+      {/* Strukturel §28-note — vises kun efter lønseddel-upload (overlay) */}
+      {structuralNote && (
+        <div className="flex items-start gap-2.5 px-4 py-3 rounded-2xl bg-muted/40 border border-border/50">
+          <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-semibold text-foreground">Bemærk: </span>
+            {structuralNote}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -610,11 +761,12 @@ function NavRow({
   );
 }
 
-function InfoCell({ label, value }: { label: string; value: string }) {
+function InfoCell({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
     <div className="bg-muted/30 rounded-xl px-3 py-2.5">
       <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</p>
       <p className="text-sm font-semibold text-foreground">{value}</p>
+      {note && <p className="text-[10px] text-muted-foreground mt-0.5">({note})</p>}
     </div>
   );
 }

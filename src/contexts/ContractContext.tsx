@@ -57,7 +57,122 @@ function buildDemoContract(config: UnionDemoConfig): ContractDetails {
   if (config.id === "djoef") return buildDjoefContract(config);
   if (config.id === "sef-kontrakt") return buildSefKontraktContract(config);
   if (config.id === "lederne") return buildLederneContract(config);
+  if (config.id === "metal") return buildMetalContract(config);
   return buildGenericContract(config);
+}
+
+// REA Automatdrejning-casen: kontrakt fra 2015 (forældet), ansat reelt fra 2019.
+// Klassifikationskonflikten betyder at opsigelse/ferie afhænger af ansættelsesform.
+function buildMetalContract(config: UnionDemoConfig): ContractDetails {
+  return {
+    employee: {
+      name: config.persona.name,
+      cpr: "••••••-••••",
+      address: "5450 Otterup",
+    },
+    employer: {
+      name: config.persona.employer,
+      cvr: config.persona.cvr,
+      address: "Industrivej 2, 5450 Otterup",
+      department: "Produktion",
+    },
+    employment: {
+      // FØR lønseddel kender vi kun kontrakten: den er fra 2015 og siger månedsløn.
+      // Lønseddel-afledte data (2019-dato, "afhænger af ansættelsesform") ligger i postPayslip.
+      title: config.persona.jobTitle,
+      startDate: "2015-09-07",          // Kontraktens egen ansættelsesdato
+      type: "permanent",
+      weeklyHours: 37,
+      probationMonths: 3,
+      noticePeriodMonths: 6,            // Kontraktens vilkår (månedsløn, lang anciennitet)
+    },
+    collectiveAgreement: {
+      name: config.collectiveAgreement,
+      id: "metal-industri",
+      union: "Dansk Metal",
+      unionFullName: "Dansk Metal",
+      employerOrg: "DI (Dansk Industri)",
+    },
+    salary: {
+      // Timeløn afledt af kontraktens månedsløn: 32.000 / 160,33 ≈ 199,59 kr/t
+      hourlyRate: 199.59,
+      monthlyRate: 32000,               // Kontraktens månedsløn (2015)
+      trin: 0,
+      trinLabel: "Månedsløn iht. kontrakt",
+      trinHeading: "Løntype",
+      seniorityYears: 10,
+      seniorityFrom: "2015-09-07",
+      fritvalgPercent: 10,
+      fritvalgNote: "fra 1.3.2026",
+    },
+    supplements: {
+      type: "agreement",
+      description: "Overarbejde iht. Industriens Overenskomst §13 stk. 7",
+      rules: [
+        { label: "1./2. klokketime", rule: "48,10 kr/t (fra 1.3.2026)" },
+        { label: "3./4. klokketime", rule: "76,80 kr/t (fra 1.3.2026)" },
+        { label: "5.+ klokketime", rule: "143,70 kr/t (fra 1.3.2026)" },
+      ],
+    },
+    pension: {
+      employeePercent: 2,
+      employerPercent: 11,
+      provider: "Industriens Pension",
+      note: "iht. §34 stk. 2 (fra 1.5.2025)",
+    },
+    vacation: {
+      // FØR lønseddel: kontrakten siger månedsløn → ferie med løn. Konflikten (arbejder-model)
+      // opdages først via lønsedlernes SH-opsparing, så "afhænger af"-versionen ligger i postPayslip.
+      daysPerYear: 25,
+      headline: "Ferie og søgnehelligdage",
+      type: "5 ugers ferie med løn iht. ferieloven (månedsløn)",
+    },
+    rights: [
+      {
+        emoji: "⏱️",
+        label: "Arbejdstid",
+        value: "37 timer/uge",
+        sub: "Man-Tor 7.00-15.15, Fre 7.00-14.00 · Pauser: 16 + 20 min (ulønnede)",
+      },
+      {
+        emoji: "💰",
+        label: "Mindsteløn",
+        value: "146,90 kr/t (fra 1.3.2026)",
+        sub: "Din timeløn: 199,59 kr/t — over mindsteløn",
+      },
+      {
+        emoji: "🏥",
+        label: "Sygdom",
+        value: "17 ugers løn under sygdom (timelønnede)",
+        sub: "Sygemelding til Lone Nielsen før arbejdsdagen",
+      },
+      {
+        emoji: "👨‍👩‍👧",
+        label: "Familie",
+        value: "Op til 5 dage ledsageorlov",
+        sub: "Ved kritisk sygdom hos pårørende",
+      },
+      {
+        emoji: "👟",
+        label: "Værnefodtøj",
+        value: "Arbejdsgiver-tilskud iht. §40",
+      },
+    ],
+    // Vises FØRST efter mindst én lønseddel er uploadet (sammenligninger umulige før)
+    postPayslip: {
+      startDate: "2019-03-01",
+      startDateNote: "iflg. lønsedler",
+      noticeLabel: "Afhænger af ansættelsesform",
+      salaryNote: "Lønseddel viser 33.000 kr — uoverensstemmelse med kontraktens 32.000 kr",
+      vacationHeadline: "Ferie iht. ferieloven og Industriens Overenskomst",
+      vacationType: "Detaljer afhænger af ansættelsesform",
+      structuralNote:
+        'Industriens Overenskomst definerer ikke eksplicit hvad "månedsløn" indebærer. Distinktionen mellem månedsløn og timelønnet arbejder afdækkes via §25 stk. 3 (SH-opsparing) og §28 (lønudbetaling). Det er præcis derfor PayTjek finder denne type konflikt automatisk — den ville være svær at se manuelt.',
+      reservation: true,
+    },
+    signedDate: "2015-09-07",           // Kontrakten er underskrevet i 2015 (F-001)
+    documentId: "ANS-2015-09-07-LP",
+  };
 }
 
 function buildLederneContract(config: UnionDemoConfig): ContractDetails {

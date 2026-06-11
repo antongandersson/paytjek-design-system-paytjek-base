@@ -10,6 +10,7 @@ const unions: { id: UnionId; ready: boolean }[] = [
   { id: "lederne", ready: true },
   { id: "sef", ready: true },
   { id: "sef-kontrakt", ready: true },
+  { id: "metal", ready: true },
 ];
 
 export default function DemoSelector() {

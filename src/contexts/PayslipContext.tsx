@@ -73,6 +73,9 @@ export interface AggregatedStats {
   latestPensionBeloeb: number;
   latestPensionProcent: number;
   trend: MonthlyTrendPoint[];
+  // Betingede findings (fx ansættelsesform-konflikt) — beløb er "op til", ikke et fast krav
+  hasConditional: boolean;
+  conflictsCount: number;
 }
 
 // Dashboard data bundle
@@ -405,6 +408,7 @@ export function PayslipProvider({ children }: { children: ReactNode }) {
       avgNettolon: 0, avgTimer: 0, latestTimer: 0, latestTimelon: 0,
       latestSupplements: emptySupplements, latestPensionBeloeb: 0, latestPensionProcent: 0,
       trend: [],
+      hasConditional: false, conflictsCount: 0,
     };
 
     if (!payslip) {
@@ -488,11 +492,19 @@ export function PayslipProvider({ children }: { children: ReactNode }) {
     let ytdBrutto = 0, ytdNetto = 0, ytdPension = 0, ytdSkat = 0;
     let ytdTillaeg = 0, ytdAftentillaeg = 0, ytdSoenHelligdag = 0, ytdFerieDage = 0;
     let totalTimer = 0, errCount = 0, totalDiff = 0;
+    let hasConditional = false, conflictsCount = 0;
     const trend: MonthlyTrendPoint[] = [];
 
     for (const e of entries) {
       const p = e.payslip;
       const v = e.validation;
+      for (const d of v.discrepancies) {
+        // "Konflikt" = betinget finding med et beløb (fx ansættelsesform-konflikt) — ikke flag/info
+        if (d.conditional && !d.forwardLooking && d.difference !== 0) {
+          hasConditional = true;
+          conflictsCount++;
+        }
+      }
       ytdBrutto += p.totals.bruttolon;
       ytdNetto += p.totals.nettolon;
       ytdPension += p.deductions.pension.beloeb;
@@ -546,6 +558,8 @@ export function PayslipProvider({ children }: { children: ReactNode }) {
       latestPensionBeloeb: deductions.pension.beloeb,
       latestPensionProcent: deductions.pension.procent ?? 0,
       trend,
+      hasConditional,
+      conflictsCount,
     };
 
     return {

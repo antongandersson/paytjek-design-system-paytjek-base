@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   AlertTriangle, 
   AlertCircle,
@@ -44,6 +45,7 @@ import type {
   PayslipData, 
   PayslipValidationResult, 
   PayslipDiscrepancy,
+  PayslipConflictCard,
   PayslipField 
 } from "@/lib/api/types";
 
@@ -125,7 +127,9 @@ export function ReportScreen({
   } = usePayslip();
 
   // Demo fallback: brug union-specifik config når ingen rigtig data er tilgængelig
-  const { demoConfig } = useDemo();
+  const { demoConfig, basePath } = useDemo();
+  const navigate = useNavigate();
+  const handleBooking = () => navigate(`${basePath}/booking`);
 
   const payslipData = contextPayslip ?? propPayslipData ?? demoConfig.payslip ?? _hkFallback.payslip;
   const validationResult = contextValidation ?? propValidationResult ?? demoConfig.validation ?? _hkFallback.validation;
@@ -317,6 +321,7 @@ export function ReportScreen({
               validationResult={validationResult}
               onOpenChat={() => {}} /* TEMPORARILY DISABLED - was: () => setIsChatOpen(true) */
               onSendCase={handleSendToUnion}
+              onBooking={handleBooking}
             />
           )}
         </div>
@@ -683,6 +688,7 @@ interface ErrorsContentProps {
   validationResult: PayslipValidationResult;
   onOpenChat: () => void;
   onSendCase: () => void;
+  onBooking: () => void;
 }
 
 // ----------------------------------------------------------------------
@@ -693,12 +699,141 @@ interface IssueCardProps {
   issue: PayslipDiscrepancy;
   payslipData: PayslipData;
   onOpenChat: () => void;
+  onSendCase: () => void;
+  onBooking: () => void;
 }
 
-function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
+// Struktureret konflikt-/info-kort (progressive disclosure) til betingede findings
+function ConflictCardBody({
+  cc,
+  onSendCase,
+  onBooking,
+  isForward = false,
+}: {
+  cc: PayslipConflictCard;
+  onSendCase: () => void;
+  onBooking: () => void;
+  isForward?: boolean;
+}) {
+  const [showCalc, setShowCalc] = useState(false);
+
+  const SectionLabel = ({ children }: { children: ReactNode }) => (
+    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{children}</p>
+  );
+
+  return (
+    <div className="space-y-4">
+      {cc.problem && (
+        <div>
+          <SectionLabel>{isForward ? "Hvad sker der?" : "Hvad er problemet?"}</SectionLabel>
+          <p className="text-sm text-foreground leading-relaxed">{cc.problem}</p>
+        </div>
+      )}
+
+      {cc.whatHappened && (
+        <div>
+          <SectionLabel>{isForward ? "For dig betyder det" : "Hvad skete der?"}</SectionLabel>
+          <p className="text-sm text-foreground leading-relaxed">{cc.whatHappened}</p>
+        </div>
+      )}
+
+      {cc.options && cc.options.length > 0 && (
+        <div>
+          <SectionLabel>To mulige svar</SectionLabel>
+          <div className="space-y-2">
+            {cc.options.map((o, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                {o.positive
+                  ? <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                  : <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />}
+                <span className="text-foreground leading-relaxed">{o.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {cc.breakdown && cc.breakdown.length > 0 && (
+        <div className="rounded-xl border border-border/60 bg-white overflow-hidden">
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowCalc(v => !v); }}
+            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-primary"
+          >
+            <span className="flex items-center gap-2"><Calculator className="w-3.5 h-3.5" /> Se beregning</span>
+            {showCalc ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {showCalc && (
+            <div className="px-4 pb-3 pt-3 space-y-1.5 text-sm border-t border-border/50">
+              {cc.breakdown.map((b, i) => (
+                <div key={i} className="flex justify-between text-muted-foreground">
+                  <span>{b.label}</span>
+                  <span className="font-medium text-foreground">{b.amount}</span>
+                </div>
+              ))}
+              {cc.breakdownTotal && (
+                <div className="flex justify-between pt-2 mt-1 border-t border-dashed border-border font-bold text-foreground">
+                  <span>I alt</span>
+                  <span>{cc.breakdownTotal}</span>
+                </div>
+              )}
+              {cc.breakdownNote && (
+                <p className="text-xs text-muted-foreground pt-1">{cc.breakdownNote}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {cc.action && (
+        <div>
+          <SectionLabel>Hvad skal du gøre?</SectionLabel>
+          <p className="text-sm text-foreground leading-relaxed">{cc.action}</p>
+        </div>
+      )}
+
+      {cc.ctas && cc.ctas.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {cc.ctas.map((cta, i) => (
+            <button
+              key={i}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (cta.action === "booking") onBooking();
+                else onSendCase();
+              }}
+              className={cn(
+                "flex-1 min-w-[140px] py-2.5 px-3 rounded-xl text-sm font-semibold transition-colors",
+                i === 0
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-primary/5 text-primary border border-primary/20 hover:bg-primary/10"
+              )}
+            >
+              {cta.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {cc.footnote && (
+        <p className="text-[11px] text-muted-foreground pt-1">{cc.footnote}</p>
+      )}
+    </div>
+  );
+}
+
+function IssueCard({ issue, payslipData, onOpenChat, onSendCase, onBooking }: IssueCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   const isError = issue.severity === "error";
+  const isForward = !!issue.forwardLooking;
+  const cc = issue.conflictCard;
+
+  // Farvetone: forward-looking = blå (info), fejl = rød, ellers gul/amber
+  const tone = isForward
+    ? { border: "border-blue-200", openBg: "bg-blue-50/50", iconBg: "bg-blue-100", icon: "text-blue-600", title: "text-blue-700", pill: "text-blue-500", dot: "bg-blue-500", detailBg: "bg-blue-50/30 border-blue-100", badge: "Kommende hændelse" }
+    : isError
+    ? { border: "border-red-200", openBg: "bg-red-50/50", iconBg: "bg-red-100", icon: "text-red-600", title: "text-red-700", pill: "text-red-500", dot: "bg-red-500", detailBg: "bg-red-50/30 border-red-100", badge: "Automatisk verificeret" }
+    : { border: "border-amber-200", openBg: "bg-amber-50/50", iconBg: "bg-amber-100", icon: "text-amber-600", title: "text-amber-700", pill: "text-amber-500", dot: "bg-amber-500", detailBg: "bg-amber-50/30 border-amber-100", badge: issue.conditional ? "Kræver afklaring" : "Kræver verifikation" };
   
   const parseCalculation = () => {
     if (!issue.calculation) return null;
@@ -728,61 +863,52 @@ function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
   return (
     <div className={cn(
       "bg-card border rounded-2xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md",
-      isError ? "border-red-200" : "border-amber-200"
+      tone.border
     )}>
       {/* Header - Altid synlig (klikbar) */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "w-full p-4 flex items-center justify-between transition-colors",
-          isOpen 
-            ? (isError ? "bg-red-50/50" : "bg-amber-50/50")
-            : "bg-white hover:bg-muted/20"
+          isOpen ? tone.openBg : "bg-white hover:bg-muted/20"
         )}
       >
         <div className="flex items-center gap-3">
           <div className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
-            isError ? "bg-red-100" : "bg-amber-100"
+            tone.iconBg
           )}>
-            <AlertCircle className={cn(
-              "w-5 h-5",
-              isError ? "text-red-600" : "text-amber-600"
-            )} />
+            {isForward
+              ? <Info className={cn("w-5 h-5", tone.icon)} />
+              : <AlertCircle className={cn("w-5 h-5", tone.icon)} />}
           </div>
           <div className="text-left">
-            <p className={cn(
-              "font-semibold",
-              isError ? "text-red-700" : "text-amber-700"
-            )}>
-              {getFieldLabel(issue.field)}
+            <p className={cn("font-semibold", tone.title)}>
+              {issue.title ?? getFieldLabel(issue.field)}
             </p>
             <p className="text-xs text-muted-foreground line-clamp-1">
-              {missingHours > 0 
+              {cc?.subtitle
+                ? cc.subtitle
+                : missingHours > 0 
                 ? `${missingHours} timer ikke honoreret`
-                : issue.description.slice(0, 50) + "..."
-              }
+                : issue.description.slice(0, 50) + "..."}
             </p>
             <span className={cn(
               "inline-flex items-center gap-1 mt-1 text-[10px] font-bold uppercase tracking-wider",
-              isError ? "text-red-500" : "text-amber-500"
+              tone.pill
             )}>
-              <span className={cn(
-                "w-1.5 h-1.5 rounded-full",
-                isError ? "bg-red-500" : "bg-amber-500"
-              )} />
-              {isError ? "Automatisk verificeret" : "Kræver verifikation"}
+              <span className={cn("w-1.5 h-1.5 rounded-full", tone.dot)} />
+              {tone.badge}
             </span>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
-          <span className={cn(
-            "font-bold text-lg",
-            isError ? "text-red-600" : "text-amber-600"
-          )}>
-            {formatKr(Math.abs(issue.difference))}
-          </span>
+          {!isForward && issue.difference !== 0 && (
+            <span className={cn("font-bold text-lg", tone.icon)}>
+              {issue.conditional ? "op til " : ""}{formatKr(Math.abs(issue.difference))}
+            </span>
+          )}
           {isOpen 
             ? <ChevronUp className="w-5 h-5 text-muted-foreground" />
             : <ChevronDown className="w-5 h-5 text-muted-foreground" />
@@ -794,21 +920,43 @@ function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
       {isOpen && (
         <div className={cn(
           "p-4 border-t space-y-4 animate-in slide-in-from-top-2 duration-200",
-          isError ? "bg-red-50/30 border-red-100" : "bg-amber-50/30 border-amber-100"
+          tone.detailBg
         )}>
-          
-          {/* Ernest beskrivelse - TEMPORARILY DISABLED */}
-          {/* <div className="flex gap-3">
-            <img src={ernestAvatar} className="w-8 h-8 shrink-0" alt="Ernest" />
-            <div className="bg-white rounded-2xl rounded-tl-sm p-3 text-sm text-foreground border border-border/50 flex-1">
-              {issue.description}
-            </div>
-          </div> */}
+
+          {/* Struktureret konflikt-/info-kort */}
+          {cc ? (
+            <ConflictCardBody cc={cc} onSendCase={onSendCase} onBooking={onBooking} isForward={isForward} />
+          ) : (
+          <>
           <div className="bg-white rounded-2xl p-3 text-sm text-foreground border border-border/50">
             {issue.description}
           </div>
-          
-          {/* Beregnings-blokken ("Bonnen") */}
+
+          {/* Betinget finding (klassifikationskonflikt o.l.) — scenarier i stedet for "du mangler" */}
+          {issue.conditional && (
+            <>
+              {issue.calculation && (
+                <div className="bg-white rounded-xl p-4 border border-border/60 shadow-sm space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider">
+                    <Calculator className="w-3.5 h-3.5" />
+                    Hvad betyder det for dig?
+                  </div>
+                  {issue.calculation.split("\n").filter(Boolean).map((line, i) => (
+                    <p key={i} className="text-sm text-foreground leading-relaxed">{line}</p>
+                  ))}
+                </div>
+              )}
+              {issue.suggestion && (
+                <div className="bg-primary/5 rounded-xl p-4 border border-primary/15 flex items-start gap-2">
+                  <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <p className="text-sm text-foreground leading-relaxed">{issue.suggestion}</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Beregnings-blokken ("Bonnen") — kun for klassiske kr-fejl */}
+          {!issue.conditional && (
           <div className="bg-white rounded-xl p-4 border border-border/60 shadow-sm">
             <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-primary uppercase tracking-wider">
               <Calculator className="w-3.5 h-3.5" />
@@ -879,18 +1027,12 @@ function IssueCard({ issue, payslipData, onOpenChat }: IssueCardProps) {
               </div>
             </div>
           </div>
+          )}
 
           {/* Dokumentation / Referencer */}
           <ContractDocBadge rule={calc?.rule} />
-          
-          {/* Spørg Ernest - TEMPORARILY DISABLED */}
-          {/* <button
-            onClick={(e) => { e.stopPropagation(); onOpenChat(); }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-primary bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors border border-primary/20"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Spørg Ernest om denne fejl
-          </button> */}
+          </>
+          )}
         </div>
       )}
     </div>
@@ -1004,7 +1146,7 @@ function ContractDocBadge({ rule }: { rule?: string }) {
   );
 }
 
-function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }: ErrorsContentProps) {
+function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase, onBooking }: ErrorsContentProps) {
   const { discrepancies, summary } = validationResult;
   
   // Vis alle issues (både errors og warnings)
@@ -1028,6 +1170,16 @@ function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }
   }
   
   const hasRealErrors = allIssues.some(i => i.severity === "error");
+  const isConditional = allIssues.some(i => i.conditional) && !hasRealErrors;
+
+  // Skel mellem advarsler (kræver afklaring) og fremtidige observationer (kommende hændelser)
+  const forwardCount = allIssues.filter(i => i.forwardLooking).length;
+  const warningCount = allIssues.length - forwardCount;
+  const issueSummaryText = forwardCount > 0
+    ? `${warningCount} ${warningCount === 1 ? "advarsel" : "advarsler"} + ${forwardCount} kommende hændelse${forwardCount > 1 ? "r" : ""}`
+    : isConditional
+    ? `${allIssues.length} forhold fundet`
+    : `${allIssues.length} uoverensstemmelse${allIssues.length > 1 ? "r" : ""}`;
   
   return (
     <div className="px-4 pb-6 animate-fade-in">
@@ -1045,7 +1197,7 @@ function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }
           )}>
             <AlertTriangle className="w-4 h-4" />
             <span className="text-sm">
-              Vi har fundet {allIssues.length} uoverensstemmelse{allIssues.length > 1 ? "r" : ""}
+              {isConditional ? "Afklaring nødvendig — " : "Vi har fundet "}{issueSummaryText}
             </span>
           </div>
           
@@ -1053,12 +1205,16 @@ function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }
             <span className={cn(
               "text-4xl font-bold",
               hasRealErrors ? "text-red-600" : "text-amber-600"
-            )}>{formatKr(Math.abs(summary.totalDifference))}</span>
-            <span className="text-sm text-muted-foreground">mangler</span>
+            )}>{isConditional ? "op til " : ""}{formatKr(Math.abs(summary.totalDifference))}</span>
+            <span className="text-sm text-muted-foreground">
+              {isConditional ? "afhænger af din ansættelsesform" : "mangler"}
+            </span>
           </div>
           
           <p className="text-xs text-muted-foreground">
-            Klik på hver fejl nedenfor for at se beregning og dokumentation
+            {isConditional
+              ? "Klik på hvert forhold nedenfor for at se hvad du kan gøre"
+              : "Klik på hver fejl nedenfor for at se beregning og dokumentation"}
           </p>
         </div>
       </div>
@@ -1071,6 +1227,8 @@ function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }
             issue={issue} 
             payslipData={payslipData}
             onOpenChat={onOpenChat}
+            onSendCase={onSendCase}
+            onBooking={onBooking}
           />
         ))}
       </div>
@@ -1080,7 +1238,7 @@ function ErrorsContent({ payslipData, validationResult, onOpenChat, onSendCase }
         className="w-full h-14 text-lg font-bold rounded-2xl shadow-lg shadow-primary/20"
         onClick={onSendCase}
       >
-        Send til arbejdsgiver
+        {isConditional ? "Send spørgsmål til arbejdsgiver" : "Send til arbejdsgiver"}
       </Button>
       
       {/* Helper text */}

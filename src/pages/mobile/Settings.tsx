@@ -11,7 +11,7 @@ import * as demoAuth from "@/lib/demoAuth";
 
 export default function MobileSettings() {
   const navigate = useNavigate();
-  const { basePath } = useDemo();
+  const { basePath, setBookedMeeting } = useDemo();
   
   const [settings, setSettings] = useState({
     notifications: true,
@@ -20,6 +20,7 @@ export default function MobileSettings() {
   });
 
   const handleLogout = () => {
+    setBookedMeeting(null);
     demoAuth.logout();
     navigate(`${basePath}/welcome`);
   };

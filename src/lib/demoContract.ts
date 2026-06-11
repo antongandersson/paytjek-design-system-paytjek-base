@@ -24,6 +24,7 @@ export interface ContractDetails {
     weeklyHours: number;
     probationMonths: number;
     noticePeriodMonths: number;
+    noticeLabel?: string;    // Overstyrer "{n} mdr." (fx "Afhænger af ansættelsesform")
   };
 
   // Overenskomst
@@ -41,9 +42,11 @@ export interface ContractDetails {
     monthlyRate?: number;
     trin: number;
     trinLabel: string;
+    trinHeading?: string;    // Overstyrer "Løntrin"-label (fx "Løntype")
     seniorityYears: number;
     seniorityFrom: string;
     fritvalgPercent: number;
+    fritvalgNote?: string;   // Suffix til fritvalgs-procent (fx "fra 1.3.2026")
   };
 
   // Tillæg — kan være faste satser eller overenskomstbaserede
@@ -66,12 +69,32 @@ export interface ContractDetails {
     employeePercent: number;
     employerPercent: number;
     provider: string;
+    note?: string;           // Kilde-/satshenvisning (fx "iht. §34 stk. 2 (fra 1.5.2025)")
   };
 
   // Ferie
   vacation: {
     daysPerYear: number;
     type: string;
+    headline?: string;       // Overstyrer "{n} feriedage / år"-overskriften
+    bullets?: string[];      // Punktliste under overskriften (rene kontraktvilkår)
+  };
+
+  // Rettigheder iht. overenskomst (valgfri ekstra-blok, fx Industriens OK)
+  rights?: Array<{ emoji: string; label: string; value: string; sub?: string }>;
+
+  // Overlay der FØRST må vises efter mindst én lønseddel er uploadet.
+  // Sammenligninger mellem kontrakt og lønseddel (fx ansat-dato 2019, "afhænger af
+  // ansættelsesform", forbehold, 33.000-uoverensstemmelse) er logisk umulige før upload.
+  postPayslip?: {
+    startDate?: string;        // Overstyrer "Ansat siden" (fx lønsedlernes 2019-dato)
+    startDateNote?: string;    // Lille note under datoen (fx "iflg. lønsedler")
+    noticeLabel?: string;      // Overstyrer opsigelse (fx "Afhænger af ansættelsesform")
+    salaryNote?: string;       // ⚠️-note under løn (fx "Lønseddel viser 33.000 kr…")
+    vacationHeadline?: string; // Overstyrer ferie-overskrift
+    vacationType?: string;     // Overstyrer ferie-undertekst
+    structuralNote?: string;   // Diskret strukturel note (fx §28-bemærkning)
+    reservation?: boolean;     // True = hero viser "verificeret — med forbehold"
   };
 
   // Metadata

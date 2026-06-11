@@ -25,7 +25,7 @@ const menuItems: MenuItem[] = [
 
 export default function MobileMore() {
   const navigate = useNavigate();
-  const { basePath } = useDemo();
+  const { basePath, setBookedMeeting } = useDemo();
   
   // Import contexts for logout
   const { clearAllData: clearPayslipData } = usePayslip();
@@ -46,6 +46,7 @@ export default function MobileMore() {
       clearAppData();
       clearContractData();
       clearRequestData();
+      setBookedMeeting(null);
       demoAuth.logout();
       navigate(`${basePath}/welcome`);
     }

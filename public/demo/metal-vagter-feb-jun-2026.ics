@@ -1,0 +1,864 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//REA Automatdrejning ApS//Planday Vagtplan//DA
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Lars Pedersen – REA Automatdrejning
+X-WR-TIMEZONE:Europe/Copenhagen
+BEGIN:VEVENT
+DTSTART:20260202T070000
+DTEND:20260202T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-02@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260203T070000
+DTEND:20260203T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-03@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260204T070000
+DTEND:20260204T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-04@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260205T070000
+DTEND:20260205T170000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor + 1\,75t overtid (OK §13 stk. 7).
+UID:metal-2026-02-05@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260206T070000
+DTEND:20260206T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-02-06@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260209T070000
+DTEND:20260209T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-09@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260210T070000
+DTEND:20260210T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-10@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260211T070000
+DTEND:20260211T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-11@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260212T070000
+DTEND:20260212T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-12@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260213T070000
+DTEND:20260213T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-02-13@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260216T070000
+DTEND:20260216T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-16@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260217T070000
+DTEND:20260217T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-17@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260218T070000
+DTEND:20260218T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-18@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260219T070000
+DTEND:20260219T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-19@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260220T070000
+DTEND:20260220T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-02-20@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260223T070000
+DTEND:20260223T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-23@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260224T070000
+DTEND:20260224T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-24@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260225T070000
+DTEND:20260225T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-25@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260226T070000
+DTEND:20260226T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-02-26@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260227T070000
+DTEND:20260227T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-02-27@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260302T070000
+DTEND:20260302T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-02@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260303T070000
+DTEND:20260303T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-03@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260304T070000
+DTEND:20260304T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-04@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260305T070000
+DTEND:20260305T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-05@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260306T070000
+DTEND:20260306T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-03-06@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260309T070000
+DTEND:20260309T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-09@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260310T070000
+DTEND:20260310T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-10@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260311T070000
+DTEND:20260311T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-11@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260312T070000
+DTEND:20260312T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-12@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260313T070000
+DTEND:20260313T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-03-13@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260316T070000
+DTEND:20260316T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-16@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260317T070000
+DTEND:20260317T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-17@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260318T070000
+DTEND:20260318T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-18@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260319T070000
+DTEND:20260319T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-19@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260320T070000
+DTEND:20260320T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-03-20@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260323T070000
+DTEND:20260323T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-23@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260324T070000
+DTEND:20260324T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-24@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260325T070000
+DTEND:20260325T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-25@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260326T070000
+DTEND:20260326T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-03-26@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260327T070000
+DTEND:20260327T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-03-27@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260330T070000
+DTEND:20260330T070000
+SUMMARY:Feriefridag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Feriefridag afholdt (jf. Industriens Overenskomst §18) – fuld løn bevaret.
+UID:metal-2026-03-30@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260331T070000
+DTEND:20260331T070000
+SUMMARY:Feriefridag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Feriefridag afholdt (jf. Industriens Overenskomst §18) – fuld løn bevaret.
+UID:metal-2026-03-31@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260401T070000
+DTEND:20260401T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-01@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260402T070000
+DTEND:20260402T070000
+SUMMARY:Helligdag – Skærtorsdag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Søgnehelligdag – ingen vagt. Finansieres af SH-opsparing (arbejder-model).
+UID:metal-2026-04-02@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260403T070000
+DTEND:20260403T070000
+SUMMARY:Helligdag – Langfredag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Søgnehelligdag – ingen vagt. Finansieres af SH-opsparing (arbejder-model).
+UID:metal-2026-04-03@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260406T070000
+DTEND:20260406T070000
+SUMMARY:Helligdag – 2. Påskedag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Søgnehelligdag – ingen vagt. Finansieres af SH-opsparing (arbejder-model).
+UID:metal-2026-04-06@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260407T070000
+DTEND:20260407T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-07@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260408T070000
+DTEND:20260408T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-08@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260409T070000
+DTEND:20260409T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-09@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260410T070000
+DTEND:20260410T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-04-10@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260413T070000
+DTEND:20260413T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-13@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260414T070000
+DTEND:20260414T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-14@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260415T070000
+DTEND:20260415T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-15@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260416T070000
+DTEND:20260416T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-16@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260417T070000
+DTEND:20260417T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-04-17@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260420T070000
+DTEND:20260420T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-20@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260421T070000
+DTEND:20260421T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-21@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260422T070000
+DTEND:20260422T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-22@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260423T070000
+DTEND:20260423T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-23@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260424T070000
+DTEND:20260424T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-04-24@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260427T070000
+DTEND:20260427T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-27@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260428T070000
+DTEND:20260428T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-28@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260429T070000
+DTEND:20260429T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-29@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260430T070000
+DTEND:20260430T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-04-30@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260501T070000
+DTEND:20260501T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-05-01@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260504T070000
+DTEND:20260504T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-04@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260505T070000
+DTEND:20260505T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-05@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260506T070000
+DTEND:20260506T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-06@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260507T070000
+DTEND:20260507T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-07@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260508T070000
+DTEND:20260508T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-05-08@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260511T070000
+DTEND:20260511T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-11@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260512T070000
+DTEND:20260512T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-12@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260513T070000
+DTEND:20260513T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-13@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260514T070000
+DTEND:20260514T070000
+SUMMARY:Helligdag – Kr. Himmelfartsdag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Søgnehelligdag – ingen vagt. Finansieres af SH-opsparing (arbejder-model).
+UID:metal-2026-05-14@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260515T070000
+DTEND:20260515T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-05-15@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260518T070000
+DTEND:20260518T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-18@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260519T070000
+DTEND:20260519T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-19@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260520T070000
+DTEND:20260520T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-20@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260521T070000
+DTEND:20260521T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-21@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260522T070000
+DTEND:20260522T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-05-22@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260525T070000
+DTEND:20260525T070000
+SUMMARY:Helligdag – 2. Pinsedag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Søgnehelligdag – ingen vagt. Finansieres af SH-opsparing (arbejder-model).
+UID:metal-2026-05-25@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260526T070000
+DTEND:20260526T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-26@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260527T070000
+DTEND:20260527T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-27@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260528T070000
+DTEND:20260528T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-05-28@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260529T070000
+DTEND:20260529T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-05-29@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260601T070000
+DTEND:20260601T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-01@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260602T070000
+DTEND:20260602T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-02@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260603T070000
+DTEND:20260603T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-03@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260604T070000
+DTEND:20260604T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-04@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260605T070000
+DTEND:20260605T070000
+SUMMARY:Fri – Grundlovsdag
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Grundlovsdag – fri.
+UID:metal-2026-06-05@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260608T070000
+DTEND:20260608T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-08@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260609T070000
+DTEND:20260609T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-09@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T070000
+DTEND:20260610T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-10@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260611T070000
+DTEND:20260611T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-11@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260612T070000
+DTEND:20260612T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-06-12@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260615T070000
+DTEND:20260615T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-15@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260616T070000
+DTEND:20260616T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-16@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260617T070000
+DTEND:20260617T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-17@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260618T070000
+DTEND:20260618T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-18@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260619T070000
+DTEND:20260619T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-06-19@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260622T070000
+DTEND:20260622T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-22@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260623T070000
+DTEND:20260623T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-23@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260624T070000
+DTEND:20260624T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-24@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260625T070000
+DTEND:20260625T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-25@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260626T070000
+DTEND:20260626T140000
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Fre 07:00-14:00.
+UID:metal-2026-06-26@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260629T070000
+DTEND:20260629T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-29@rea-automatdrejning.dk
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260630T070000
+DTEND:20260630T151500
+SUMMARY:Arbejde – Industritekniker
+LOCATION:REA Automatdrejning ApS, Industrivej 2, 5450 Otterup
+DESCRIPTION:Faste arbejdstider Man-Tor 07:00-15:15.
+UID:metal-2026-06-30@rea-automatdrejning.dk
+END:VEVENT
+END:VCALENDAR
